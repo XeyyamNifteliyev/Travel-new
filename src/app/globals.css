@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #0EA5E9;
+  --secondary: #F59E0B;
+  --accent: #10B981;
+  --az-flag: #0092BC;
+}
+
+.dark {
+  --bg-base: #0F172A;
+  --bg-surface: #1E293B;
+  --bg-surface-hover: #334155;
+  --bg-input: #1E293B;
+  --border: #334155;
+  --border-light: #1E293B;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --header-bg: rgba(15, 23, 42, 0.8);
+  --card-bg: rgba(30, 41, 59, 0.5);
+  --dropdown-bg: #1E293B;
+}
+
+.light {
+  --bg-base: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-surface-hover: #F1F5F9;
+  --bg-input: #FFFFFF;
+  --border: #E2E8F0;
+  --border-light: #F1F5F9;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --header-bg: rgba(248, 250, 252, 0.8);
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --dropdown-bg: #FFFFFF;
+}
+
+/*noinspection CssUnknownAtRule*/
+@theme inline {
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-az-flag: var(--az-flag);
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-hover: var(--bg-surface-hover);
+  --color-bg-input: var(--bg-input);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-txt: var(--text-primary);
+  --color-txt-sec: var(--text-secondary);
+  --color-txt-muted: var(--text-muted);
+  --color-header-bg: var(--header-bg);
+  --color-card-bg: var(--card-bg);
+  --color-dropdown-bg: var(--dropdown-bg);
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+button:not(:disabled),
+[role="button"]:not(:disabled),
+a {
+  cursor: pointer;
+}
+
+@keyframes orbit1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes counterRotate1 { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(-360deg); } }
+@keyframes orbit2 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes counterRotate2 { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(-360deg); } }
+@keyframes globeRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes glowPulse { 0%, 100% { opacity: 0.6; transform: scale(1.3); } 50% { opacity: 1; transform: scale(1.4); } }
+@keyframes flagFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
