@@ -68,7 +68,7 @@ export function HotelSearch({ onSearch }: HotelSearchProps) {
       </div>
       <button
         onClick={handleSearch}
-        className="mt-4 w-full bg-secondary hover:bg-secondary/90 text-dark font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+        className="mt-4 w-full bg-primary hover:bg-primary/90 text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
       >
         {t('findHotel')}
         <ArrowRight className="w-4 h-4" />

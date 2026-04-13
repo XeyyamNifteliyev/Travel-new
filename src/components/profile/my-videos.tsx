@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Plus, Trash2, Video, ExternalLink, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { confirmDialog } from '@/components/ui/confirm-dialog';
 
 export function MyVideos() {
   const params = useParams();
@@ -70,14 +72,21 @@ export function MyVideos() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bu videonu silmək istədiyinizə əminsiniz?')) return;
+    const confirmed = await confirmDialog({
+      title: 'Videonu sil',
+      message: 'Bu videonu silmək istədiyinizə əminsiniz?',
+      confirmText: 'Sil',
+      cancelText: 'Ləğv et',
+    });
+    if (!confirmed) return;
     setDeleting(id);
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase.from('youtube_links').delete().eq('id', id).eq('user_id', user?.id);
     if (error) {
-      alert('Silmək alınmadı');
+      toast.error('Silmək alınmadı');
     } else {
       setVideos((prev) => prev.filter((v) => v.id !== id));
+      toast.success('Video uğurla silindi');
     }
     setDeleting(null);
   };

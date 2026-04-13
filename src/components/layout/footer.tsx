@@ -23,25 +23,25 @@ export function Footer() {
             <p className="text-txt-sec text-sm">{t('tagline')}</p>
           </div>
           <div>
-            <h3 className="font-semibold mb-3 text-txt">{t('flights')}</h3>
+            <h3 className="font-semibold mb-3 text-txt">{t('reservation')}</h3>
             <ul className="space-y-2 text-sm text-txt-sec">
-              <li><Link href={`/${locale}/flights`} className="hover:text-primary transition-colors">{t('search')}</Link></li>
+              <li><Link href={`/${locale}/flights`} className="hover:text-primary transition-colors">{t('flights')}</Link></li>
               <li><Link href={`/${locale}/hotels`} className="hover:text-primary transition-colors">{t('hotels')}</Link></li>
               <li><Link href={`/${locale}/tours`} className="hover:text-primary transition-colors flex items-center gap-1"><Map className="w-3 h-3" />{tc('tours')}</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-3 text-txt">{tc('title')}</h3>
+            <h3 className="font-semibold mb-3 text-txt">{t('explore')}</h3>
             <ul className="space-y-2 text-sm text-txt-sec">
-              <li><Link href={`/${locale}/companions`} className="hover:text-primary transition-colors flex items-center gap-1"><Users className="w-3 h-3" />{tc('companions')}</Link></li>
-              <li><Link href={`/${locale}/videos`} className="hover:text-primary transition-colors flex items-center gap-1"><Video className="w-3 h-3" />{tc('videos')}</Link></li>
-              <li><Link href={`/${locale}/leaderboard`} className="hover:text-primary transition-colors flex items-center gap-1"><Trophy className="w-3 h-3" />{tc('topWriters')}</Link></li>
+              <li><Link href={`/${locale}/countries`} className="hover:text-primary transition-colors">{t('countries')}</Link></li>
+              <li><Link href={`/${locale}/ai-planner`} className="hover:text-primary transition-colors">{t('aiPlanner')}</Link></li>
+              <li><Link href={`/${locale}/blog`} className="hover:text-primary transition-colors">{t('blog')}</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-3 text-txt">{t('blog')}</h3>
+            <h3 className="font-semibold mb-3 text-txt">{t('services')}</h3>
             <ul className="space-y-2 text-sm text-txt-sec">
-              <li><Link href={`/${locale}/blog`} className="hover:text-primary transition-colors">{t('blog')}</Link></li>
+              <li><Link href={`/${locale}/companions`} className="hover:text-primary transition-colors flex items-center gap-1"><Users className="w-3 h-3" />{tc('companions')}</Link></li>
               <li><Link href={`/${locale}/visa`} className="hover:text-primary transition-colors">{t('visa')}</Link></li>
               <li><Link href={`/${locale}/company`} className="hover:text-primary transition-colors flex items-center gap-1"><Building2 className="w-3 h-3" />Tur şirkəti</Link></li>
             </ul>

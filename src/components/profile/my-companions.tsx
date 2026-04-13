@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Plus, Trash2, MapPin, Calendar, Users } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { confirmDialog } from '@/components/ui/confirm-dialog';
 
 export function MyCompanions() {
   const params = useParams();
@@ -33,14 +35,21 @@ export function MyCompanions() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bu yoldaş elanını silmək istədiyinizə əminsiniz?')) return;
+    const confirmed = await confirmDialog({
+      title: 'Elanı sil',
+      message: 'Bu yoldaş elanını silmək istədiyinizə əminsiniz?',
+      confirmText: 'Sil',
+      cancelText: 'Ləğv et',
+    });
+    if (!confirmed) return;
     setDeleting(id);
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase.from('companions').delete().eq('id', id).eq('user_id', user?.id);
     if (error) {
-      alert('Silmək alınmadı');
+      toast.error('Silmək alınmadı');
     } else {
       setCompanions((prev) => prev.filter((c) => c.id !== id));
+      toast.success('Elan uğurla silindi');
     }
     setDeleting(null);
   };

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { Building2, CheckCircle, Loader2, Phone, Mail, Globe, MessageCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function CompanyRegister() {
   const t = useTranslations('company');
@@ -59,7 +60,7 @@ export default function CompanyRegister() {
       checkAuth();
     } else {
       const data = await res.json();
-      alert(data.error || 'Xəta baş verdi');
+      toast.error(data.error || 'Xəta baş verdi');
     }
   }
 

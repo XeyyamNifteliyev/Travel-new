@@ -107,7 +107,9 @@ ${countryContext}
 Hər gün üçün detallı plan hazırla. Hər gündə 3-5 aktivlik, yemək tövsiyələri (səhər, nahar, şam), nəqliyyat məlumatı və təxmini xərc göstər.
 Vacib məsləhətlər və çanta siyahısı da əlavə et.
 
-Cavabını YALNIZ aşağıdakı JSON formatında ver, heç bir digər mətn əlavə etmə:
+ÇOX VACİB: Cavabını YALNIZ və YALNIZ JSON olaraq qaytar. Heç bir izahat, giriş mətni, salam və ya əlavə mətn yazma. Birbaşa { ilə başla və } ilə bitir.
+
+JSON formatı:
 {
   "summary": "Qısa səyahət xülasəsi (2-3 cümlə)",
   "totalEstimatedCost": {
@@ -151,5 +153,7 @@ Cavabını YALNIZ aşağıdakı JSON formatında ver, heç bir digər mətn əla
   },
   "bestTimeToVisit": "Ən yaxşı ziyarət vaxtı",
   "packingList": ["Əşya 1", "Əşya 2"]
-}`;
+}
+
+Yalnız JSON qaytar. Heç nə əlavə etme.`;
 }

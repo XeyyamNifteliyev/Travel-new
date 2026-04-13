@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { generateTravelPlan } from '@/lib/ai/gemini';
+import { getProvider } from '@/lib/ai/provider';
 import { buildPrompt } from '@/lib/ai/prompts';
 import { parseAIResponse } from '@/lib/ai/parser';
 import { PlanRequest } from '@/types/ai-planner';
@@ -15,8 +15,9 @@ export async function POST(request: Request) {
       );
     }
 
+    const provider = getProvider();
     const prompt = buildPrompt(body);
-    const rawResponse = await generateTravelPlan(prompt);
+    const rawResponse = await provider.generateText(prompt);
     const plan = parseAIResponse(rawResponse);
 
     const destinationSlug = body.destination.toLowerCase().replace(/\s+/g, '-');

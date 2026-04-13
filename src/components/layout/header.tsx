@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from './language-switcher';
 import { ThemeToggle } from './theme-toggle';
 import { MobileMenu } from './mobile-menu';
-import { Plane, User, MessageCircle, Sparkles, PlaneTakeoff, Hotel, MapPin, Users, ShieldCheck, BookOpen, MessageSquareText } from 'lucide-react';
+import { Plane, User, ChevronDown, PlaneTakeoff, Hotel, MapPin, Users, ShieldCheck, BookOpen, MessageSquareText, Sparkles, Globe } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { type LucideIcon } from 'lucide-react';
 
@@ -17,10 +17,22 @@ interface NavLink {
   highlight?: boolean;
 }
 
+interface NavGroup {
+  key: string;
+  label: string;
+  icon: LucideIcon;
+  highlight?: boolean;
+  children?: NavLink[];
+  link?: NavLink;
+}
+
 export function Header() {
   const t = useTranslations('common');
   const locale = useLocale();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -37,20 +49,73 @@ export function Header() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const navLinks: NavLink[] = [
-    { href: `/${locale}/flights`, label: t('flights'), icon: PlaneTakeoff },
-    { href: `/${locale}/hotels`, label: t('hotels'), icon: Hotel },
-    { href: `/${locale}/tours`, label: t('tours'), icon: MapPin },
-    { href: `/${locale}/countries`, label: t('countries'), icon: MapPin },
-    { href: `/${locale}/companions`, label: t('companions'), icon: Users },
-    { href: `/${locale}/visa`, label: t('visa'), icon: ShieldCheck },
-    { href: `/${locale}/blog`, label: t('blog'), icon: BookOpen },
-    { href: `/${locale}/ai-planner`, label: t('aiPlanner'), icon: Sparkles, highlight: true },
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (openGroup) {
+        const allRefs = Object.values(groupRefs.current);
+        if (!allRefs.some(ref => ref && ref.contains(e.target as Node))) {
+          setOpenGroup(null);
+        }
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openGroup]);
+
+  function handleGroupEnter(key: string) {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setOpenGroup(key);
+  }
+
+  function handleGroupLeave() {
+    timeoutRef.current = setTimeout(() => {
+      setOpenGroup(null);
+    }, 150);
+  }
+
+  const navGroups: NavGroup[] = [
+    {
+      key: 'reservation',
+      label: t('reservation'),
+      icon: PlaneTakeoff,
+      children: [
+        { href: `/${locale}/flights`, label: t('flights'), icon: PlaneTakeoff },
+        { href: `/${locale}/hotels`, label: t('hotels'), icon: Hotel },
+        { href: `/${locale}/tours`, label: t('tours'), icon: MapPin },
+      ],
+    },
+    {
+      key: 'explore',
+      label: t('explore'),
+      icon: Globe,
+      children: [
+        { href: `/${locale}/countries`, label: t('countries'), icon: Globe },
+        { href: `/${locale}/ai-planner`, label: t('aiPlanner'), icon: Sparkles, highlight: true },
+      ],
+    },
+    {
+      key: 'services',
+      label: t('services'),
+      icon: Users,
+      children: [
+        { href: `/${locale}/companions`, label: t('companions'), icon: Users },
+        { href: `/${locale}/visa`, label: t('visa'), icon: ShieldCheck },
+      ],
+    },
+    {
+      key: 'blog',
+      label: t('blog'),
+      icon: BookOpen,
+      link: { href: `/${locale}/blog`, label: t('blog'), icon: BookOpen },
+    },
   ];
 
-  const isLoggedInNavLinks: NavLink[] = isLoggedIn
-    ? [...navLinks, { href: `/${locale}/chat`, label: t('chat'), icon: MessageSquareText }]
-    : navLinks;
+  const chatLink: NavLink | null = isLoggedIn
+    ? { href: `/${locale}/chat`, label: t('chat'), icon: MessageSquareText }
+    : null;
 
   return (
     <header className="sticky top-0 z-50 bg-header-bg backdrop-blur-md border-b border-border">
@@ -61,22 +126,75 @@ export function Header() {
             <span>{t('appName')}</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-4">
-            {isLoggedInNavLinks.map((link) => {
-              const Icon = link.icon;
+          <nav className="hidden md:flex items-center gap-1">
+            {navGroups.map((group) => {
+              const GroupIcon = group.icon;
+
+              if (group.link) {
+                return (
+                  <Link
+                    key={group.key}
+                    href={group.link.href}
+                    className="hover:text-primary transition-colors text-sm flex items-center gap-1.5 text-txt-sec px-2 py-1.5 rounded-md"
+                  >
+                    <GroupIcon className="w-3.5 h-3.5" />
+                    {group.label}
+                  </Link>
+                );
+              }
+
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`hover:text-primary transition-colors text-sm flex items-center gap-1.5 text-txt-sec ${
-                    link.highlight ? 'text-primary font-medium' : ''
-                  }`}
+                <div
+                  key={group.key}
+                  ref={(el) => { groupRefs.current[group.key] = el; }}
+                  className="relative"
+                  onMouseEnter={() => handleGroupEnter(group.key)}
+                  onMouseLeave={handleGroupLeave}
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  {link.label}
-                </Link>
+                  <button
+                    className={`hover:text-primary transition-colors text-sm flex items-center gap-1.5 text-txt-sec px-2 py-1.5 rounded-md ${
+                      openGroup === group.key ? 'text-primary bg-bg-surface-hover' : ''
+                    }`}
+                    onClick={() => setOpenGroup(openGroup === group.key ? null : group.key)}
+                  >
+                    <GroupIcon className="w-3.5 h-3.5" />
+                    {group.label}
+                    <ChevronDown className={`w-3 h-3 transition-transform ${openGroup === group.key ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {openGroup === group.key && group.children && (
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-bg-base border border-border rounded-lg shadow-lg py-1 z-50">
+                      {group.children.map((child) => {
+                        const ChildIcon = child.icon;
+                        return (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => setOpenGroup(null)}
+                            className={`flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-bg-surface-hover transition-colors ${
+                              child.highlight ? 'text-primary font-medium' : 'text-txt-sec'
+                            }`}
+                          >
+                            <ChildIcon className="w-4 h-4" />
+                            {child.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
+
+            {chatLink && (
+              <Link
+                href={chatLink.href}
+                className="hover:text-primary transition-colors text-sm flex items-center gap-1.5 text-txt-sec px-2 py-1.5 rounded-md"
+              >
+                <MessageSquareText className="w-3.5 h-3.5" />
+                {chatLink.label}
+              </Link>
+            )}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -89,7 +207,7 @@ export function Header() {
               <User className="w-4 h-4" />
               <span>{isLoggedIn ? t('profile') : t('login')}</span>
             </Link>
-            <MobileMenu navLinks={isLoggedInNavLinks} />
+            <MobileMenu navGroups={navGroups} chatLink={chatLink} />
           </div>
         </div>
       </div>

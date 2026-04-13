@@ -31,7 +31,9 @@
     "reviews": "отзывов",
     "searchFlightsTo": "Найти рейс",
     "goToFlightSearch": "Перейти к поиску рейсов",
-    "aiPlanner": "ИИ План"
+    "aiPlanner": "ИИ План",
+    "reservation": "Бронирование",
+    "services": "Услуги"
   },
   "home": {
     "heroTitle": "Откройте мир",

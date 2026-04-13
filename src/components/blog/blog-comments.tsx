@@ -5,6 +5,7 @@ import { BlogComment } from '@/types/comment';
 import { useTranslations } from 'next-intl';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { MessageSquare, Send, Trash2, Loader2, User } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface BlogCommentsProps {
   blogId: string;
@@ -67,9 +68,10 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
     const res = await fetch(`/api/comments?id=${id}`, { method: 'DELETE' });
     if (res.ok) {
       fetchComments();
+      toast.success('Şərh silindi');
     } else {
       const data = await res.json().catch(() => ({}));
-      alert(data.error || 'Şərhi silmək alınmadı');
+      toast.error(data.error || 'Şərhi silmək alınmadı');
     }
   }
 

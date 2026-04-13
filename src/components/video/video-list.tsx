@@ -8,6 +8,7 @@ import {
   Play, Plus, X, Loader2, MapPin, Calendar, Eye,
   Heart, ExternalLink, Video
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const COUNTRIES = [
   'Türkiyə', 'Dubai', 'Rusiya', 'Gürcüstan', 'İran',
@@ -79,7 +80,7 @@ export default function VideosPage() {
       });
     } else {
       const data = await res.json();
-      alert(data.error || 'Xəta baş verdi');
+      toast.error(data.error || 'Xəta baş verdi');
     }
   }
 

@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Plus, Trash2, ExternalLink, Calendar, Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { confirmDialog } from '@/components/ui/confirm-dialog';
 
 export function MyBlogs() {
   const params = useParams();
@@ -35,13 +37,20 @@ export function MyBlogs() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bu blogu silmək istədiyinizə əminsiniz?')) return;
+    const confirmed = await confirmDialog({
+      title: 'Blogu sil',
+      message: 'Bu blogu silmək istədiyinizə əminsiniz?',
+      confirmText: 'Sil',
+      cancelText: 'Ləğv et',
+    });
+    if (!confirmed) return;
     setDeleting(id);
     const { error } = await supabase.from('blogs').delete().eq('id', id).eq('author_id', user?.id);
     if (error) {
-      alert('Silmək alınmadı');
+      toast.error('Silmək alınmadı');
     } else {
       setBlogs((prev) => prev.filter((b) => b.id !== id));
+      toast.success('Blog uğurla silindi');
     }
     setDeleting(null);
   };

@@ -31,7 +31,9 @@
     "reviews": "reviews",
     "searchFlightsTo": "Search flights to",
     "goToFlightSearch": "Go to flight search",
-    "aiPlanner": "AI Plan"
+    "aiPlanner": "AI Plan",
+    "reservation": "Reservation",
+    "services": "Services"
   },
   "home": {
     "heroTitle": "Explore the World",

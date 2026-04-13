@@ -9,6 +9,7 @@ import {
   Search, MapPin, Calendar, Users, Heart,
   X, Plus, Loader2, Globe, User, MessageCircle
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const REGIONS = [
   'Türkiyə', 'Dubai', 'Rusiya', 'Gürcüstan', 'İran',
@@ -144,7 +145,7 @@ export default function CompanionSearch() {
     } else {
       const errorData = await res.json();
       console.error('Companion creation error:', errorData);
-      alert(errorData.error || 'Xəta baş verdi');
+      toast.error(errorData.error || 'Xəta baş verdi');
     }
   }
 
@@ -172,7 +173,7 @@ export default function CompanionSearch() {
       return;
     }
     if (user.id === adOwnerId) {
-      alert(t('cannotSelfMessage'));
+      toast.warning(t('cannotSelfMessage'));
       return;
     }
 
@@ -199,7 +200,7 @@ export default function CompanionSearch() {
       .single();
 
     if (error) {
-      alert(t('cannotSelfMessage'));
+      toast.error(t('cannotSelfMessage'));
       setMessagingId(null);
       return;
     }
