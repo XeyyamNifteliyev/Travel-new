@@ -5,30 +5,37 @@ import { routing } from '@/i18n/routing';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-export async function middleware(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  const pathname = url.pathname;
-  const locales = ['az', 'ru', 'en'];
+const PUBLIC_PATHS = [
+  '/',
+  '/countries',
+  '/blog',
+  '/tours',
+  '/flights',
+  '/hotels',
+  '/visa',
+  '/companions',
+  '/videos',
+  '/ai-planner',
+];
 
-  // Check if pathname has a locale prefix
-  const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+function isPublicPath(pathname: string): boolean {
+  const withoutLocale = pathname.replace(/^\/(az|ru|en)/, '') || '/';
+  return PUBLIC_PATHS.some(
+    (p) => withoutLocale === p || withoutLocale.startsWith(p + '/')
   );
+}
 
-  // If no locale and not auth callback, redirect to /az
-  if (!pathnameHasLocale && !pathname.startsWith('/auth/v1')) {
-    url.pathname = `/az${pathname}`;
-    return NextResponse.redirect(url);
+export async function middleware(request: NextRequest) {
+  const intlResponse = intlMiddleware(request);
+
+  if (isPublicPath(request.nextUrl.pathname)) {
+    return intlResponse;
   }
 
-  // Create response
   const response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request: { headers: request.headers },
   });
 
-  // Create Supabase client
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -47,13 +54,8 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session - this triggers setAll() which writes cookies to response
   await supabase.auth.getUser();
 
-  // Run intl middleware
-  const intlResponse = intlMiddleware(request);
-
-  // Copy Supabase cookies from our response to intl response
   response.cookies.getAll().forEach(({ name, value }) => {
     intlResponse.cookies.set(name, value);
   });
@@ -62,5 +64,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 };

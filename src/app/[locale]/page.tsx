@@ -28,7 +28,7 @@ export default function HomePage() {
             </div>
 
             {/* Right: 3D Globe */}
-            <div className="flex-shrink-0 w-[280px] h-[280px] hidden md:block">
+            <div className="flex-shrink-0 w-[280px] h-[280px]">
               <GlobeHero />
             </div>
           </div>

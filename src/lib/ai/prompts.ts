@@ -1,4 +1,4 @@
-import { PlanRequest } from '@/types/ai-planner';
+import { PlanRequest, CheapDatesRequest } from '@/types/ai-planner';
 
 const COUNTRY_CONTEXT: Record<string, { visa: string; costs: string; places: string }> = {
   turkey: {
@@ -155,5 +155,71 @@ JSON formatı:
   "packingList": ["Əşya 1", "Əşya 2"]
 }
 
+Yalnız JSON qaytar. Heç nə əlavə etme.`;
+}
+
+export function buildCheapDatesPrompt(request: CheapDatesRequest): string {
+  const countryContext = getCountryContext(request.destination);
+  const langInstruction = getLanguageInstruction(request.language);
+
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  const seasonMap: Record<string, { az: string; months: string }> = {
+    spring: { az: 'yaz (mart, aprel, may)', months: 'March, April, May' },
+    summer: { az: 'yay (iyun, iyul, avqust)', months: 'June, July, August' },
+    autumn: { az: 'payız (sentyabr, oktyabr, noyabr)', months: 'September, October, November' },
+    winter: { az: 'qış (dekabr, yanvar, fevral)', months: 'December, January, February' },
+  };
+
+  const seasonInfo = seasonMap[request.season] || seasonMap.summer;
+
+  return `Sən TravelAZ platformasının AI ucuz səyahət məsləhətçisisən.
+${langInstruction}
+
+Bugünkü tarix: ${today}
+
+İstifadəçi məlumatları:
+- Destinasiya: ${request.destination}
+- Müddət: ${request.duration} gün
+- Səyahətçilər: ${request.travelers} nəfər
+- Seçilmiş fəsil: ${seasonInfo.az} (${seasonInfo.months})
+
+${countryContext}
+
+Vəzifən: İstifadəçiyə Bakıdan (GYD) ${request.destination}-a ${request.duration} günlük səfər üçün YALNIZ ${seasonInfo.az} fəslinə aid ən ucuz 5 tarix aralığını tapmaq.
+
+ÇOX VACİB QAYDALAR:
+1. YALNIZ ${today} tarixindən SONRAKI tarixləri göstər. Keçmiş tarixləri (${today}-dən əvvəl) heç vaxt göstərmə.
+2. Əgər seçilən fəsil bu il artıq keçibsə, növbəti ilin həmin fəslini göstər.
+3. YALNIZ ${seasonInfo.months} aylarına aid tarixlər göstər. Digər fəsillərin aylarını GÖSTƏRMƏ.
+
+Hər tarix aralığı üçün:
+- Dəqiq tarix aralığı ilə il birlikdə (məs: "5-12 Mart 2026")
+- Təxmini uçuş qiyməti (bakıdan, gediş-gəliş, nəfər başı, AZN)
+- Təxmini otel qiyməti (gecəlik, 1 otaq üçün, AZN)
+- Ümumi təxmini xərc (${request.travelers} nəfər üçün, ${request.duration} gün, AZN)
+- Nə üçün bu dövrdə ucuzdur (qısa səbəb: mövsüm, tətil sonu, alçaq demand və s.)
+
+Qiymətləri realistik təxmini et. AZN ilə göstər.
+
+ÇOX VACİB: Cavabını YALNIZ və YALNIZ JSON olaraq qaytar. Heç bir izahat, giriş mətni yazma.
+
+JSON formatı:
+{
+  "destination": "${request.destination}",
+  "options": [
+    {
+      "period": "5-12 Mart 2026",
+      "flightPrice": 180,
+      "hotelPricePerNight": 35,
+      "totalPrice": 530,
+      "reason": "Martın əvvəli turist axını aşağı, otel endirimləri"
+    }
+  ],
+  "tip": "Ümumi ucuz səyahət məsləhəti (1-2 cümlə)"
+}
+
+options massivini ən ucuza görə sırala (totalPrice artan sıra).
 Yalnız JSON qaytar. Heç nə əlavə etme.`;
 }

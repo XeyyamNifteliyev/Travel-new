@@ -70,10 +70,4 @@ a {
   cursor: pointer;
 }
 
-@keyframes orbit1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes counterRotate1 { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(-360deg); } }
-@keyframes orbit2 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes counterRotate2 { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(-360deg); } }
-@keyframes globeRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes glowPulse { 0%, 100% { opacity: 0.6; transform: scale(1.3); } 50% { opacity: 1; transform: scale(1.4); } }
 @keyframes flagFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }

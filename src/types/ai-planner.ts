@@ -64,3 +64,25 @@ export interface PlanResponse {
     visaPage: string;
   };
 }
+
+export interface CheapDatesRequest {
+  destination: string;
+  duration: number;
+  travelers: number;
+  season: string;
+  language: 'az' | 'ru' | 'en';
+}
+
+export interface CheapDateOption {
+  period: string;
+  flightPrice: number;
+  hotelPricePerNight: number;
+  totalPrice: number;
+  reason: string;
+}
+
+export interface CheapDatesResponse {
+  destination: string;
+  options: CheapDateOption[];
+  tip: string;
+}
