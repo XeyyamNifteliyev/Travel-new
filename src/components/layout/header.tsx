@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from './language-switcher';
 import { ThemeToggle } from './theme-toggle';
 import { MobileMenu } from './mobile-menu';
-import { Plane, User, ChevronDown, PlaneTakeoff, Hotel, MapPin, Users, ShieldCheck, BookOpen, MessageSquareText, Sparkles, Globe } from 'lucide-react';
+import { Plane, User, ChevronDown, PlaneTakeoff, Hotel, MapPin, Users, ShieldCheck, BookOpen, MessageSquareText, Sparkles, Globe, Newspaper } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { type LucideIcon } from 'lucide-react';
 
@@ -109,7 +109,10 @@ export function Header() {
       key: 'blog',
       label: t('blog'),
       icon: BookOpen,
-      link: { href: `/${locale}/blog`, label: t('blog'), icon: BookOpen },
+      children: [
+        { href: `/${locale}/blog`, label: t('blog'), icon: BookOpen },
+        { href: `/${locale}/news`, label: t('news'), icon: Newspaper },
+      ],
     },
   ];
 

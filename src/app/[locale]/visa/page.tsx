@@ -1,39 +1,44 @@
-'use client';
+import { createClient } from '@/lib/supabase/server';
+import { VisaPageClient } from './visa-page-client';
+import type { VisaCountryData, VisaInfo } from '@/types/country';
 
-import { useTranslations } from 'next-intl';
-import { VisaInfo } from '@/components/country/visa-info';
-import type { VisaInfo as VisaInfoType } from '@/types/country';
+export default async function VisaPage() {
+  const supabase = await createClient();
 
-const visaData: VisaInfoType[] = [
-  { id: '1', country_id: '1', requirement_type: 'not_required', processing_time: '-', documents: [], notes_az: 'Azərbaycan vətəndaşları üçün vizasız (90 gün)' },
-  { id: '2', country_id: '2', requirement_type: 'on_arrival', processing_time: 'Anında', documents: ['Pasport (6 ay)', 'Qayıdış bileti'], notes_az: 'Gəlişdə viza — 30 gün' },
-  { id: '3', country_id: '3', requirement_type: 'not_required', processing_time: '-', documents: [], notes_az: 'Azərbaycan vətəndaşları üçün vizasız (1 il)' },
-  { id: '4', country_id: '4', requirement_type: 'required', processing_time: '5-7 iş günü', documents: ['Pasport', 'Viza ərizəsi', 'Foto', 'Səyahət planı', 'Maliyyə sübutu'], notes_az: 'Əvvəlcədən müraciət lazımdır' },
-  { id: '5', country_id: '5', requirement_type: 'not_required', processing_time: '-', documents: [], notes_az: '30 gün vizasız' },
-];
+  const { data: rows } = await supabase
+    .from('visa_info')
+    .select(`
+      *,
+      countries!inner(id, name_az, name_en, name_ru, slug, flag_emoji)
+    `)
+    .order('countries(name_az)');
 
-const countryNames: Record<string, string> = {
-  '1': 'Türkiyə 🇹🇷',
-  '2': 'Dubai 🇦🇪',
-  '3': 'Gürcüstan 🇬🇪',
-  '4': 'Yaponiya 🇯🇵',
-  '5': 'Tailand 🇹🇭',
-};
+  const countries: VisaCountryData[] = (rows || []).map((row: Record<string, unknown>) => ({
+    visa: {
+      id: row.id,
+      country_id: row.country_id,
+      requirement_type: row.requirement_type,
+      processing_time: row.processing_time,
+      documents: row.documents || [],
+      notes_az: row.notes_az,
+      notes_en: row.notes_en,
+      notes_ru: row.notes_ru,
+      fee_usd: row.fee_usd,
+      fee_azn: row.fee_azn,
+      processing_days_min: row.processing_days_min,
+      processing_days_max: row.processing_days_max,
+      validity_days: row.validity_days,
+      max_stay_days: row.max_stay_days,
+      is_evisa: row.is_evisa,
+      evisa_url: row.evisa_url,
+      official_url: row.official_url,
+      appointment_url: row.appointment_url,
+      last_verified_at: row.last_verified_at,
+      data_confidence: row.data_confidence,
+    } as VisaInfo,
+    country: row.countries as VisaCountryData['country'],
+    documents: [],
+  }));
 
-export default function VisaPage() {
-  const t = useTranslations('visa');
-
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
-      <div className="space-y-6">
-        {visaData.map((visa) => (
-          <div key={visa.id}>
-            <h2 className="text-lg font-semibold mb-2">{countryNames[visa.country_id]}</h2>
-            <VisaInfo visa={visa} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  return <VisaPageClient countries={countries} />;
 }

@@ -33,7 +33,8 @@
     "goToFlightSearch": "Uçuş axtarışına get",
     "aiPlanner": "AI Plan",
     "reservation": "Rezervasiya",
-    "services": "Xidmətlər"
+    "services": "Xidmətlər",
+    "news": "Xəbərlər"
   },
   "home": {
     "heroTitle": "Dünyanı Kəşf Et",
@@ -114,13 +115,47 @@
   },
   "visa": {
     "title": "Viza Mərkəzi",
+    "subtitle": "Azərbaycan pasportu ilə dünya ölkələrinə viza tələbləri",
     "required": "Viza lazımdır",
-    "notRequired": "Viza lazım deyil",
+    "notRequired": "Vizasız",
     "onArrival": "Gəlişdə viza",
     "eVisa": "E-viza",
     "documents": "Tələb olunan sənədlər",
     "processingTime": "Emal müddəti",
-    "embassy": "Konsulluq məlumatı"
+    "embassy": "Konsulluq məlumatı",
+    "searchPlaceholder": "Ölkə axtar...",
+    "fee": "Viza haqqı",
+    "feeFree": "Pulsuz",
+    "validity": "Etibarlılıq",
+    "maxStay": "Maks. qalma",
+    "evisaAvailable": "Bu ölkə üçün E-viza mövcuddur",
+    "applyOnline": "Online müraciət et",
+    "ready": "hazır",
+    "allDocumentsReady": "Bütün sənədlər hazırdır! Müraciətə başlaya bilərsiniz.",
+    "askAI": "AI-ya sual ver",
+    "disclaimer": "Bu məlumatlar məlumat vermək məqsəti daşıyır. Viza tələbləri dəyişə bilər. Müraciət etməzdən əvvəl rəsmi konsulluq veb saytını yoxlayın.",
+    "lastVerified": "Son yenilənmə",
+    "confidence": "Məlumat etibarlığı",
+    "noVisaInfo": "Bu ölkə üçün viza məlumatı tapılmadı",
+    "backToVisa": "Viza mərkəzinə qayıt",
+    "days": "gün",
+    "workDays": "iş günü",
+    "appointment": "Randevu al",
+    "officialSite": "Rəsmi sayt",
+    "aiPlaceholder": "Bu ölkənin vizası haqqında sual ver...",
+    "aiSending": "Cavab hazırlanır...",
+    "aiQuickQuestions": "Sürətli suallar",
+    "aiGenerateBtn": "AI ilə öyrən",
+    "aiGenerateDesc": "Bu ölkə haqqında məlumat yoxdur. AI ilə viza məlumatlarını öyrən.",
+    "aiGenerating": "AI məlumat yaradır...",
+    "countryNotFound": "Axtardığınız ölkə tapılmadı",
+    "countryNotFoundDesc": "Bu ölkənin viza məlumatları hələ bazada yoxdur. AI ilə avtomatik yarada bilərsiniz.",
+    "category": {
+      "identity": "Şəxsiyyət sənədləri",
+      "financial": "Maliyyə sənədləri",
+      "travel": "Səyahət sənədləri",
+      "other": "Digər"
+    }
   },
   "companions": {
     "title": "Yoldaş Tap",
@@ -318,5 +353,16 @@
     "seasonWinter": "Qış (Dekabr-Fevral)",
     "cheapDurationDesc": "Səfərinizin müddətini daxil edin",
     "cheapDaysLabel": "gün"
+  },
+  "news": {
+    "title": "Xəbərlər",
+    "subtitle": "Səyahət və viza xəbərləri",
+    "readMore": "Davamını oxu",
+    "noNews": "Xəbər tapılmadı",
+    "allCategories": "Hamısı",
+    "categoryVisaChange": "Viza dəyişiklikləri",
+    "categoryGeneral": "Ümumi",
+    "categoryTravelTip": "Səyahət məsləhətləri",
+    "backToNews": "Xəbərlərə qayıt"
   }
 }

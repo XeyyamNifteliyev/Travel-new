@@ -33,7 +33,8 @@
     "goToFlightSearch": "Go to flight search",
     "aiPlanner": "AI Plan",
     "reservation": "Reservation",
-    "services": "Services"
+    "services": "Services",
+    "news": "News"
   },
   "home": {
     "heroTitle": "Explore the World",
@@ -112,13 +113,47 @@
   },
   "visa": {
     "title": "Visa Center",
+    "subtitle": "Visa requirements for Azerbaijani passport holders",
     "required": "Visa required",
-    "notRequired": "No visa required",
+    "notRequired": "Visa-free",
     "onArrival": "Visa on arrival",
     "eVisa": "E-visa",
     "documents": "Required documents",
     "processingTime": "Processing time",
-    "embassy": "Embassy information"
+    "embassy": "Embassy information",
+    "searchPlaceholder": "Search country...",
+    "fee": "Visa fee",
+    "feeFree": "Free",
+    "validity": "Validity",
+    "maxStay": "Max. stay",
+    "evisaAvailable": "E-visa available for this country",
+    "applyOnline": "Apply online",
+    "ready": "ready",
+    "allDocumentsReady": "All documents are ready! You can start your application.",
+    "askAI": "Ask AI",
+    "disclaimer": "This information is for reference only. Visa requirements may change. Please verify with the official embassy website before applying.",
+    "lastVerified": "Last verified",
+    "confidence": "Data confidence",
+    "noVisaInfo": "No visa information found for this country",
+    "backToVisa": "Back to Visa Center",
+    "days": "days",
+    "workDays": "working days",
+    "appointment": "Get appointment",
+    "officialSite": "Official website",
+    "aiPlaceholder": "Ask about this country's visa...",
+    "aiSending": "Generating answer...",
+    "aiQuickQuestions": "Quick questions",
+    "aiGenerateBtn": "Learn with AI",
+    "aiGenerateDesc": "No info for this country. Use AI to get visa details.",
+    "aiGenerating": "AI is generating info...",
+    "countryNotFound": "Country not found",
+    "countryNotFoundDesc": "Visa info for this country is not in our database yet. AI can generate it automatically.",
+    "category": {
+      "identity": "Identity documents",
+      "financial": "Financial documents",
+      "travel": "Travel documents",
+      "other": "Other"
+    }
   },
   "companions": {
     "title": "Find a Companion",
@@ -316,5 +351,16 @@
     "seasonWinter": "Winter (Dec-Feb)",
     "cheapDurationDesc": "Enter your trip duration",
     "cheapDaysLabel": "days"
+  },
+  "news": {
+    "title": "News",
+    "subtitle": "Travel and visa news",
+    "readMore": "Read more",
+    "noNews": "No news found",
+    "allCategories": "All",
+    "categoryVisaChange": "Visa changes",
+    "categoryGeneral": "General",
+    "categoryTravelTip": "Travel tips",
+    "backToNews": "Back to news"
   }
 }
