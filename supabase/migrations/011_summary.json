@@ -1,0 +1,1122 @@
+{
+  "total": 185,
+  "newCountries": 175,
+  "byType": {
+    "required": 84,
+    "not_required": 33,
+    "e_visa": 52,
+    "on_arrival": 16
+  },
+  "countries": [
+    {
+      "slug": "afghanistan",
+      "name": "Afghanistan",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "albania",
+      "name": "Albania",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "algeria",
+      "name": "Algeria",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "andorra",
+      "name": "Andorra",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "angola",
+      "name": "Angola",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "antigua-and-barbuda",
+      "name": "Antigua and Barbuda",
+      "visa": "not_required",
+      "stay": 180
+    },
+    {
+      "slug": "argentina",
+      "name": "Argentina",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "armenia",
+      "name": "Armenia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "australia",
+      "name": "Australia",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "austria",
+      "name": "Austria",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "bahamas",
+      "name": "Bahamas",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "bahrain",
+      "name": "Bahrain",
+      "visa": "e_visa",
+      "stay": 14
+    },
+    {
+      "slug": "bangladesh",
+      "name": "Bangladesh",
+      "visa": "on_arrival",
+      "stay": 30
+    },
+    {
+      "slug": "barbados",
+      "name": "Barbados",
+      "visa": "not_required",
+      "stay": 28
+    },
+    {
+      "slug": "belarus",
+      "name": "Belarus",
+      "visa": "not_required",
+      "stay": null
+    },
+    {
+      "slug": "belgium",
+      "name": "Belgium",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "belize",
+      "name": "Belize",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "benin",
+      "name": "Benin",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "bhutan",
+      "name": "Bhutan",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "bolivia",
+      "name": "Bolivia",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "bosnia-and-herzegovina",
+      "name": "Bosnia and Herzegovina",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "botswana",
+      "name": "Botswana",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "brazil",
+      "name": "Brazil",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "brunei",
+      "name": "Brunei",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "bulgaria",
+      "name": "Bulgaria",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "burkina-faso",
+      "name": "Burkina Faso",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "burundi",
+      "name": "Burundi",
+      "visa": "on_arrival",
+      "stay": null
+    },
+    {
+      "slug": "cambodia",
+      "name": "Cambodia",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "cameroon",
+      "name": "Cameroon",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "canada",
+      "name": "Canada",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "cape-verde",
+      "name": "Cape Verde",
+      "visa": "on_arrival",
+      "stay": null
+    },
+    {
+      "slug": "central-african-republic",
+      "name": "Central African Republic",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "chad",
+      "name": "Chad",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "chile",
+      "name": "Chile",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "china",
+      "name": "China",
+      "visa": "not_required",
+      "stay": 30
+    },
+    {
+      "slug": "colombia",
+      "name": "Colombia",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "comoros",
+      "name": "Comoros",
+      "visa": "on_arrival",
+      "stay": 45
+    },
+    {
+      "slug": "republic-of-the-congo",
+      "name": "Republic of the Congo",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "costa-rica",
+      "name": "Costa Rica",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "c-te-d-ivoire",
+      "name": "Côte d'Ivoire",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "croatia",
+      "name": "Croatia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "cuba",
+      "name": "Cuba",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "cyprus",
+      "name": "Cyprus",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "denmark",
+      "name": "Denmark",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "djibouti",
+      "name": "Djibouti",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "dominica",
+      "name": "Dominica",
+      "visa": "not_required",
+      "stay": 21
+    },
+    {
+      "slug": "ecuador",
+      "name": "Ecuador",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "egypt",
+      "name": "Egypt",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "el-salvador",
+      "name": "El Salvador",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "guinea",
+      "name": "Guinea",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "eritrea",
+      "name": "Eritrea",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "estonia",
+      "name": "Estonia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "eswatini",
+      "name": "Eswatini",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "ethiopia",
+      "name": "Ethiopia",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "fiji",
+      "name": "Fiji",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "finland",
+      "name": "Finland",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "france",
+      "name": "France",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "gabon",
+      "name": "Gabon",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "gambia",
+      "name": "Gambia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "georgia",
+      "name": "Georgia",
+      "visa": "not_required",
+      "stay": 365
+    },
+    {
+      "slug": "germany",
+      "name": "Germany",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "ghana",
+      "name": "Ghana",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "greece",
+      "name": "Greece",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "grenada",
+      "name": "Grenada",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "guatemala",
+      "name": "Guatemala",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "guinea-bissau",
+      "name": "Guinea-Bissau",
+      "visa": "on_arrival",
+      "stay": 90
+    },
+    {
+      "slug": "guyana",
+      "name": "Guyana",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "haiti",
+      "name": "Haiti",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "honduras",
+      "name": "Honduras",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "hungary",
+      "name": "Hungary",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "iceland",
+      "name": "Iceland",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "india",
+      "name": "India",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "indonesia",
+      "name": "Indonesia",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "iran",
+      "name": "Iran",
+      "visa": "not_required",
+      "stay": 14
+    },
+    {
+      "slug": "iraq",
+      "name": "Iraq",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "ireland",
+      "name": "Ireland",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "israel",
+      "name": "Israel",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "italy",
+      "name": "Italy",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "jamaica",
+      "name": "Jamaica",
+      "visa": "on_arrival",
+      "stay": null
+    },
+    {
+      "slug": "japan",
+      "name": "Japan",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "jordan",
+      "name": "Jordan",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "kazakhstan",
+      "name": "Kazakhstan",
+      "visa": "not_required",
+      "stay": 30
+    },
+    {
+      "slug": "kenya",
+      "name": "Kenya",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "kiribati",
+      "name": "Kiribati",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "north-korea",
+      "name": "North Korea",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "kuwait",
+      "name": "Kuwait",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "kyrgyzstan",
+      "name": "Kyrgyzstan",
+      "visa": "not_required",
+      "stay": null
+    },
+    {
+      "slug": "laos",
+      "name": "Laos",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "latvia",
+      "name": "Latvia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "lebanon",
+      "name": "Lebanon",
+      "visa": "on_arrival",
+      "stay": null
+    },
+    {
+      "slug": "lesotho",
+      "name": "Lesotho",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "liberia",
+      "name": "Liberia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "libya",
+      "name": "Libya",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "liechtenstein",
+      "name": "Liechtenstein",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "lithuania",
+      "name": "Lithuania",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "luxembourg",
+      "name": "Luxembourg",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "madagascar",
+      "name": "Madagascar",
+      "visa": "e_visa",
+      "stay": 60
+    },
+    {
+      "slug": "malawi",
+      "name": "Malawi",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "malaysia",
+      "name": "Malaysia",
+      "visa": "not_required",
+      "stay": 30
+    },
+    {
+      "slug": "maldives",
+      "name": "Maldives",
+      "visa": "on_arrival",
+      "stay": 30
+    },
+    {
+      "slug": "mali",
+      "name": "Mali",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "malta",
+      "name": "Malta",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "marshall-islands",
+      "name": "Marshall Islands",
+      "visa": "on_arrival",
+      "stay": 90
+    },
+    {
+      "slug": "mauritania",
+      "name": "Mauritania",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "mauritius",
+      "name": "Mauritius",
+      "visa": "on_arrival",
+      "stay": 60
+    },
+    {
+      "slug": "mexico",
+      "name": "Mexico",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "micronesia",
+      "name": "Micronesia",
+      "visa": "not_required",
+      "stay": 30
+    },
+    {
+      "slug": "moldova",
+      "name": "Moldova",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "monaco",
+      "name": "Monaco",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "mongolia",
+      "name": "Mongolia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "montenegro",
+      "name": "Montenegro",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "morocco",
+      "name": "Morocco",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "mozambique",
+      "name": "Mozambique",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "myanmar",
+      "name": "Myanmar",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "namibia",
+      "name": "Namibia",
+      "visa": "on_arrival",
+      "stay": 90
+    },
+    {
+      "slug": "nauru",
+      "name": "Nauru",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "nepal",
+      "name": "Nepal",
+      "visa": "on_arrival",
+      "stay": 90
+    },
+    {
+      "slug": "netherlands",
+      "name": "Netherlands",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "new-zealand",
+      "name": "New Zealand",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "nicaragua",
+      "name": "Nicaragua",
+      "visa": "on_arrival",
+      "stay": 90
+    },
+    {
+      "slug": "niger",
+      "name": "Niger",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "nigeria",
+      "name": "Nigeria",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "north-macedonia",
+      "name": "North Macedonia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "norway",
+      "name": "Norway",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "oman",
+      "name": "Oman",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "pakistan",
+      "name": "Pakistan",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "palau",
+      "name": "Palau",
+      "visa": "on_arrival",
+      "stay": 30
+    },
+    {
+      "slug": "panama",
+      "name": "Panama",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "equatorial-guinea",
+      "name": "Equatorial Guinea",
+      "visa": "e_visa",
+      "stay": 60
+    },
+    {
+      "slug": "paraguay",
+      "name": "Paraguay",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "peru",
+      "name": "Peru",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "philippines",
+      "name": "Philippines",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "poland",
+      "name": "Poland",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "portugal",
+      "name": "Portugal",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "qatar",
+      "name": "Qatar",
+      "visa": "not_required",
+      "stay": 30
+    },
+    {
+      "slug": "romania",
+      "name": "Romania",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "russia",
+      "name": "Russia",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "rwanda",
+      "name": "Rwanda",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "saint-kitts-and-nevis",
+      "name": "Saint Kitts and Nevis",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "saint-lucia",
+      "name": "Saint Lucia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "saint-vincent-and-the-grenadines",
+      "name": "Saint Vincent and the Grenadines",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "samoa",
+      "name": "Samoa",
+      "visa": "not_required",
+      "stay": 60
+    },
+    {
+      "slug": "san-marino",
+      "name": "San Marino",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "sao-tome-and-principe",
+      "name": "Sao Tome and Principe",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "saudi-arabia",
+      "name": "Saudi Arabia",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "senegal",
+      "name": "Senegal",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "serbia",
+      "name": "Serbia",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "seychelles",
+      "name": "Seychelles",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "sierra-leone",
+      "name": "Sierra Leone",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "singapore",
+      "name": "Singapore",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "slovakia",
+      "name": "Slovakia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "slovenia",
+      "name": "Slovenia",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "somalia",
+      "name": "Somalia",
+      "visa": "e_visa",
+      "stay": 30
+    },
+    {
+      "slug": "sudan",
+      "name": "Sudan",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "spain",
+      "name": "Spain",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "sri-lanka",
+      "name": "Sri Lanka",
+      "visa": "e_visa",
+      "stay": 60
+    },
+    {
+      "slug": "suriname",
+      "name": "Suriname",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "sweden",
+      "name": "Sweden",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "switzerland",
+      "name": "Switzerland",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "syria",
+      "name": "Syria",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "tajikistan",
+      "name": "Tajikistan",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "tanzania",
+      "name": "Tanzania",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "thailand",
+      "name": "Thailand",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "timor-leste",
+      "name": "Timor-Leste",
+      "visa": "on_arrival",
+      "stay": 30
+    },
+    {
+      "slug": "togo",
+      "name": "Togo",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "tonga",
+      "name": "Tonga",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "trinidad-and-tobago",
+      "name": "Trinidad and Tobago",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "tunisia",
+      "name": "Tunisia",
+      "visa": "not_required",
+      "stay": null
+    },
+    {
+      "slug": "turkey",
+      "name": "Turkey",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "turkmenistan",
+      "name": "Turkmenistan",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "tuvalu",
+      "name": "Tuvalu",
+      "visa": "on_arrival",
+      "stay": null
+    },
+    {
+      "slug": "uganda",
+      "name": "Uganda",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "ukraine",
+      "name": "Ukraine",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "dubai",
+      "name": "United Arab Emirates",
+      "visa": "not_required",
+      "stay": 90
+    },
+    {
+      "slug": "uk",
+      "name": "United Kingdom",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "united-states",
+      "name": "United States",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "uruguay",
+      "name": "Uruguay",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "uzbekistan",
+      "name": "Uzbekistan",
+      "visa": "not_required",
+      "stay": null
+    },
+    {
+      "slug": "vanuatu",
+      "name": "Vanuatu",
+      "visa": "not_required",
+      "stay": 120
+    },
+    {
+      "slug": "vatican-city",
+      "name": "Vatican City",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "venezuela",
+      "name": "Venezuela",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "vietnam",
+      "name": "Vietnam",
+      "visa": "e_visa",
+      "stay": null
+    },
+    {
+      "slug": "yemen",
+      "name": "Yemen",
+      "visa": "required",
+      "stay": null
+    },
+    {
+      "slug": "zambia",
+      "name": "Zambia",
+      "visa": "e_visa",
+      "stay": 90
+    },
+    {
+      "slug": "zimbabwe",
+      "name": "Zimbabwe",
+      "visa": "e_visa",
+      "stay": 30
+    }
+  ]
+}

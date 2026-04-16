@@ -2,7 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { Clock, DollarSign, CheckCircle, AlertCircle, Plane } from 'lucide-react';
+import { Clock, DollarSign, CheckCircle, AlertCircle, Plane, ExternalLink } from 'lucide-react';
 import type { VisaCountryData } from '@/types/country';
 
 interface VisaCountryGridProps {
@@ -72,6 +72,13 @@ export default function VisaCountryGrid({ countries }: VisaCountryGridProps) {
                   {visa.processing_days_min}-{visa.processing_days_max} {t('workDays')}
                 </div>
               ) : null}
+            </div>
+
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+              <span className="text-[10px] text-txt-sec/50 flex items-center gap-1">
+                <ExternalLink className="w-2.5 h-2.5" />
+                Wikipedia
+              </span>
             </div>
           </Link>
         );

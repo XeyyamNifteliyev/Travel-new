@@ -166,6 +166,15 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
               {t('lastVerified')}: {timeAgo(lastVerified)}
             </p>
           )}
+          <a
+            href="https://en.wikipedia.org/wiki/Visa_requirements_for_Azerbaijani_citizens"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+          >
+            <ExternalLink className="w-3 h-3" />
+            {t('sourceWikipedia')}
+          </a>
         </div>
       </div>
     </div>

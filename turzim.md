@@ -264,19 +264,26 @@ Hər ölkə səhifəsinin məzmunu:
 
 ### 4.3 🛂 Viza Mərkəzi
 
+> **Status:** ✅ Tamamlanıb — 185 ölkə, Wikipedia mənbə, AI chat, sənəd checklist
+
 Hər ölkə üçün 3 dildə:
 
 | Məlumat | Detal |
 |---|---|
 | Viza tələbi | Lazımdır / Lazım deyil / On-arrival / E-viza |
-| Rəsmi konuslluq saytı | Birbaşa link (ölkə saytı açılır) |
+| Rəsmi konsulluq saytı | Birbaşa link (ölkə saytı açılır) |
 | Azərbaycanlılar üçün xüsusi şərtlər | ✅/❌ |
 | Ortalama prosesing vaxtı | X iş günü |
 | Tələb olunan sənədlər | İnteraktiv checklist |
-| Konuslluq ünvanı (Bakıda) | Xəritə + telefon + iş saatları |
+| Konsulluq ünvanı (Bakıda) | Xəritə + telefon + iş saatları |
 | Onlayn müraciət linki | Varsa, birbaşa link |
+| **AI Chat** | Viza suallarına cavab |
+| **AI Generasiya** | Tapılmayan ölkələr üçün avtomatik məlumat |
+| **Mənbə** | Wikipedia (185 ölkə) |
 
-> ⚠️ **Hüquqi qeyd:** Viza məlumatları yalnız məlumatlandırma məqsədlidir. Rəsmi konuslluq saytını həmişə yoxlayın.
+**Məlumat mənbəyi:** `scripts/import-wikipedia-visa.js` ilə Wikipedia-dan import olunur. İstənilən vaxt təkrar run edilə bilər.
+
+> ⚠️ **Hüquqi qeyd:** Viza məlumatları yalnız məlumatlandırma məqsəplidir. Rəsmi konsulluq saytını həmişə yoxlayın.
 
 ---
 
@@ -1677,3 +1684,189 @@ Azərbaycanda internet istifadəçilərinin 75%+ mobil cihazdan giriş edir. Das
 
 *Sənəd hazırlanma tarixi: 2026 | TravelAZ Layihə Planı v3.0*
 *Dashboard Dizaynı Əlavə Edildi: Faza 2.5 — Müasir və Funksional İnterfeys*
+
+---
+
+## 16. Viza Mərkəzi — Tam Sistem (YENİ!)
+
+> **Status:** ✅ Tamamlanıb
+> **Tarix:** Aprel 2026
+
+### 16.1 Viza Mərkəzi Arxitekturası
+
+```
+Viza Mərkəzi (/az/visa)
+├── Ölkə siyahısı (185 ölkə, axtarış + filtr)
+│   └── Hər ölkə kartı → /az/visa/{slug}
+├── Viza detal səhifəsi
+│   ├── Viza tələbi, haqqı, emal müddəti
+│   ├── Sənəd checklist (interaktiv)
+│   ├── E-viza linki (varsa)
+│   ├── AI Chat (suallar üçün)
+│   └── "Mənbə: Wikipedia" disclaimer
+└── Ölkə tapılmadı → AI ilə generasiya
+```
+
+### 16.2 Məlumat Mənbəyi
+
+**Wikipedia Import (əsas mənbə):**
+- Skript: `scripts/import-wikipedia-visa.js`
+- Mənbə: `en.wikipedia.org/wiki/Visa_requirements_for_Azerbaijani_citizens`
+- **185 ölkə** üçün viza məlumatları (auto-generated)
+- Viza tipi: required / not_required / on_arrival / e_visa
+- Qalma müddəti, qeydlər
+- `data_confidence=70` (Wikipedia məlumatı)
+- İstənilən vaxt təkrar run edilə bilər: `node scripts/import-wikipedia-visa.js`
+
+**AI Generasiya (əlavə mənbə):**
+- Tapılmayan ölkələr üçün `/api/visa/generate`
+- AI provider sistemi ilə (gemini/openai/claude/deepseek/groq/glm)
+- Generasiya olunmuş məlumat `data_confidence=50`
+
+**Scraper (periodik yenilənmə):**
+- API: `/api/visa/scraper` (batch 25, 100+ ölkə)
+- GitHub Actions workflow: `.github/workflows/visa-scraper.yml` (5 parallel job)
+- Dəyişiklik aşkarlananda `visa_updates` cədvəlinə yazılır + `news` article yaradılır
+
+### 16.3 Viza Statistikası
+
+| Viza tipi | Say |
+|-----------|-----|
+| Vizasız (not_required) | 33 |
+| Gəlişdə viza (on_arrival) | 16 |
+| E-viza (e_visa) | 52 |
+| Viza lazımdır (required) | 84 |
+| **Cəmi** | **185** |
+
+### 16.4 Database Cədvəlləri
+
+```
+countries          → Ölkə məlumatları (185 ölkə, Wikipedia mənbə)
+visa_info          → Viza məlumatları (requirement_type, fee, processing, max_stay, evisa_url...)
+visa_documents     → Sənəd checklist (identity, financial, travel kateqoriyaları)
+visa_qa_cache      → AI viza sual-cavab keşi
+visa_updates       → Scraper tərəfindən aşkarlanan dəyişikliklər
+scraper_logs       → Scraper jurnalı
+```
+
+### 16.5 API Route-ları
+
+| Route | Metod | Təsvir |
+|-------|-------|--------|
+| `/api/visa/[country]` | GET | Tək ölkə viza məlumatı |
+| `/api/visa/ai-answer` | POST | AI viza cavab (keşli) |
+| `/api/visa/generate` | POST | AI ilə yeni ölkə generasiyası |
+| `/api/visa/scraper` | POST | Wikipedia scraper (batch 25) |
+| `/api/news` | GET | Xəbərlər (scraper dəyişiklik xəbərləri daxil) |
+
+### 16.6 UI Komponentləri
+
+```
+src/components/visa/
+├── visa-search-bar.tsx          → Axtarış inputu
+├── visa-country-grid.tsx        → Ölkə grid (Wikipedia mənbə badge)
+├── visa-detail-client.tsx       → Detal (emal, haqq, e-visa, AI chat, disclaimer)
+├── visa-document-checklist.tsx  → Sənəd checklist
+├── visa-ai-chat.tsx             → AI viza sual-cavab
+└── visa-not-found-client.tsx    → Ölkə tapılmadı → AI generasiya düyməsi
+```
+
+### 16.7 Migration Faylları
+
+```
+005_visa_system.sql           → visa_info genişlənməsi + visa_documents
+006_seed_countries.sql        → 10 ölkə seed
+007_seed_all.sql              → Bütün data (countries + visa_info + visa_documents)
+008_visa_qa_cache.sql         → AI keş cədvəli
+010_visa_scraper.sql          → visa_updates + scraper_logs
+011_wikipedia_visa_seed.sql   → 185 ölkə Wikipedia-dan (auto-generated)
+```
+
+### 16.8 Ölkə Adları (3 dil)
+
+185 ölkənin hər biri üçün:
+- `name_az` — Azərbaycanca (məs: Yaponiya, Türkiyə, Almaniya)
+- `name_en` — English (məs: Japan, Turkey, Germany)
+- `name_ru` — Русский (мәс: Япония, Турция, Германия)
+- `flag_emoji` — Unicode flag emoji (🇯🇵, 🇹🇷, 🇩🇪)
+
+Mapping faylı: `scripts/import-wikipedia-visa.js` içində `COUNTRY_NAMES` obyektində.
+
+---
+
+## 17. Xəbərlər Bölməsi (YENİ!)
+
+> **Status:** ✅ Tamamlanıb
+
+### 17.1 Xəbər Sistemi
+
+```
+Xəbərlər (/az/news)
+├── Xəbər siyahısı (Supabase-dən, trilingual)
+│   └── Hər xəbər kartı → /az/news/{id}
+└── Xəbər detal səhifəsi
+    ├── Başlıq, məzmun, tarix
+    └── Şəkil (varsa)
+```
+
+### 17.2 Xəbər Mənbələri
+
+1. **Manual seed** — `009_news.sql` ilə 3 seed xəbər
+2. **Scraper** — Viza dəyişiklikləri avtomatik xəbər yaradır
+3. **Gələcəkdə** — RSS feed, admin panel
+
+### 17.3 Header-da Yeri
+
+Header → Blog dropdown → "Xəbərlər" linki (Newspaper icon)
+
+---
+
+## 18. AI Provider Sistemi — 6 Provider (YENİ!)
+
+> **Status:** ✅ Tamamlanıb
+
+### 18.1 Provider-lar
+
+| Provider | Model | Env Key | Qiymət |
+|----------|-------|---------|--------|
+| gemini | gemini-2.5-flash (fallback: lite, v3-preview) | `GEMINI_API_KEY` | Pulsuz |
+| openai | gpt-4o-mini | `OPENAI_API_KEY` | ~$0.15/1M token |
+| claude | claude-3.5-haiku | `ANTHROPIC_API_KEY` | ~$0.25/1M token |
+| deepseek | deepseek-chat | `DEEPSEEK_API_KEY` | ~$0.27/1M token |
+| groq | llama-3.3-70b-versatile | `GROQ_API_KEY` | Pulsuz tier |
+| glm | glm-4-flash | `GLM_API_KEY` | Pulsuz/ucuz |
+
+`.env.local`-da `AI_PROVIDER=gemini` yazmaqla dəyişir. Bütün provider-lar sırf `fetch`, SDK-sız.
+
+### 18.2 AI İstifadə Sahələri
+
+- **AI Planner** — Səyahət planı + En Ucuz Tarix (2 rejim)
+- **Viza AI Chat** — Ölkə viza suallarına cavab (keşli)
+- **Viza AI Generasiya** — Tapılmayan ölkələr üçün məlumat yaradır
+
+### 18.3 Gemini Fallback
+
+503 overload olanda avtomatik növbəti modeli sınayır:
+gemini-2.5-flash → gemini-2.5-flash-lite → gemini-2.0-flash-preview
+
+---
+
+## 19. Mövcud Faza Statusu (2026 Aprel)
+
+```
+✅ Faza 1 — MVP           → Tamamlandı
+✅ Faza 2 — İcma + Turlar → Tamamlandı
+✅ Faza 2.5 — Dashboard   → Tamamlandı
+✅ Faza 3.5 — AI Planner  → Tamamlandı
+✅ Dark/Light Mode         → Tamamlandı
+✅ Viza Mərkəzi (185 ölkə) → Tamamlandı
+✅ Xəbərlər Bölməsi       → Tamamlandı
+✅ Wikipedia Import Skripti → Tamamlandı
+✅ Scraper Sistemi        → Tamamlandı
+
+🔄 Növbəti:
+   - Flights & Hotels real API inteqrasiya
+   - ePoint ödəniş sistemi
+   - Premium üzvlük
+   - Mobil app (React Native)
+```
