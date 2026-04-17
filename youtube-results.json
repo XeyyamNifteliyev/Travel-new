@@ -1,0 +1,34 @@
+{
+  "turkey": {
+    "ids": [
+      "R9FqjVHYqA4",
+      "_xCdUgap4tc",
+      "juGxmkm1GZw"
+    ],
+    "verified": true
+  },
+  "dubai": {
+    "ids": [
+      "mQPXtRDQRB0",
+      "K2vlZyhASRE",
+      "00Q7mDtlCmI"
+    ],
+    "verified": true
+  },
+  "france": {
+    "ids": [
+      "_gIljISgm_k",
+      "-LMFYM5QJJ8",
+      "8S_hq3Hojuk"
+    ],
+    "verified": true
+  },
+  "italy": {
+    "ids": [
+      "DEJx0CYrDHk",
+      "lSzlIrOCxjk",
+      "WtDHWAXYrQU"
+    ],
+    "verified": true
+  }
+}

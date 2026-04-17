@@ -1460,11 +1460,12 @@ PUT → Rezervasiya statusunu yenilə
 ✅ Tur şirkəti qeydiyyat paneli (B2B)
 ✅ Daxili tur elanları modulu
 ✅ Tur axtarış filtirləri
-✅ 50+ ölkə məzmunu (3 dildə)
+✅ 50+ ölkə məzmunu (3 dildə) → ✅ 32 ölkə tam data (Unsplash şəkillər, YouTube, xərc, məşhur yerlər)
 ✅ "Ən Yaxşı Yazıçı" liderlik cədvəli
 ✅ Blog şərhləri sistemi
 ✅ Blog axtarış və tag filtrləri
 ✅ Database schema genişləndirilməsi (10 yeni cədvəl)
+✅ Ölkələr genişləndirməsi (32 ölkə tam data, Unsplash, YouTube, xərc, highlights)
 ✅ API route-ları (companions, tours, companies, youtube, comments)
 ✅ Dark theme UI bütün yeni səhifələr üçün
 ✅ i18n tərcümələr (AZ/RU/EN) — 6 yeni namespace
@@ -1863,6 +1864,7 @@ gemini-2.5-flash → gemini-2.5-flash-lite → gemini-2.0-flash-preview
 ✅ Xəbərlər Bölməsi       → Tamamlandı
 ✅ Wikipedia Import Skripti → Tamamlandı
 ✅ Scraper Sistemi        → Tamamlandı
+✅ Ölkələr Genişləndirməsi → Tamamlandı (32 ölkə, Unsplash, YouTube, xərc, highlights)
 
 🔄 Növbəti:
    - Flights & Hotels real API inteqrasiya
@@ -1870,3 +1872,82 @@ gemini-2.5-flash → gemini-2.5-flash-lite → gemini-2.0-flash-preview
    - Premium üzvlük
    - Mobil app (React Native)
 ```
+
+---
+
+## 20. Ölkələr Modulu Genişləndirməsi (YENİ!)
+
+> **Status:** ✅ Tamamlanıb
+> **Tarix:** Aprel 2026
+
+### 20.1 Əsas Dəyişikliklər
+
+Hardcoded 10 ölkə → Supabase-dən dinamik 32 ölkə (tam data, Unsplash şəkillər, YouTube videolar, xərc məlumatları, məşhur yerlər).
+
+### 20.2 Yeni Fayllar
+
+| # | Fayl | Təsvir |
+|---|------|--------|
+| 1 | `supabase/migrations/012_countries_expand.sql` | DB: 26 yeni sütun + `country_highlights` cədvəli + 4 index |
+| 2 | `supabase/migrations/013_countries_seed_50.sql` | 32 ölkə tam seed (şəkil, video, xərc, yerlər) |
+| 3 | `src/lib/unsplash.ts` | `getUnsplashUrl()` — Unsplash CDN URL generator |
+| 4 | `src/components/ui/youtube-lite.tsx` | Lite YouTube embed (thumbnail → klikdə iframe) |
+| 5 | `src/app/[locale]/countries/country-grid-client.tsx` | Axtarış + kontinent filtri + grid |
+| 6 | `src/app/[locale]/countries/[slug]/country-detail-client.tsx` | Hero, stat, xərc, aylar, video, viza CTA |
+
+### 20.3 Dəyişdirilmiş Fayllar
+
+| # | Fayl | Dəyişiklik |
+|---|------|-----------|
+| 1 | `next.config.ts` | Unsplash + ytimg image domains, AVIF/WebP, 24h cache |
+| 2 | `src/types/country.ts` | `ExpandedCountry` + `CountryHighlight` tipləri |
+| 3 | `src/components/country/country-card.tsx` | Tam redesign: Unsplash şəkil, viza badge, xərc, hover zoom |
+| 4 | `src/app/[locale]/countries/page.tsx` | Hardcoded → Supabase dinamik (ISR 24 saat) |
+| 5 | `src/app/[locale]/countries/[slug]/page.tsx` | Hardcoded → Supabase (hero, highlights, bloglar) |
+| 6 | `src/messages/az.json`, `en.json`, `ru.json` | `countries` namespace: 25+ yeni açar |
+
+### 20.4 32 Ölkə Siyahısı
+
+Türkiyə, BƏƏ, Fransa, İtaliya, İspaniya, Yaponiya, Almaniya, Tailand, Gürcüstan, Yunanıstan, İran, Rusiya, Niderland, Maldiv, İngiltərə, Portuqaliya, Bali (İndoneziya), Kanada, Avstraliya, Mərakeş, Hindistan, Braziliya, Cənubi Koreya, Çin, Sinqapur, İsveçrə, Norveç, İslandiya, Meksika, Çexiya, Avstriya, Yeni Zelandiya
+
+### 20.5 Ölkə Siyahısı Səhifəsi
+
+- Supabase-dən dinamik (ISR 24 saat cache)
+- Kontinent filtri (Avropa, Asiya, Amerika, Afrika, Okeaniya)
+- Axtarış (ad ilə)
+- Professional kartlar: Unsplash şəkil, viza badge, safety badge, xərc, ən yaxşı aylar
+- Dark/light tema dəstəyi
+
+### 20.6 Ölkə Detal Səhifəsi
+
+- Hero şəkil (Unsplash, gradient overlay)
+- Sürətli məlumatlar (valyuta, timezone, telefon kodu, viza)
+- Ortalama xərclər (bilet, otel, gündəlik — AZN)
+- 12 ay təqvimi (yaxşı aylar yaşıl)
+- Məşhur yerlər grid (şəkilli kartlar)
+- YouTube videolar (lite embed)
+- Viza məlumatına link (narıncı CTA)
+- Əlaqəli bloglar
+- Safety badge (safe/caution/warning)
+
+### 20.7 DB Genişləndirməsi (`012_countries_expand.sql`)
+
+`countries` cədvəlinə 26 yeni sütun:
+- `image_url`, `hero_image_url`, `flag_emoji`
+- `continent`, `region`
+- `currency_code`, `currency_name`, `language`, `timezone`, `phone_code`
+- `avg_flight_cost_azn`, `avg_hotel_cost_azn`, `avg_daily_cost_azn`
+- `best_months`, `safety_level`, `popularity_order`, `is_featured`
+- `video_url`, `video_title`
+- `description_az`, `description_en`, `description_ru`
+- `highlights_az`, `highlights_en`, `highlights_ru`
+- `meta_title_az`, `meta_title_en`, `meta_title_ru`
+
+`country_highlights` cədvəli:
+- `id`, `country_slug`, `name_az/en/ru`, `description_az/en/ru`, `image_url`, `order_index`
+
+### 20.8 İstifadə Qaydası
+
+1. Supabase Dashboard → SQL Editor → `012_countries_expand.sql` çalıştır
+2. Sonra `013_countries_seed_50.sql` çalıştır
+3. `npm run dev` → http://localhost:3000/az/countries

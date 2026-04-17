@@ -9,6 +9,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Ölkə adı tələb olunur' }, { status: 400 });
   }
 
+  const blocked = ['armenia', 'ermənistan', 'ermenistan', 'армения', 'armanistan'];
+  if (blocked.some(b => country_name.toLowerCase().includes(b))) {
+    return NextResponse.json({ error: 'Bu ölkə dəstəklənmir' }, { status: 403 });
+  }
+
   const supabase = await createClient();
 
   const provider = getProvider();

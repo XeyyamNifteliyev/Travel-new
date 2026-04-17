@@ -38,7 +38,6 @@ const VISA_SOURCES: Record<string, { urls: string[]; embassy_az?: string }> = {
   uzbekistan: { urls: ['https://mfa.uz/en'] },
   kazakhstan: { urls: ['https://www.gov.kz/memleket/entities/mfa-kz'] },
   belarus: { urls: ['https://belarus.by/travel/visas'] },
-  armenia: { urls: ['https://www.mfa.am/en/visa'] },
   serbia: { urls: ['https://www.mfa.gov.rs'] },
   bulgaria: { urls: ['https://www.mfa.bg/embassies/azerbaijan'] },
   romania: { urls: ['https://baku.mae.ro'] },
