@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="az"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#00344d",
+                        "surface-container-low": "#131b2e",
+                        "surface-bright": "#31394d",
+                        "outline-variant": "#3e4850",
+                        "secondary": "#7bd0ff",
+                        "surface-variant": "#2d3449",
+                        "on-surface": "#dae2fd",
+                        "surface-container": "#171f33",
+                        "surface-container-highest": "#2d3449",
+                        "on-primary-fixed-variant": "#004c6e",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#c9e6ff",
+                        "surface-container-high": "#222a3d",
+                        "on-tertiary-container": "#4a2c00",
+                        "surface-container-lowest": "#060e20",
+                        "on-tertiary": "#472a00",
+                        "on-secondary-fixed": "#001e2c",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#89ceff",
+                        "surface-dim": "#0b1326",
+                        "secondary-fixed-dim": "#7bd0ff",
+                        "on-primary-fixed": "#001e2f",
+                        "outline": "#88929b",
+                        "background": "#0b1326",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-error": "#690005",
+                        "secondary-container": "#00a6e0",
+                        "on-secondary-container": "#00374d",
+                        "inverse-primary": "#006591",
+                        "on-secondary-fixed-variant": "#004c69",
+                        "tertiary-fixed": "#ffddb8",
+                        "secondary-fixed": "#c4e7ff",
+                        "inverse-surface": "#dae2fd",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-container": "#003751",
+                        "primary-fixed-dim": "#89ceff",
+                        "primary": "#89ceff",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#283044",
+                        "tertiary-container": "#d88a00",
+                        "on-secondary": "#00354a",
+                        "primary-container": "#0ea5e9",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-surface-variant": "#bec8d2",
+                        "tertiary": "#ffb95f",
+                        "surface": "#0b1326",
+                        "on-background": "#dae2fd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b1326; color: #dae2fd; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .glass-card {
+            background: rgba(23, 31, 51, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(137, 206, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl shadow-[0_20px_50px_rgba(14,165,233,0.1)] flex justify-between items-center px-8 h-20 w-full">
+<div class="text-2xl font-bold tracking-tighter text-sky-400 font-['Space_Grotesk']">
+            TravelAZ
+        </div>
+<div class="hidden md:flex gap-8 items-center font-['Space_Grotesk'] tracking-tight">
+<a class="text-slate-400 hover:text-sky-300 transition-colors" href="#">Reservations</a>
+<a class="text-sky-400 border-b-2 border-sky-400 pb-1" href="#">Explore</a>
+<a class="text-slate-400 hover:text-sky-300 transition-colors" href="#">Services</a>
+<a class="text-slate-400 hover:text-sky-300 transition-colors" href="#">Blog</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-sky-400 scale-95 active:scale-90 hover:bg-white/5 p-2 rounded-full transition-all duration-300" data-icon="account_circle">account_circle</button>
+</div>
+</nav>
+<main class="pt-24 pb-32 px-6 lg:px-12 max-w-7xl mx-auto">
+<!-- Hero Section: Editorial Headline -->
+<section class="mb-16 mt-8">
+<div class="relative rounded-xl overflow-hidden min-h-[400px] flex items-center p-8 lg:p-16">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover brightness-50" data-alt="Majestic snowy peaks of the Caucasus Mountains in Azerbaijan at sunrise with deep blue shadows and golden morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4vcx7BfZXse_uAAoyVjC4atl5hm1mawEHjhm_K5mp769zg1aJGTlzS-kgkk1exdH8pSkCsZwyhPSNaa2KX_tKKWgikhuGFQbq6Jl7LG2BOkaCfZUdhf012MN8hlcQhof9d19xRqB4_095KYUYoCeMmBXgULbWO_Q1twU7g0YC9g4DnGBN8q_7BbyPslFTJZI-kpbi8cHv3iJWX62DWhzTNYen7teOuQZi1r-86al69f7xI8P7IMgt1Ffe3p4DN3t5fsTNqYp_Mi0"/>
+</div>
+<div class="relative z-10 max-w-2xl">
+<span class="inline-block px-4 py-1 rounded-full bg-primary-container text-on-primary-container font-label text-xs tracking-widest uppercase mb-4">Azərbaycanı Kəşf Et</span>
+<h1 class="text-5xl lg:text-7xl font-headline font-bold text-white tracking-tighter mb-6 leading-tight">
+                        Daxili <span class="text-primary text-glow">Turlar</span>
+</h1>
+<p class="text-lg text-on-surface-variant font-body leading-relaxed mb-8 opacity-90">
+                        Xəzərin sahillərindən Qafqazın zirvələrinədək uzanan unudulmaz səyahətlər. Yerli mədəniyyəti və təbiəti yeni rakursdan kəşf edin.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="px-8 py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary font-semibold rounded-full shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">Səyahətə Başla</button>
+<button class="px-8 py-4 bg-surface-variant/40 backdrop-blur-md border border-outline-variant/30 text-white font-semibold rounded-full hover:bg-surface-variant transition-all">Video İzlə</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Filters & Search -->
+<section class="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="relative flex-1 max-w-md">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-high border-none rounded-full py-4 pl-12 pr-6 text-on-surface focus:ring-2 focus:ring-primary/50 font-headline placeholder:text-outline/50" placeholder="Hara getmək istəyirsiniz?" type="text"/>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+<button class="px-6 py-2 rounded-full bg-tertiary-container text-on-tertiary-container font-medium whitespace-nowrap">Bütün Turlar</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant hover:text-white transition-all whitespace-nowrap">Dağ Turları</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant hover:text-white transition-all whitespace-nowrap">Tarixi Turlar</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant hover:text-white transition-all whitespace-nowrap">Həftəsonu</button>
+</div>
+</section>
+<!-- Bento Grid / Cards -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Tour Card 1 (Large Feature) -->
+<div class="lg:col-span-2 group relative h-[500px] rounded-xl overflow-hidden glass-card transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Ancient mountain village of Khinalug in Azerbaijan with stone houses perched on steep green slopes under a dramatic sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7X5qHr0iSpTpRM8_i5jfqyUFI2C_KZDVQi5LnetH-vAowpIR8K4N4B0QzpIf0XbSR5wPThFwX3xbLoUQWt1Ww4SckLg8ft1uEgiXl-2MF5hNe7yQxehG9h1KiDjlUWDHtzN9aR5G0IADnm-1gmxW309wdZu4-xgICYzCsQjKu2cKLNzuqlRhE_9g22DLEkxufYKk44Te5aH-OxfPmd80D3IhR5oGTEkoud8f9b5QRFdyoEDHu0GXf7JeOJe0gpSAZMskaKQ1WkUY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<div class="flex justify-between items-end">
+<div>
+<div class="flex items-center gap-2 text-tertiary mb-2">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="text-xs font-bold uppercase tracking-widest font-label">Quba - Xınalıq</span>
+</div>
+<h3 class="text-3xl font-headline font-bold text-white mb-2">Buludların Üzərindəki Kənd</h3>
+<div class="flex items-center gap-4 text-on-surface-variant text-sm mb-6">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span> 2 Gün / 1 Gecə</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">group</span> Max 12 nəfər</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm text-outline mb-1">Cəmi</p>
+<p class="text-2xl font-bold text-primary">₼ 120</p>
+</div>
+</div>
+<button class="w-full py-4 mt-4 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-lg text-white font-semibold transition-all border border-white/10">Detallara Bax</button>
+</div>
+</div>
+<!-- Tour Card 2 -->
+<div class="group relative rounded-xl overflow-hidden glass-card transition-all duration-500 hover:-translate-y-2">
+<div class="h-64 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="The panoramic night view of Baku city from Upland Park with the Flame Towers illuminated against the dark Caspian Sea" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmOYIvH9-tKAYLv-rl20fkZClrlFpPGh_-Xlg6LFaGq9ZOOOPbuApOK-jI4Xb0au19zMUcbEnTASAdtOIvszQHJ1hgGvCBnpGp2fxShKquukfOR17YNy5jJm3tekYZcMiub0xoPED3u3pDfLILNt_Jyk_B518721jg2rUTp8tKpi7td8vWb2jNxraQVNfHm37AnZ5M5P_GPz1oq422ykC_c9qpYo96S6WZl4zgPcoVxCfxs-SsjUt68UF50XzJz8_yCgxtPYWCzow"/>
+<span class="absolute top-4 right-4 bg-tertiary text-on-tertiary px-3 py-1 rounded-full text-xs font-bold">Populyar</span>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="text-xs font-bold uppercase tracking-widest font-label">Baku City</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-white mb-4">Bakının İşıqları: Gecə Turu</h3>
+<div class="flex items-center justify-between">
+<div class="text-on-surface-variant text-sm">
+<span class="block">4 Saat</span>
+<span class="block text-primary font-bold mt-1">₼ 45</span>
+</div>
+<button class="p-3 bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Tour Card 3 -->
+<div class="group relative rounded-xl overflow-hidden glass-card transition-all duration-500 hover:-translate-y-2">
+<div class="h-64 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Lush green forests of Gabala with the Tufandag mountains in the distance and a clear blue sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCimkSfPKZZWxsssjqllUY7NTMPdvpW3MBQajofe8bi8lZyffVgi0_KsrOnSITKStlGEaireFJEESs80yWMSDH1J6MLt9oeppgx2-nYyC22mWGw15q5lU85PiemTE0_AzVIXnNpQENQah4nj4fizAdvTnczNsN--INykg9m-7hwRvy3IEGEOiTaNCBDd2jpPW73GxxCKQzUPauFpdELspc1x5EENgU-RahasqfriPRV67KwMtTT_gy_o209GdNWCIdVifshH7kK-Vc"/>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined text-sm">nature</span>
+<span class="text-xs font-bold uppercase tracking-widest font-label">Qəbələ - Şəki</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-white mb-4">İpək Yolunun İzləri İlə</h3>
+<div class="flex items-center justify-between">
+<div class="text-on-surface-variant text-sm">
+<span class="block">3 Gün / 2 Gecə</span>
+<span class="block text-primary font-bold mt-1">₼ 185</span>
+</div>
+<button class="p-3 bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Tour Card 4 -->
+<div class="group relative rounded-xl overflow-hidden glass-card transition-all duration-500 hover:-translate-y-2">
+<div class="h-64 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="The tranquil Goygol Lake in Azerbaijan reflecting the surrounding dense forest and high mountains in its deep blue water" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3HQRmEUNYS905YAb4TabkK4NtdHOGp_EK7LXkoMWuaQkuFCwbUTSymqXF_Rb4YYAzqc7aQ2Oh6jI3m7IUKAfTgJj0ELkAc3Y4zGSEw3xlQ2Yc504urRpzmd5bZfjp6kvf5CJf6gsHZNt7qSOrt8jLQBvhK-nTevxEQeLcgE7uqekIjiepBOmv4VyryKWV7MfyT1BPD3fW4l7rnFe_sGACgNXIhkPQKduCo-6MRppFvhZOLxOV5Mp3y-EfiZI1l3kz5NS17s8lyDg"/>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined text-sm">water_drop</span>
+<span class="text-xs font-bold uppercase tracking-widest font-label">Göygöl - Gəncə</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-white mb-4">Mavi Gözün Əfsanəsi</h3>
+<div class="flex items-center justify-between">
+<div class="text-on-surface-variant text-sm">
+<span class="block">2 Gün / 1 Gecə</span>
+<span class="block text-primary font-bold mt-1">₼ 95</span>
+</div>
+<button class="p-3 bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Tour Card 5 -->
+<div class="group relative rounded-xl overflow-hidden glass-card transition-all duration-500 hover:-translate-y-2">
+<div class="h-64 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="The mud volcanoes of Gobustan, Azerbaijan with bubbling gray mud and a desolate lunar-like landscape under a hot sun" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAudsc8eiLC5iyMYjdvZd8kpHwFr8VW9RWCzN5H03M-7e4-OUD1iRcVlDBSIgZlXvZjqDLWDlBPAfI-FjQPNUeLTdMEe84OdYU5ovzVm6PVrUsxL1mQfJd-7PEUqi9dPc0kEOfHviaTKwYP-xplrxHyQrs2G3NFnenkB12H6xRavPUjqR21fXq0gHqHVYPK8TbOvv5SlKXPr9aLDct1HH7flZexmJj0nWioEoFfJQ6hvtCQidJjvgqoWp8xU19NHVQxfAz-mvC1w5A"/>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined text-sm">volcano</span>
+<span class="text-xs font-bold uppercase tracking-widest font-label">Qobustan</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-white mb-4">Palçıq Vulkanları Turu</h3>
+<div class="flex items-center justify-between">
+<div class="text-on-surface-variant text-sm">
+<span class="block">1 Gün</span>
+<span class="block text-primary font-bold mt-1">₼ 35</span>
+</div>
+<button class="p-3 bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter Subscription -->
+<section class="mt-24">
+<div class="rounded-xl glass-card p-12 flex flex-col md:flex-row items-center gap-8 border-l-4 border-l-tertiary">
+<div class="flex-1">
+<h2 class="text-3xl font-headline font-bold text-white mb-2">Heç bir macəranı qaçırmayın</h2>
+<p class="text-on-surface-variant">Yeni turlar və endirimlər barədə ilk siz xəbər tutun.</p>
+</div>
+<div class="flex w-full md:w-auto gap-2">
+<input class="flex-1 min-w-[260px] bg-background border-none rounded-lg px-6 py-4 focus:ring-2 focus:ring-primary/50" placeholder="E-poçt ünvanınız" type="email"/>
+<button class="px-8 py-4 bg-primary text-on-primary font-bold rounded-lg hover:bg-primary-container transition-all">Abunə ol</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/10 pt-20 pb-28 md:pb-12 px-8 lg:px-12">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<div class="text-2xl font-bold tracking-tighter text-sky-400 font-headline mb-6">TravelAZ</div>
+<p class="text-on-surface-variant max-w-sm mb-8 leading-relaxed">
+                    Biz Azərbaycanın ən gizli və gözəl guşələrinə peşəkar turlar təşkil edirik. Məqsədimiz hər kəsə vətənimizi sevdirmək və tanıtmaqdır.
+                </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">mail</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+</div>
+</div>
+<div>
+<h4 class="font-headline font-bold text-white mb-6 uppercase tracking-widest text-xs">Şirkət</h4>
+<ul class="space-y-4 text-on-surface-variant text-sm">
+<li><a class="hover:text-primary transition-colors" href="#">Haqqımızda</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Xidmətlər</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Bloq</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Əlaqə</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-headline font-bold text-white mb-6 uppercase tracking-widest text-xs">Dəstək</h4>
+<ul class="space-y-4 text-on-surface-variant text-sm">
+<li><a class="hover:text-primary transition-colors" href="#">Tez-tez verilən suallar</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Qaydalar və şərtlər</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Məxfilik siyasəti</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-outline-variant/10 text-center text-outline text-xs">
+            © 2024 TravelAZ. Bütün hüquqlar qorunur. Made for Explorers.
+        </div>
+</footer>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 md:hidden bg-slate-900/90 backdrop-blur-2xl rounded-t-[3rem] shadow-[0_-10px_40px_rgba(14,165,233,0.15)]">
+<div class="flex flex-col items-center justify-center text-slate-500 font-['Inter'] text-[10px] font-medium uppercase tracking-widest">
+<span class="material-symbols-outlined mb-1" data-icon="event_available">event_available</span>
+            Reservations
+        </div>
+<div class="flex flex-col items-center justify-center bg-sky-500/20 text-sky-300 rounded-full px-6 py-2 font-['Inter'] text-[10px] font-medium uppercase tracking-widest animate-pulse-slow">
+<span class="material-symbols-outlined mb-1" data-icon="explore">explore</span>
+            Explore
+        </div>
+<div class="flex flex-col items-center justify-center text-slate-500 font-['Inter'] text-[10px] font-medium uppercase tracking-widest">
+<span class="material-symbols-outlined mb-1" data-icon="concierge_bell">doorbell</span>
+            Services
+        </div>
+<div class="flex flex-col items-center justify-center text-slate-500 font-['Inter'] text-[10px] font-medium uppercase tracking-widest">
+<span class="material-symbols-outlined mb-1" data-icon="article">article</span>
+            Blog
+        </div>
+</nav>
+</body></html>

@@ -15,13 +15,11 @@ export async function GET(request: NextRequest) {
     const ageMin = searchParams.get('ageMin');
     const ageMax = searchParams.get('ageMax');
     const interests = searchParams.get('interests');
-    const languages = searchParams.get('languages');
-
-    let query = supabase
+    const languages = searchParams.get('languages');    let query = supabase
       .from('companions')
       .select(`
         *,
-        author:profiles!companions_user_id_fkey(name, avatar_url, gender)
+        author:profiles!companions_user_id_fkey(name, avatar_url)
       `)
       .eq('status', 'open')
       .order('created_at', { ascending: false });
@@ -35,8 +33,8 @@ export async function GET(request: NextRequest) {
     if (departureDate) {
       query = query.gte('departure_date', departureDate);
     }
-    if (genderPreference) {
-      query = query.eq('gender_preference', genderPreference);
+    if (genderPreference && genderPreference !== 'any') {
+      query = query.eq('gender', genderPreference);
     }
     if (ageMin) {
       const min = parseInt(ageMin);
@@ -65,15 +63,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    let filteredData = data || [];
-    if (genderPreference && genderPreference !== 'any') {
-      filteredData = filteredData.filter((c: any) => {
-        if (!c.author?.gender) return true;
-        return c.author.gender === genderPreference;
-      });
-    }
-
-    return NextResponse.json({ companions: filteredData });
+    return NextResponse.json({ companions: data || [] });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -102,6 +92,7 @@ export async function POST(request: NextRequest) {
       interests,
       languages,
       description,
+      gender,
     } = body;
 
     if (!destinationCountry || !departureDate) {
@@ -120,6 +111,7 @@ export async function POST(request: NextRequest) {
         departure_date: departureDate,
         return_date: returnDate,
         gender_preference: genderPreference || 'any',
+        gender: gender || null,
         age_min: ageMin || 18,
         age_max: ageMax || 99,
         interests: interests || [],

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html class="" lang="az"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TravelAZ - Viza Mərkəzi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#1a1f2e",
+                        "surface-container-highest": "#e2e8f0",
+                        "inverse-on-surface": "#f8fafc",
+                        "surface-container-high": "#f1f5f9",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#ffffff",
+                        "surface": "#f8fafc",
+                        "on-surface": "#0f172a",
+                        "on-primary-fixed-variant": "#004c6e",
+                        "secondary-fixed-dim": "#7bd0ff",
+                        "secondary": "#38bdf8",
+                        "primary": "#0ea5e9",
+                        "outline-variant": "#cbd5e1",
+                        "tertiary-container": "#fef08a",
+                        "surface-variant": "#f1f5f9",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#475569",
+                        "on-tertiary-container": "#713f12",
+                        "on-primary": "#ffffff",
+                        "error": "#ef4444",
+                        "on-primary-container": "#082f49",
+                        "surface-container-low": "#ffffff",
+                        "outline": "#94a3b8",
+                        "on-secondary-fixed-variant": "#004c69",
+                        "inverse-primary": "#7dd3fc",
+                        "surface-bright": "#ffffff",
+                        "on-secondary-container": "#0369a1",
+                        "tertiary": "#f59e0b",
+                        "surface-tint": "#0ea5e9",
+                        "inverse-surface": "#0f172a",
+                        "error-container": "#fee2e2",
+                        "on-primary-fixed": "#001e2f",
+                        "primary-container": "#e0f2fe",
+                        "on-error-container": "#7f1d1d",
+                        "secondary-fixed": "#c4e7ff",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "secondary-container": "#e0f2fe",
+                        "background": "#f8fafc",
+                        "primary-fixed": "#c9e6ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001e2c",
+                        "primary-fixed-dim": "#89ceff",
+                        "on-tertiary-fixed": "#2a1700",
+                        "surface-dim": "#e2e8f0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .nav-dropdown:hover .nav-dropdown-menu {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-white/80 backdrop-blur-3xl docked full-width top-0 z-50 shadow-[0_10px_40px_rgba(14,165,233,0.05)] sticky">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-black text-sky-500 tracking-tighter font-headline shrink-0 mr-8">TravelAZ</div>
+<div class="hidden md:flex gap-4 lg:gap-6 items-center flex-grow justify-center">
+<!-- Rezervasiya -->
+<div class="relative nav-dropdown group">
+<button class="text-slate-600 hover:text-sky-500 transition-colors font-medium tracking-tight px-3 py-2 flex items-center gap-1 group-hover:bg-slate-50/50 rounded-lg">
+            Rezervasiya <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<div class="nav-dropdown-menu hidden absolute top-full left-0 bg-white border border-slate-100 shadow-xl rounded-xl py-2 w-44 z-[60]">
+<a class="block px-4 py-2 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-500" href="#">Bilet</a>
+<a class="block px-4 py-2 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-500" href="#">Otel</a>
+<a class="block px-4 py-2 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-500" href="#">Tur</a>
+</div>
+</div>
+<!-- Kəşf et -->
+<div class="relative nav-dropdown group">
+<button class="text-slate-600 hover:text-sky-500 transition-colors font-medium tracking-tight px-3 py-2 flex items-center gap-1 group-hover:bg-slate-50/50 rounded-lg">
+            Kəşf et <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<div class="nav-dropdown-menu hidden absolute top-full left-0 bg-white border border-slate-100 shadow-xl rounded-xl py-2 w-44 z-[60]">
+<a class="block px-4 py-2 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-500" href="#">Ölkələr</a>
+<a class="block px-4 py-2 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-500" href="#">AI Plan</a>
+</div>
+</div>
+<!-- Xidmətlər -->
+<div class="relative nav-dropdown group">
+<button class="text-sky-500 font-bold border-b-2 border-sky-500 px-3 py-2 flex items-center gap-1">
+            Xidmətlər <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<div class="nav-dropdown-menu hidden absolute top-full left-0 bg-white border border-slate-100 shadow-xl rounded-xl py-2 w-44 z-[60]">
+<a class="block px-4 py-2 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-500" href="#">Yoldaş tap</a>
+<a class="block px-4 py-2 text-sm text-sky-500 font-semibold bg-sky-50" href="#">Visa</a>
+</div>
+</div>
+<!-- Blog -->
+<div class="relative nav-dropdown group">
+<button class="text-slate-600 hover:text-sky-500 transition-colors font-medium tracking-tight px-3 py-2 flex items-center gap-1 group-hover:bg-slate-50/50 rounded-lg">
+            Blog <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<div class="nav-dropdown-menu hidden absolute top-full left-0 bg-white border border-slate-100 shadow-xl rounded-xl py-2 w-44 z-[60]">
+<a class="block px-4 py-2 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-500" href="#">Blog</a>
+<a class="block px-4 py-2 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-500" href="#">Xəbərlər</a>
+</div>
+</div>
+</div>
+<div class="flex gap-2 lg:gap-4 items-center shrink-0">
+<button class="p-2 text-slate-500 hover:text-sky-500 transition-colors relative">
+<span class="material-symbols-outlined">mail</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<button class="flex items-center gap-1 px-3 py-1.5 border border-slate-100 rounded-full hover:bg-slate-50 transition-colors text-sm font-medium text-slate-600">
+<span>🇦🇿</span> AZ
+    </button>
+<button class="w-10 h-10 rounded-full overflow-hidden border-2 border-sky-100 hover:border-sky-300 transition-all">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/a/ACg8ocIWpL_F_h9X_Z66g3P2Mv6z9t3Xf7i8A_4mX6U-8vVj=s96-c"/>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-screen-2xl mx-auto px-6 md:px-8 py-12 flex flex-col lg:flex-row gap-12">
+<!-- Left Column: Search & Grid -->
+<div class="flex-1 flex flex-col gap-10">
+<!-- Header & Search -->
+<header class="flex flex-col gap-6 relative">
+<div class="relative z-10">
+<h1 class="font-headline text-5xl md:text-6xl font-bold tracking-tighter text-on-surface mb-2">Viza Mərkəzi</h1>
+<p class="font-body text-on-surface-variant text-lg max-w-xl">Dünyanı kəşf etmək üçün ilk addımınızı atın. İstədiyiniz ölkə üçün viza tələblərini öyrənin.</p>
+</div>
+<div class="relative w-full max-w-2xl group mt-4">
+<div class="absolute inset-0 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-all duration-500"></div>
+<div class="relative flex items-center bg-surface-container rounded-full p-2 pl-6 shadow-sm border border-surface-dim">
+<span class="material-symbols-outlined text-outline text-2xl mr-3">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-headline text-lg placeholder-outline bg-transparent" placeholder="Ölkə axtarın... (məs. Yaponiya, ABŞ)" type="text"/>
+<button class="bg-primary text-on-primary rounded-full px-6 py-3 font-body font-medium ml-2 hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">
+                            Axtar
+                        </button>
+</div>
+</div>
+</header>
+<!-- Popular Destinations Grid -->
+<section>
+<div class="flex justify-between items-end mb-6">
+<h2 class="font-headline text-2xl font-bold text-on-surface">Populyar İstiqamətlər</h2>
+<div class="flex gap-2">
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-label text-sm font-medium">Hamısı</button>
+<button class="bg-surface-container text-on-surface-variant px-4 py-2 rounded-full font-label text-sm font-medium border border-surface-dim hover:bg-surface-variant transition-colors">Şengen</button>
+<button class="bg-surface-container text-on-surface-variant px-4 py-2 rounded-full font-label text-sm font-medium border border-surface-dim hover:bg-surface-variant transition-colors">Asiya</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Card 1 -->
+<div class="group relative bg-surface-container rounded-2xl overflow-hidden border border-surface-dim shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col h-full">
+<div class="h-48 relative overflow-hidden">
+<img alt="Japan landscape" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="vibrant street scene in tokyo japan at dusk with neon lights and Mount Fuji in the distant background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGQ7JMH6q_t8rnZM5tqZZeX05ZVnT6WYDsbaB4oStWc-rbh64x66L4t0nANIPwW9gTojNM1QdSBCNyXW0xY_RpfzbMr-6pRwM7-R4VlJulDJT1wRzUAe5XdGnJWrKBAbUdKu-_NACZHLyn38jnQioncMQoDAmGp5SmeOsInOjWHa0UQxZYl0wDxsYQ_E9Iqyolv_rf469L-ensrQb87j7Pw6IPAqnEPGDVPtMEPdutInDVTtAfBP7eJ2CriP5r6a8ZTYHxPK-gaIA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-sky-600 px-3 py-1 rounded-full font-label text-xs font-bold uppercase tracking-wider shadow-sm">E-Viza</div>
+<h3 class="absolute bottom-4 left-4 font-headline text-3xl font-bold text-white tracking-tight">Yaponiya</h3>
+</div>
+<div class="p-6 flex-grow flex flex-col justify-between gap-4">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<span class="text-outline font-label text-xs uppercase tracking-wider">Müddət</span>
+<span class="text-on-surface font-body font-medium">90 Gün</span>
+</div>
+<div class="w-px h-8 bg-surface-dim"></div>
+<div class="flex flex-col">
+<span class="text-outline font-label text-xs uppercase tracking-wider">Rüsum</span>
+<span class="text-on-surface font-body font-medium">30 USD</span>
+</div>
+</div>
+<button class="w-full py-3 rounded-full border border-primary text-primary font-body font-medium group-hover:bg-primary group-hover:text-on-primary transition-colors mt-2">Müraciət et</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group relative bg-surface-container rounded-2xl overflow-hidden border border-surface-dim shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col h-full">
+<div class="h-48 relative overflow-hidden">
+<img alt="USA landscape" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="statue of liberty against a bright blue sky on a sunny day in new york city" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsXFXkuIJQAn-IzE2aOIgc8BefkGETrDsy4WLJ-KPFm3LJ67XIisPb0Qefr6CCBtCxiyjb0-4fw1dxWJfjo8JOA2I7yhlDMOtAeAqyk8ykDw3nwWxoWV9A5dGhQQS8na0LZRd0kqqg9-h_PTIYozGHtHtpvRXAXTvQ8HiY743pK32WyF7gKTAzmjP9PnRvAnPAa3M648lKdrGkyNoLi2E01LYIqbK7RIustaBWaeFLmTuGIoB_GCUdE9MPE7ENRjopuaICs3qvxCA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-orange-500 px-3 py-1 rounded-full font-label text-xs font-bold uppercase tracking-wider shadow-sm">Səfirlik</div>
+<h3 class="absolute bottom-4 left-4 font-headline text-3xl font-bold text-white tracking-tight">ABŞ</h3>
+</div>
+<div class="p-6 flex-grow flex flex-col justify-between gap-4">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<span class="text-outline font-label text-xs uppercase tracking-wider">Müddət</span>
+<span class="text-on-surface font-body font-medium">10 İl (B1/B2)</span>
+</div>
+<div class="w-px h-8 bg-surface-dim"></div>
+<div class="flex flex-col">
+<span class="text-outline font-label text-xs uppercase tracking-wider">Rüsum</span>
+<span class="text-on-surface font-body font-medium">185 USD</span>
+</div>
+</div>
+<button class="w-full py-3 rounded-full border border-primary text-primary font-body font-medium group-hover:bg-primary group-hover:text-on-primary transition-colors mt-2">Müraciət et</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Sidebar: Details Panel -->
+<aside class="w-full lg:w-96 flex-shrink-0">
+<div class="sticky top-32 bg-surface-container rounded-3xl p-8 border border-surface-dim shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] relative overflow-hidden">
+<!-- Decorative background elements -->
+<div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">verified_user</span>
+</div>
+<div>
+<h3 class="font-headline text-xl font-bold text-on-surface">Almaniya</h3>
+<p class="font-label text-sm text-outline">Şengen Vizası</p>
+</div>
+</div>
+<div class="space-y-6">
+<!-- Quick Info -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-variant p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">schedule</span>
+<p class="font-label text-xs text-outline mb-1">Baxılma</p>
+<p class="font-body font-semibold text-on-surface">15-30 Gün</p>
+</div>
+<div class="bg-surface-variant p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">payments</span>
+<p class="font-label text-xs text-outline mb-1">Rüsum</p>
+<p class="font-body font-semibold text-on-surface">80 EUR</p>
+</div>
+</div>
+<!-- Checklist -->
+<div class="pt-4 border-t border-surface-dim">
+<h4 class="font-headline font-semibold text-on-surface mb-4">Sənədlərin Siyahısı</h4>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 group">
+<span class="material-symbols-outlined text-primary text-xl group-hover:scale-110 transition-transform">check_circle</span>
+<span class="font-body text-sm text-on-surface-variant pt-0.5">Xarici pasport (ən azı 6 ay etibarlı)</span>
+</li>
+<li class="flex items-start gap-3 group">
+<span class="material-symbols-outlined text-primary text-xl group-hover:scale-110 transition-transform">check_circle</span>
+<span class="font-body text-sm text-on-surface-variant pt-0.5">2 ədəd biometrik fotoşəkil (3.5 x 4.5)</span>
+</li>
+<li class="flex items-start gap-3 group">
+<span class="material-symbols-outlined text-primary text-xl group-hover:scale-110 transition-transform">check_circle</span>
+<span class="font-body text-sm text-on-surface-variant pt-0.5">İş yerindən arayış (ingilis dilində)</span>
+</li>
+<li class="flex items-start gap-3 group">
+<span class="material-symbols-outlined text-outline text-xl group-hover:text-primary transition-colors">circle</span>
+<span class="font-body text-sm text-on-surface-variant pt-0.5">Bank çıxarışı (son 6 ay)</span>
+</li>
+<li class="flex items-start gap-3 group">
+<span class="material-symbols-outlined text-outline text-xl group-hover:text-primary transition-colors">circle</span>
+<span class="font-body text-sm text-on-surface-variant pt-0.5">Səyahət sığortası (30,000 EUR təminatlı)</span>
+</li>
+</ul>
+</div>
+</div>
+<button class="w-full mt-8 bg-gradient-to-r from-primary to-secondary text-on-primary font-body font-semibold py-4 rounded-xl shadow-[0_10px_20px_-10px_rgba(14,165,233,0.5)] hover:shadow-[0_15px_25px_-10px_rgba(14,165,233,0.6)] transition-all active:scale-95">
+                    Məsləhətçi ilə Əlaqə
+                </button>
+</div>
+</aside>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 bg-white/90 backdrop-blur-2xl rounded-t-[3rem] shadow-[0_-15px_40px_rgba(14,165,233,0.05)] border-t border-surface-dim md:hidden">
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-sky-500 transition-all font-['Inter'] text-[11px] font-semibold uppercase tracking-widest gap-1" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span>Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-sky-500 transition-all font-['Inter'] text-[11px] font-semibold uppercase tracking-widest gap-1" href="#">
+<span class="material-symbols-outlined">travel</span>
+<span>Trips</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-sky-50 text-sky-500 rounded-full px-5 py-2 font-['Inter'] text-[11px] font-semibold uppercase tracking-widest scale-110 duration-300 ease-out gap-1 shadow-sm border border-sky-100" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">description</span>
+<span>Vizalar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-sky-500 transition-all font-['Inter'] text-[11px] font-semibold uppercase tracking-widest gap-1" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Profile</span>
+</a>
+</nav>
+</body></html>

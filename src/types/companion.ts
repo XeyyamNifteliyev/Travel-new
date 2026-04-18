@@ -6,6 +6,7 @@ export interface Companion {
   departureDate: string;
   returnDate?: string;
   genderPreference: 'any' | 'male' | 'female';
+  gender?: 'male' | 'female';
   ageMin: number;
   ageMax: number;
   interests: string[];
@@ -26,6 +27,7 @@ export interface CompanionFormData {
   departureDate: string;
   returnDate?: string;
   genderPreference: 'any' | 'male' | 'female';
+  gender?: 'male' | 'female';
   ageMin: number;
   ageMax: number;
   interests: string[];

@@ -8,6 +8,7 @@ import { ThemeToggle } from './theme-toggle';
 import { MobileMenu } from './mobile-menu';
 import { Plane, User, ChevronDown, PlaneTakeoff, Hotel, MapPin, Users, ShieldCheck, BookOpen, MessageSquareText, Sparkles, Globe, Newspaper } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { type LucideIcon } from 'lucide-react';
 
 interface NavLink {
@@ -30,20 +31,24 @@ export function Header() {
   const t = useTranslations('common');
   const locale = useLocale();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = createClient();
+  const { unreadCount } = useUnreadMessages(userId);
 
   useEffect(() => {
     async function checkUser() {
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
+      setUserId(user?.id ?? null);
     }
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session?.user);
+      setUserId(session?.user?.id ?? null);
     });
 
     return () => subscription.unsubscribe();
@@ -188,20 +193,20 @@ export function Header() {
                 </div>
               );
             })}
-
-            {chatLink && (
-              <Link
-                href={chatLink.href}
-                className="hover:text-primary transition-colors text-sm flex items-center gap-1.5 text-txt-sec px-2 py-1.5 rounded-md"
-              >
-                <MessageSquareText className="w-3.5 h-3.5" />
-                {chatLink.label}
-              </Link>
-            )}
           </nav>
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
+            {isLoggedIn && (
+              <Link href={`/${locale}/chat`} className="relative p-2 text-txt-sec hover:text-primary transition-colors">
+                <MessageSquareText className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1 leading-none">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <LanguageSwitcher />
             <Link
               href={isLoggedIn ? `/${locale}/profile` : `/${locale}/auth/login`}
@@ -210,7 +215,7 @@ export function Header() {
               <User className="w-4 h-4" />
               <span>{isLoggedIn ? t('profile') : t('login')}</span>
             </Link>
-            <MobileMenu navGroups={navGroups} chatLink={chatLink} />
+            <MobileMenu navGroups={navGroups} chatLink={chatLink} unreadCount={unreadCount} />
           </div>
         </div>
       </div>

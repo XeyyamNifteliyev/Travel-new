@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TravelAZ - Find Travel Buddy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#00344d",
+                        "surface-container-low": "#131b2e",
+                        "surface-bright": "#31394d",
+                        "outline-variant": "#3e4850",
+                        "secondary": "#7bd0ff",
+                        "surface-variant": "#2d3449",
+                        "on-surface": "#dae2fd",
+                        "surface-container": "#171f33",
+                        "surface-container-highest": "#2d3449",
+                        "on-primary-fixed-variant": "#004c6e",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#c9e6ff",
+                        "surface-container-high": "#222a3d",
+                        "on-tertiary-container": "#4a2c00",
+                        "surface-container-lowest": "#060e20",
+                        "on-tertiary": "#472a00",
+                        "on-secondary-fixed": "#001e2c",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#89ceff",
+                        "surface-dim": "#0b1326",
+                        "secondary-fixed-dim": "#7bd0ff",
+                        "on-primary-fixed": "#001e2f",
+                        "outline": "#88929b",
+                        "background": "#0b1326",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-error": "#690005",
+                        "secondary-container": "#00a6e0",
+                        "on-secondary-container": "#00374d",
+                        "inverse-primary": "#006591",
+                        "on-secondary-fixed-variant": "#004c69",
+                        "tertiary-fixed": "#ffddb8",
+                        "secondary-fixed": "#c4e7ff",
+                        "inverse-surface": "#dae2fd",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-container": "#003751",
+                        "primary-fixed-dim": "#89ceff",
+                        "primary": "#89ceff",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#283044",
+                        "tertiary-container": "#d88a00",
+                        "on-secondary": "#00354a",
+                        "primary-container": "#0ea5e9",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-surface-variant": "#bec8d2",
+                        "tertiary": "#ffb95f",
+                        "surface": "#0b1326",
+                        "on-background": "#dae2fd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+        }
+        .glass-panel {
+            background: rgba(23, 31, 51, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container">
+<nav class="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl shadow-[0_20px_50px_rgba(14,165,233,0.1)] flex justify-between items-center px-8 h-20 w-full">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold tracking-tighter text-sky-400 font-['Space_Grotesk']">TravelAZ</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-['Space_Grotesk'] tracking-tight text-slate-400 hover:text-sky-300 transition-colors" href="#">Reservations</a>
+<a class="font-['Space_Grotesk'] tracking-tight text-sky-400 border-b-2 border-sky-400 pb-1" href="#">Explore</a>
+<a class="font-['Space_Grotesk'] tracking-tight text-slate-400 hover:text-sky-300 transition-colors" href="#">Services</a>
+<a class="font-['Space_Grotesk'] tracking-tight text-slate-400 hover:text-sky-300 transition-colors" href="#">Blog</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:block relative">
+<input class="bg-white/5 border-none rounded-full py-2 px-6 focus:ring-2 focus:ring-primary text-sm w-64 font-label" placeholder="Search buddies..." type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-2 text-slate-400">search</span>
+</div>
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/5 transition-all duration-300 scale-95 active:scale-90">
+<span class="material-symbols-outlined text-sky-400" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+<main class="pt-32 pb-40 px-6 max-w-7xl mx-auto min-h-screen">
+<header class="mb-16">
+<h1 class="text-5xl md:text-7xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-6">
+                Yoldaş <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Tap</span>
+</h1>
+<p class="text-on-surface-variant max-w-2xl text-lg md:text-xl font-light leading-relaxed">
+                Connect with like-minded explorers. Your next great adventure starts with the right company. Filter by destination, interest, and vibe.
+            </p>
+</header>
+<section class="mb-12">
+<div class="glass-panel p-8 rounded-xl flex flex-wrap gap-6 items-end">
+<div class="flex-1 min-w-[240px]">
+<label class="block text-label font-medium uppercase tracking-widest text-[10px] text-primary mb-3">Destination</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest/50 border-none rounded-2xl py-4 px-6 text-on-surface focus:ring-2 focus:ring-primary transition-all font-headline" placeholder="Where are we going?" type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-4 text-outline">location_on</span>
+</div>
+</div>
+<div class="flex-1 min-w-[200px]">
+<label class="block text-label font-medium uppercase tracking-widest text-[10px] text-primary mb-3">Interests</label>
+<select class="w-full bg-surface-container-highest/50 border-none rounded-2xl py-4 px-6 text-on-surface focus:ring-2 focus:ring-primary appearance-none transition-all">
+<option>All Activities</option>
+<option>Hiking</option>
+<option>Photography</option>
+<option>Culinary</option>
+<option>Relaxation</option>
+</select>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-10 py-4 rounded-full font-bold hover:shadow-[0_0_30px_rgba(137,206,255,0.4)] transition-all duration-300 h-[60px]">
+                    Search Buddies
+                </button>
+</div>
+</section>
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden hover:shadow-[0_20px_50px_rgba(14,165,233,0.1)] transition-all duration-500">
+<div class="h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Close-up of a smiling young man wearing an orange beanie and outdoor gear with mountains in the background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWpt0xeZGgUsa_08zzVOdXgzvrbzIIxve3Wsf-CPZV6dboF0ysmv7o1gjXWb7OesOEerx8DFEJnWXiExmKWNYoUs5jSN2zh7hl9A05c_2v2-QRgfyHHyhSlsI3rLy82zGIV6_TtLiaUgpKKonp7dGhYuUeV4RwveyuMAlD52RAAG12NKTEKgJ446Ejg99_A1kbHbTbpPbtvs6B8ciVSl8LdXEHam-JuCSgbVI1W1vKBo4nTwYZS-cv7Dbp6BJFxJC1w9XWqGo-Y-Y"/>
+</div>
+<div class="p-8 relative">
+<div class="absolute -top-12 left-8 w-20 h-20 rounded-full border-4 border-surface-container-low overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young man with a rugged beard looking directly at the camera with a soft warm sunset background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1tEAhYI5PUisxKoLPsdndv2tmTaY22ZG1YvEwx8hnUbXyATf2DYLsP8D2Y5qcbYdvxT4KoeezEjUPSwf_HhK3PHz9d-6j00H20sf4019uy_-W55N0cHKZUl4iHHF1AZ-iVJ7W6tFAg308VsrYBoNNs0ApGYAUELt0dK7RKELax8mvR7G6lvsyIQNhjPLO6p2fBZmcYjVPeCaeTOk_BeTm6a7hiXOvPyb_S3Z6k0ElNxMZabKd1h5YN6Qo8BO1uUJOhsbBy-WHwds"/>
+</div>
+<div class="pt-8">
+<h3 class="text-2xl font-headline font-bold text-on-surface">Alex Mercer</h3>
+<p class="text-primary text-sm font-medium tracking-wide mb-4">Hiking • Photography</p>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Looking for a companion to explore the Swiss Alps this December. I love early mornings and long trails.</p>
+<div class="flex flex-wrap gap-2 mb-8">
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface text-xs rounded-full">Switzerland</span>
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface text-xs rounded-full">Dec 15 - Jan 02</span>
+</div>
+<button class="w-full py-4 rounded-full border border-primary/30 text-primary font-bold hover:bg-primary hover:text-on-primary transition-all">
+                            Send Request
+                        </button>
+</div>
+</div>
+</div>
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden hover:shadow-[0_20px_50px_rgba(14,165,233,0.1)] transition-all duration-500">
+<div class="h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Aerial view of a coastal city with turquoise water and historical European architecture under a bright blue sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXdn_ufVmEk3sfUQRG9_T6yzAIREU5m8tmL1TjZS8c6riSeeZiIR_JDdUQnHwEvqhBlR-L5mcP7QIzfaIdvD2KyToUftdAxMBADRWDg6Ccl7t5Xltc0k7DLx73aDnGJOUomz6amUB6EvHVY7o3OV6ZreCHF2HM1vafPh42KQAFTmrtHP9O-xPOPaolJ8dcYHqfc4ogUUZ1hgP6n7BUYbOfY8RAey0jNoJpx4DOFN1s7mUoFl6tX5gWyR7JWMRqTdyVdLese87Q0ys"/>
+</div>
+<div class="p-8 relative">
+<div class="absolute -top-12 left-8 w-20 h-20 rounded-full border-4 border-surface-container-low overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a woman with long dark hair smiling brightly with a vibrant urban street in the background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWTeOwh3f4mSDOPaOcDeISeSMrIngrINSyA8zsNDIWgUS7_STS3keoGNDOxfmrr9RmTnP1baodEpzF7kUney1CBpK7VIBKPFg0Ew-1Krh7I-rbzFbb_h5P8J4GSL1aUdH85L3r13QU7dMCIB-0ApfSZz5op0Y139gZqE9Y0hVOTmzFqqfvc2bmV349wIOe5TIHCS8NVgWtTar5zxfOqZ8DJcHDxzLG2RDR49mPrpbPWTVtqqFINKpLH5u3CL9GkX5I1RP30owst_0"/>
+</div>
+<div class="pt-8">
+<h3 class="text-2xl font-headline font-bold text-on-surface">Elena Rodriguez</h3>
+<p class="text-primary text-sm font-medium tracking-wide mb-4">Culinary • Culture</p>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Planning a street food tour in Tokyo. Seeking someone who isn't afraid to try everything twice!</p>
+<div class="flex flex-wrap gap-2 mb-8">
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface text-xs rounded-full">Japan</span>
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface text-xs rounded-full">March 2024</span>
+</div>
+<button class="w-full py-4 rounded-full border border-primary/30 text-primary font-bold hover:bg-primary hover:text-on-primary transition-all">
+                            Send Request
+                        </button>
+</div>
+</div>
+</div>
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden hover:shadow-[0_20px_50_rgba(14,165,233,0.1)] transition-all duration-500">
+<div class="h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Close-up of scuba divers underwater in a clear blue ocean with vibrant coral reefs and small tropical fish" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL9xSGv-wMiAd_VJaHMJgNb0XznNf3TR7Vbxqe0QnphF-fsyKUTCrbrYn_9C_-LUlHT_S_j74GXLmvLLrBYdH-MJDVN4BSvkLPzX1RUWCeZlouFvfYV_7-fVM-bgEmhIqNWw0QKCxjkhyWO6GfqFrJDCbwRT9NllR91HTo6BzpUAUQZ_lagYNgqkRRv8BiZ1eDjwbXtM-Tr1M626AWfffkCIKoUBNC9besdoFxZvFgSfYSKP2tNoRhFHAhTwmwsr6HErn7AO1b6Nw"/>
+</div>
+<div class="p-8 relative">
+<div class="absolute -top-12 left-8 w-20 h-20 rounded-full border-4 border-surface-container-low overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a man wearing glasses and a casual linen shirt looking sideways with a blurry tropical beach background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFTJmX4xMsirqiGB-lR9yNGjmADrbj2VxvcbO7dZZcMjd3ropJS9Q6WwstbTc-zJuGMolGDTeWK0lws3RYOMA8KNGKbdcB01iV7fiVKgE1Fis231OE_RzU5xZUzbdmO7MB9piZRrRpBYzQ4HwuXLH2275VquFhXk284JSkop-4T7TTp3ChYCyruRmcxPo9VzMOhrDb3b8VMSyOIStbZm2ljqC3pQ7skabfY_E2sT6hDsg2eC16Yp6w08ifnCxgQImBAWQK1Pjz5wo"/>
+</div>
+<div class="pt-8">
+<h3 class="text-2xl font-headline font-bold text-on-surface">Mark J.</h3>
+<p class="text-primary text-sm font-medium tracking-wide mb-4">Diving • Adventure</p>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Advanced diver heading to Raja Ampat. Looking for a dive buddy for deep explorations.</p>
+<div class="flex flex-wrap gap-2 mb-8">
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface text-xs rounded-full">Indonesia</span>
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface text-xs rounded-full">Flexible Dates</span>
+</div>
+<button class="w-full py-4 rounded-full border border-primary/30 text-primary font-bold hover:bg-primary hover:text-on-primary transition-all">
+                            Send Request
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<section class="mt-24">
+<h2 class="text-3xl font-headline font-bold mb-12">Recommended Routes</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="col-span-1 md:col-span-2 relative h-[400px] rounded-xl overflow-hidden group">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="Panoramic view of misty blue mountain peaks at twilight with a single glowing light from a tent" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQdZZr-qW6MbU0DJdLL8dyMx5TwsAFMhHxwRZO28V4S1urBXDbzXmZoD2gumLdlYF-UfyaGoAsa3iXPS8U2eR5tB6GMmKEx3dhTWp2jT99QCzIieydlLrC4lTgmebx5oUmEQB3tcqi2MC2HGku6rNppQPfhqZ2uJT150OkclV5HT_VrG3hrJvSAhkKSYJsplBqmkwrRMxh1fK2kZCcPxwhwpYapXGI1Wa-tUZ5DKWf_B33DUraM4BpPz5IDC8JQxQ971-ZemzEc6s"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+<div class="absolute bottom-8 left-8">
+<span class="text-tertiary text-xs font-bold tracking-widest uppercase mb-2 block">Trending</span>
+<h4 class="text-3xl font-headline font-bold">The Nordic Trail</h4>
+<p class="text-on-surface-variant text-sm">42 buddies currently searching</p>
+</div>
+</div>
+<div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-6">
+<div class="relative rounded-xl overflow-hidden h-full group">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="Close-up of ancient stone ruins in Egypt under a burning orange sunset sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDrEUpxBp7v3Qu_Bc1pdMI_2aU8Z0ImL9wyCarq4gnhNvNx4HGPNDrODJ1UVl5cyD7cxfKjYz2HdI8HUy2J-g_GJEycjJfPOFB15V1ci5pO_g_sAk2eYHu3TL-mYLmd8t4csn-_PwXaSOZTjdkJk-Soiw7jsPSTTfPzy4F95CsNyfFU9MWcnEbZXttsfWEM9cyoKu8nRFpay3UdoqqK1ujd7Us81Kj1bYutwlSemGrEpjBNiX6VzdnpWq8BUyrKTwfjjYBMCGN98g"/>
+<div class="absolute inset-0 bg-black/40"></div>
+<div class="absolute bottom-4 left-4">
+<p class="font-headline font-bold">Giza Sands</p>
+</div>
+</div>
+<div class="relative rounded-xl overflow-hidden h-full group">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="Night view of a bustling street in Santorini with white buildings and warm yellow lights reflecting on the pavement" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhkLApN-Peuk5yEGALZyEF6z3wgut3g7JxdaAWoXEAaQgRx9ctXf6Bn_MPqiMQX5fvL4z7-yrU67MPjDgWLaw5rlX73OhDaTIYwgNOdt5q6GG1fKWPPr4v-QYezalSUDpBIFk1T3pv7yiz781JhvzMjd1babG-545iv9hORg4de1XtQ2aFtPLUXBBtFOVLi1iibW_12PauHbrKHXnMISFF5wfvF5nVEc1DCrdTzaHbnz5hlTu-HSgwlAgqEpIJY5qB0ltSAJndGkU"/>
+<div class="absolute inset-0 bg-black/40"></div>
+<div class="absolute bottom-4 left-4">
+<p class="font-headline font-bold">Island Hopping</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-slate-900/90 backdrop-blur-2xl py-12 px-8 border-t border-white/5">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
+<div>
+<span class="text-2xl font-bold tracking-tighter text-sky-400 font-headline mb-4 block">TravelAZ</span>
+<p class="text-on-surface-variant max-w-sm text-sm">Elevating travel experiences through connection and discovery. Journey beyond the horizon.</p>
+</div>
+<div class="flex gap-16">
+<div>
+<h5 class="text-white font-headline font-bold mb-4">Explore</h5>
+<ul class="text-on-surface-variant space-y-2 text-sm">
+<li><a class="hover:text-primary" href="#">Destinations</a></li>
+<li><a class="hover:text-primary" href="#">Buddies</a></li>
+<li><a class="hover:text-primary" href="#">Guides</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-headline font-bold mb-4">Support</h5>
+<ul class="text-on-surface-variant space-y-2 text-sm">
+<li><a class="hover:text-primary" href="#">Safety</a></li>
+<li><a class="hover:text-primary" href="#">Help Center</a></li>
+<li><a class="hover:text-primary" href="#">Privacy</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5 text-center text-xs text-on-surface-variant">
+            © 2024 TravelAZ. All rights reserved. Crafted for the Celestial Navigator.
+        </div>
+</footer>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 md:hidden bg-slate-900/90 backdrop-blur-2xl rounded-t-[3rem] shadow-[0_-10px_40px_rgba(14,165,233,0.15)]">
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-sky-200">
+<span class="material-symbols-outlined mb-1" data-icon="event_available">event_available</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Reservations</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-sky-500/20 text-sky-300 rounded-full px-6 py-2 animate-pulse-slow">
+<span class="material-symbols-outlined mb-1" data-icon="explore">explore</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Explore</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-sky-200">
+<span class="material-symbols-outlined mb-1" data-icon="concierge_bell">doorbell</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Services</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-sky-200">
+<span class="material-symbols-outlined mb-1" data-icon="article">article</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Blog</span>
+</div>
+</nav>
+</body></html>

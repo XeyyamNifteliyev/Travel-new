@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useChat } from '@/hooks/useChat';
 import { ChatList } from '@/components/chat/chat-list';
 import { ChatWindow } from '@/components/chat/chat-window';
-import { MessageCircle, ArrowLeft, Loader2 } from 'lucide-react';
+import { MessageCircle, ArrowLeft, Loader2, Search } from 'lucide-react';
 
 function ChatContent() {
   const router = useRouter();
@@ -17,6 +17,14 @@ function ChatContent() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [mobileShowChat, setMobileShowChat] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const markConvAsSeen = (convId: string) => {
+    try {
+      localStorage.setItem(`chat_seen_${convId}`, new Date().toISOString());
+      window.dispatchEvent(new Event('travelaz-unread-changed'));
+    } catch {}
+  };
 
   const {
     conversations,
@@ -25,8 +33,15 @@ function ChatContent() {
     loading: chatLoading,
     sending,
     error,
+    blockedUsers,
     fetchMessages,
     sendMessage,
+    editMessage,
+    deleteMessage,
+    deleteConversation,
+    blockUser,
+    unblockUser,
+    isUserBlocked,
     setActiveConversation,
     setError,
   } = useChat(user?.id);
@@ -58,6 +73,7 @@ function ChatContent() {
     setActiveConversation(id);
     fetchMessages(id);
     setMobileShowChat(true);
+    markConvAsSeen(id);
   };
 
   const handleBack = () => {
@@ -67,12 +83,31 @@ function ChatContent() {
 
   const activeConv = conversations.find(c => c.id === activeConversation);
 
+  const filteredConversations = searchQuery
+    ? conversations.filter(c =>
+        c.other_user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.last_message?.text?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : conversations;
+
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-12">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-bg-surface rounded w-48" />
-          <div className="h-64 bg-bg-surface rounded-xl" />
+      <div className="flex items-center justify-center h-[calc(100vh-80px)]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="space-y-3 w-80">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="animate-pulse">
+                <div className="flex items-center gap-4 p-4">
+                  <div className="w-14 h-14 rounded-full bg-bg-surface/50" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-bg-surface/50 rounded w-24" />
+                    <div className="h-3 bg-bg-surface/50 rounded w-40" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -81,64 +116,112 @@ function ChatContent() {
   if (!user) return null;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="flex items-center gap-3 mb-6">
-        <MessageCircle className="w-6 h-6 text-primary" />
-        <h1 className="text-2xl font-bold">Mesajlar</h1>
-      </div>
-
+    <div className="h-[calc(100vh-80px)] flex overflow-hidden">
       {error && (
-        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 bg-red-500/10 border border-red-500/30 rounded-2xl text-red-400 text-sm backdrop-blur-xl flex items-center gap-3">
           {error}
-          <button onClick={() => setError(null)} className="ml-2 underline">Bağla</button>
+          <button onClick={() => setError(null)} className="underline font-medium">Bağla</button>
         </div>
       )}
 
-      <div className="bg-bg-surface rounded-2xl border border-border overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: '500px' }}>
-        <div className="flex h-full">
-          <div className={`w-full md:w-80 lg:w-96 border-r border-border flex flex-col ${mobileShowChat ? 'hidden md:flex' : 'flex'}`}>
-            <div className="p-4 border-b border-border">
-              <h2 className="font-semibold">Yazışmalar</h2>
+      {/* Sidebar */}
+      <aside className={`w-full md:w-96 flex-shrink-0 flex flex-col border-r border-border/10 bg-bg-base ${
+        mobileShowChat ? 'hidden md:flex' : 'flex'
+      }`}>
+        <div className="p-6 pb-4">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <MessageCircle className="w-5 h-5 text-primary" />
             </div>
-            <div className="flex-1 overflow-y-auto p-3">
-              <ChatList
-                conversations={conversations}
-                activeId={activeConversation}
-                onSelect={handleSelect}
-                loading={chatLoading}
-              />
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Mesajlar</h1>
+              <p className="text-xs text-txt-muted">{conversations.length} yazışma</p>
             </div>
           </div>
 
-          <div className={`flex-1 flex flex-col ${!mobileShowChat ? 'hidden md:flex' : 'flex'}`}>
-            {activeConv ? (
-              <>
-                <button
-                  onClick={handleBack}
-                  className="md:hidden flex items-center gap-2 p-3 border-b border-border text-sm text-txt-sec"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Geri
-                </button>
-                <ChatWindow
-                  messages={messages}
-                  currentUserId={user.id}
-                  otherUserName={activeConv.other_user?.name || 'İstifadəçi'}
-                  onSend={(text) => sendMessage(activeConv.id, text)}
-                  sending={sending}
-                />
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-txt-muted">
-                <div className="text-center">
-                  <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Yazışma seçin</p>
-                </div>
-              </div>
-            )}
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-txt-muted group-focus-within:text-primary transition-colors" />
+            <input
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full bg-bg-surface/80 border-none rounded-full py-3.5 pl-11 pr-6 text-sm text-txt placeholder:text-txt-muted focus:ring-2 focus:ring-primary/40 transition-all"
+              placeholder="Axtar..."
+              type="text"
+            />
           </div>
         </div>
-      </div>
+
+        <div className="flex-grow overflow-y-auto chat-scrollbar px-2 pb-4">
+          <ChatList
+            conversations={filteredConversations}
+            activeId={activeConversation}
+            onSelect={handleSelect}
+            onDelete={(convId) => {
+              deleteConversation(convId);
+              if (activeConversation === convId) {
+                setMobileShowChat(false);
+              }
+            }}
+            onBlock={(userId) => {
+              if (isUserBlocked(userId)) {
+                unblockUser(userId);
+              } else {
+                blockUser(userId);
+              }
+            }}
+            blockedUsers={blockedUsers}
+            loading={chatLoading}
+          />
+        </div>
+      </aside>
+
+      {/* Chat Window */}
+      <section className={`flex-1 flex flex-col relative bg-bg-base overflow-hidden ${
+        !mobileShowChat ? 'hidden md:flex' : 'flex'
+      }`}>
+        {activeConv ? (
+          <>
+            <button
+              onClick={handleBack}
+              className="md:hidden flex items-center gap-2 p-4 border-b border-border/10 text-sm text-txt-sec"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Geri
+            </button>
+            <ChatWindow
+              messages={messages}
+              currentUserId={user.id}
+              otherUser={activeConv.other_user}
+              onSend={(text) => sendMessage(activeConv.id, text)}
+              onEditMessage={(msgId, newText) => editMessage(msgId, newText)}
+              onDeleteMessage={(msgId) => deleteMessage(msgId)}
+              onDeleteConversation={() => {
+                deleteConversation(activeConv.id);
+                setMobileShowChat(false);
+              }}
+              onBlockUser={(uid) => {
+                if (isUserBlocked(uid)) {
+                  unblockUser(uid);
+                } else {
+                  blockUser(uid);
+                }
+              }}
+              isBlocked={!!activeConv.other_user?.id && isUserBlocked(activeConv.other_user.id)}
+              sending={sending}
+            />
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-bg-surface/50 flex items-center justify-center">
+                <MessageCircle className="w-10 h-10 text-txt-muted/40" />
+              </div>
+              <p className="text-txt-sec font-medium">Yazışma seçin</p>
+              <p className="text-txt-muted text-sm mt-1">Soldakı siyahıdan yazışma seçin</p>
+            </div>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
@@ -146,7 +229,7 @@ function ChatContent() {
 export default function ChatPage() {
   return (
     <Suspense fallback={
-      <div className="max-w-5xl mx-auto px-4 py-12 flex justify-center">
+      <div className="flex items-center justify-center h-[calc(100vh-80px)]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     }>

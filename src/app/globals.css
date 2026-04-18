@@ -71,3 +71,43 @@ a {
 }
 
 @keyframes flagFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+
+.glass-panel {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.light .glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.chat-bubble-received {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.light .chat-bubble-received {
+  background: rgba(241, 245, 249, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.chat-bubble-sent {
+  background: linear-gradient(135deg, #89ceff 0%, #0ea5e9 100%);
+  color: #001e2f;
+}
+
+.chat-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.2);
+  border-radius: 10px;
+}

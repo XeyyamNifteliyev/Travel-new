@@ -27,9 +27,10 @@ interface NavGroup {
 interface MobileMenuProps {
   navGroups: NavGroup[];
   chatLink: NavLink | null;
+  unreadCount?: number;
 }
 
-export function MobileMenu({ navGroups, chatLink }: MobileMenuProps) {
+export function MobileMenu({ navGroups, chatLink, unreadCount = 0 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
@@ -168,10 +169,15 @@ export function MobileMenu({ navGroups, chatLink }: MobileMenuProps) {
               <Link
                 href={chatLink.href}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-txt-sec hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-base"
+                className="flex items-center gap-3 px-4 py-3 text-txt-sec hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-base relative"
               >
                 <chatLink.icon className="w-4 h-4" />
                 {chatLink.label}
+                {unreadCount > 0 && (
+                  <span className="ml-auto min-w-[20px] h-5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 leading-none">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </Link>
             )}
           </nav>

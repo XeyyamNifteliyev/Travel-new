@@ -12,8 +12,17 @@ export function useChat(userId: string | null) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [blockedUsers, setBlockedUsers] = useState<string[]>([]);
 
-  // Fetch conversations
+  const fetchBlockedUsers = useCallback(async () => {
+    if (!userId) return;
+    const { data } = await supabase
+      .from('blocked_users')
+      .select('blocked_id')
+      .eq('blocker_id', userId);
+    setBlockedUsers((data || []).map(b => b.blocked_id));
+  }, [userId]);
+
   const fetchConversations = useCallback(async () => {
     if (!userId) return;
     const { data, error } = await supabase
@@ -24,7 +33,6 @@ export function useChat(userId: string | null) {
 
     if (error) { setError(error.message); return; }
 
-    // Enrich with other user info and last message
     const enriched = await Promise.all((data || []).map(async (conv) => {
       const otherUserId = conv.ad_owner_id === userId ? conv.user_id : conv.ad_owner_id;
       const { data: profile } = await supabase.from('profiles').select('name, avatar_url').eq('id', otherUserId).single();
@@ -47,7 +55,6 @@ export function useChat(userId: string | null) {
     setLoading(false);
   }, [userId]);
 
-  // Fetch messages for a conversation
   const fetchMessages = useCallback(async (convId: string) => {
     setActiveConversation(convId);
     const { data, error } = await supabase
@@ -58,7 +65,6 @@ export function useChat(userId: string | null) {
 
     if (error) { setError(error.message); return; }
 
-    // Enrich with sender info
     const enriched = await Promise.all((data || []).map(async (msg) => {
       const { data: profile } = await supabase.from('profiles').select('name, avatar_url').eq('id', msg.sender_id).single();
       return { ...msg, sender: { name: profile?.name || 'İstifadəçi', avatar_url: profile?.avatar_url } };
@@ -67,7 +73,6 @@ export function useChat(userId: string | null) {
     setMessages(enriched);
   }, []);
 
-  // Send message
   const sendMessage = useCallback(async (convId: string, text: string) => {
     if (!userId || !text.trim()) return;
     setSending(true);
@@ -78,25 +83,80 @@ export function useChat(userId: string | null) {
     });
     if (error) { setError(error.message); setSending(false); return; }
     setSending(false);
+    await fetchMessages(convId);
+  }, [userId, fetchMessages]);
+
+  const deleteMessage = useCallback(async (msgId: string) => {
+    const { error } = await supabase
+      .from('messages')
+      .delete()
+      .eq('id', msgId);
+    if (error) { setError(error.message); return false; }
+    setMessages(prev => prev.filter(m => m.id !== msgId));
+    return true;
+  }, []);
+
+  const editMessage = useCallback(async (msgId: string, newText: string) => {
+    if (!newText.trim()) return false;
+    const { error } = await supabase
+      .from('messages')
+      .update({ message_text: newText.trim() })
+      .eq('id', msgId);
+    if (error) { setError(error.message); return false; }
+    setMessages(prev => prev.map(m => m.id === msgId ? { ...m, message_text: newText.trim(), is_edited: true } : m));
+    return true;
+  }, []);
+
+  const deleteConversation = useCallback(async (convId: string) => {
+    await supabase.from('messages').delete().eq('conversation_id', convId);
+    const { error } = await supabase.from('conversations').delete().eq('id', convId);
+    if (error) { setError(error.message); return false; }
+    setActiveConversation(null);
+    setMessages([]);
+    await fetchConversations();
+    return true;
+  }, [fetchConversations]);
+
+  const blockUser = useCallback(async (blockedId: string) => {
+    if (!userId) return false;
+    const { error } = await supabase
+      .from('blocked_users')
+      .insert({ blocker_id: userId, blocked_id: blockedId });
+    if (error) { setError(error.message); return false; }
+    setBlockedUsers(prev => [...prev, blockedId]);
+    return true;
   }, [userId]);
 
-  // Start or get existing conversation
+  const unblockUser = useCallback(async (blockedId: string) => {
+    if (!userId) return false;
+    const { error } = await supabase
+      .from('blocked_users')
+      .delete()
+      .eq('blocker_id', userId)
+      .eq('blocked_id', blockedId);
+    if (error) { setError(error.message); return false; }
+    setBlockedUsers(prev => prev.filter(id => id !== blockedId));
+    return true;
+  }, [userId]);
+
+  const isUserBlocked = useCallback((otherUserId: string) => {
+    return blockedUsers.includes(otherUserId);
+  }, [blockedUsers]);
+
   const startConversation = useCallback(async (adId: string, adOwnerId: string) => {
     if (!userId) return null;
     if (userId === adOwnerId) { setError('Özünüzə mesaj yaza bilməzsiniz'); return null; }
 
-    // Check existing
     const { data: existing } = await supabase
       .from('conversations')
       .select('id')
-      .eq('ad_id', adId)
       .eq('ad_owner_id', adOwnerId)
       .eq('user_id', userId)
-      .single();
+      .limit(1)
+      .maybeSingle();
 
     if (existing) return existing.id;
 
-    // Create new
     const { data, error } = await supabase
       .from('conversations')
       .insert({ ad_id: adId, ad_owner_id: adOwnerId, user_id: userId })
@@ -107,7 +167,6 @@ export function useChat(userId: string | null) {
     return data?.id;
   }, [userId]);
 
-  // Realtime subscription
   useEffect(() => {
     if (!userId) return;
 
@@ -122,7 +181,6 @@ export function useChat(userId: string | null) {
             const { data: profile } = await supabase.from('profiles').select('name, avatar_url').eq('id', newMsg.sender_id).single();
             setMessages(prev => [...prev, { ...newMsg, sender: { name: profile?.name || 'İstifadəçi', avatar_url: profile?.avatar_url } }]);
           }
-          // Refresh conversations to update last message
           fetchConversations();
         }
       )
@@ -132,7 +190,10 @@ export function useChat(userId: string | null) {
   }, [userId, activeConversation]);
 
   useEffect(() => {
-    if (userId) fetchConversations();
+    if (userId) {
+      fetchConversations();
+      fetchBlockedUsers();
+    }
   }, [userId]);
 
   return {
@@ -142,9 +203,16 @@ export function useChat(userId: string | null) {
     loading,
     sending,
     error,
+    blockedUsers,
     fetchConversations,
     fetchMessages,
     sendMessage,
+    editMessage,
+    deleteMessage,
+    deleteConversation,
+    blockUser,
+    unblockUser,
+    isUserBlocked,
     startConversation,
     setActiveConversation,
     setError,

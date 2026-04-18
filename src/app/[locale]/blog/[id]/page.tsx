@@ -1,14 +1,24 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import type { Blog } from '@/types/blog';
-import { Calendar, Eye, Heart, ArrowLeft, Share2, Tag } from 'lucide-react';
+import {
+  Calendar, Eye, Heart, ArrowLeft, Share2, Tag,
+  Send, MessageCircle, Copy, Check
+} from 'lucide-react';
 import Link from 'next/link';
 import BlogComments from '@/components/blog/blog-comments';
 import DOMPurify from 'dompurify';
+
+const MONTHS_LONG = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avqust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr);
+  return `${d.getDate()} ${MONTHS_LONG[d.getMonth()]} ${d.getFullYear()}`;
+}
 
 export default function BlogDetailPage() {
   const params = useParams();
@@ -20,6 +30,9 @@ export default function BlogDetailPage() {
   const [liked, setLiked] = useState(false);
   const [likeLoading, setLikeLoading] = useState(false);
   const [shareMsg, setShareMsg] = useState('');
+  const [showShare, setShowShare] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const shareRef = useRef<HTMLDivElement>(null);
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
@@ -53,6 +66,46 @@ export default function BlogDetailPage() {
     checkLiked();
   }, [blogId, supabase]);
 
+  useEffect(() => {
+    const recordView = async () => {
+      if (!blogId) return;
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: existing } = await supabase
+          .from('blog_views')
+          .select('id')
+          .eq('blog_id', blogId)
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (!existing) {
+          await supabase.from('blog_views').insert({ blog_id: blogId, user_id: user.id });
+          await supabase.rpc('increment_blog_views', { blog_id: blogId });
+          setBlog(prev => prev ? { ...prev, views: prev.views + 1 } as Blog : prev);
+        }
+      } else {
+        const viewed = localStorage.getItem(`blog_viewed_${blogId}`);
+        if (!viewed) {
+          localStorage.setItem(`blog_viewed_${blogId}`, '1');
+          await supabase.rpc('increment_blog_views', { blog_id: blogId });
+          setBlog(prev => prev ? { ...prev, views: prev.views + 1 } as Blog : prev);
+        }
+      }
+    };
+    recordView();
+  }, [blogId, supabase]);
+
+  useEffect(() => {
+    const close = (e: MouseEvent) => {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShowShare(false);
+      }
+    };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, []);
+
   const handleLike = useCallback(async () => {
     if (!blog || likeLoading) return;
     const { data: { user } } = await supabase.auth.getUser();
@@ -83,23 +136,24 @@ export default function BlogDetailPage() {
     setLikeLoading(false);
   }, [blog, liked, likeLoading, supabase]);
 
-  const handleShare = useCallback(async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: blog?.title, url });
-      } catch {}
-    } else {
-      try {
-        await navigator.clipboard.writeText(url);
-        setShareMsg(t('linkCopied') || 'Link kopyalandı!');
-        setTimeout(() => setShareMsg(''), 2000);
-      } catch {
-        setShareMsg(t('shareFailed') || 'Paylaşmaq alınmadı');
-        setTimeout(() => setShareMsg(''), 2000);
-      }
-    }
-  }, [blog?.title, t]);
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareTitle = blog?.title || '';
+
+  const shareLinks = [
+    { name: 'Telegram', icon: Send, url: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`, color: 'text-sky-400' },
+    { name: 'WhatsApp', icon: MessageCircle, url: `https://wa.me/?text=${encodeURIComponent(shareTitle + ' ' + shareUrl)}`, color: 'text-emerald-400' },
+    { name: 'Facebook', icon: Share2, url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, color: 'text-blue-400' },
+    { name: 'X (Twitter)', icon: Share2, url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`, color: 'text-txt' },
+  ];
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setShareMsg('Link kopyalandı!');
+      setTimeout(() => { setCopied(false); setShareMsg(''); }, 2000);
+    } catch {}
+  };
 
   if (loading) return <div className="max-w-3xl mx-auto px-4 py-12 animate-pulse">{t('loading')}</div>;
   if (!blog) return <div className="max-w-3xl mx-auto px-4 py-12">{t('notFound')}</div>;
@@ -108,54 +162,93 @@ export default function BlogDetailPage() {
 
   return (
     <div className="min-h-screen bg-bg-base">
-      <div className="max-w-3xl mx-auto px-4 py-12">
-        <Link href={`/${locale}/blog`} className="flex items-center gap-2 text-txt-sec hover:text-primary mb-6">
+      <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
+        <Link href={`/${locale}/blog`} className="flex items-center gap-2 text-txt-sec hover:text-primary mb-8 text-sm font-medium">
           <ArrowLeft className="w-4 h-4" />
           {t('backToBlogs')}
         </Link>
 
-        <h1 className="text-3xl md:text-4xl font-bold text-txt mb-4">{blog.title}</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-txt mb-6 leading-tight">{blog.title}</h1>
 
-        <div className="flex items-center gap-4 text-txt-sec text-sm mb-8">
-          <span className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-txt-sec mb-8">
+          <span className="flex items-center gap-1.5 font-medium">
             <Calendar className="w-4 h-4" />
-            {new Date(blog.created_at).toLocaleDateString('az-AZ', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {formatDate(blog.created_at)}
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1.5">
             <Eye className="w-4 h-4" />
-            {blog.views} {t('views')}
+            {blog.views} baxış
           </span>
-          <button onClick={handleLike} disabled={likeLoading} className={`flex items-center gap-1 transition-colors ${liked ? 'text-red-400' : 'hover:text-red-400'}`}>
+          <button onClick={handleLike} disabled={likeLoading} className={`flex items-center gap-1.5 transition-colors font-medium ${liked ? 'text-red-400' : 'hover:text-red-400'}`}>
             <Heart className={`w-4 h-4 ${liked ? 'fill-red-400' : ''}`} />
-            {blog.likes} {t('likes')}
+            {blog.likes}
           </button>
-          <button onClick={handleShare} className="flex items-center gap-1 hover:text-sky-400 transition-colors relative">
-            <Share2 className="w-4 h-4" />
-            Paylaş
-            {shareMsg && <span className="absolute -top-8 left-0 text-xs bg-sky-500 text-white px-2 py-1 rounded whitespace-nowrap">{shareMsg}</span>}
-          </button>
+
+          {/* Share dropdown */}
+          <div className="relative" ref={shareRef}>
+            <button
+              onClick={() => setShowShare(!showShare)}
+              className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
+            >
+              <Share2 className="w-4 h-4" />
+              Paylaş
+            </button>
+
+            {showShare && (
+              <div className="absolute top-full left-0 mt-2 w-56 bg-bg-surface border border-border rounded-2xl shadow-2xl py-2 z-50">
+                {shareLinks.map(link => (
+                  <a
+                    key={link.name}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setShowShare(false)}
+                    className={`flex items-center gap-3 px-4 py-2.5 text-sm ${link.color} hover:bg-white/5 transition-colors`}
+                  >
+                    <link.icon className="w-4 h-4" />
+                    {link.name}
+                  </a>
+                ))}
+                <div className="border-t border-border my-1" />
+                <button
+                  onClick={copyLink}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-txt-sec hover:bg-white/5 transition-colors"
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  {copied ? 'Kopyalandı!' : 'Linki kopyala'}
+                </button>
+                {shareMsg && (
+                  <div className="px-4 py-1.5 text-xs text-emerald-400">{shareMsg}</div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {blog.cover_image && (
-          <img src={blog.cover_image} alt={blog.title} className="w-full rounded-xl mb-8" />
+          <img src={blog.cover_image} alt={blog.title} className="w-full rounded-2xl mb-8 shadow-lg" />
         )}
 
         {author && (
-          <div className="flex items-center gap-3 mb-8 p-4 bg-card-bg rounded-xl border border-border">
-            <div className="w-10 h-10 bg-sky-500/20 rounded-full flex items-center justify-center">
-              <span className="text-sky-400 font-medium">{author.name?.[0] || 'A'}</span>
-            </div>
+          <div className="flex items-center gap-4 mb-8 p-4 bg-bg-surface/50 rounded-2xl border border-border">
+            {author.avatar_url ? (
+              <img src={author.avatar_url} alt={author.name} className="w-12 h-12 rounded-full object-cover" />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-lg font-bold text-primary">
+                {author.name?.[0] || 'A'}
+              </div>
+            )}
             <div>
-              <p className="text-txt font-medium">{author.name}</p>
+              <p className="text-txt font-bold">{author.name}</p>
               {author.bio && <p className="text-txt-sec text-sm">{author.bio}</p>}
             </div>
           </div>
         )}
 
         {blog.tags && blog.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-8">
             {blog.tags.map((tag, i) => (
-              <span key={i} className="flex items-center gap-1 px-3 py-1 bg-sky-500/10 text-sky-400 text-sm rounded-full">
+              <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary text-xs rounded-full font-semibold">
                 <Tag className="w-3 h-3" />
                 {tag}
               </span>
@@ -164,7 +257,7 @@ export default function BlogDetailPage() {
         )}
 
         <div
-          className="prose prose-invert max-w-none text-txt-sec"
+          className="prose prose-invert max-w-none text-txt-sec leading-relaxed"
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog.content, { ALLOWED_TAGS: ['h1','h2','h3','h4','h5','h6','p','br','strong','em','ul','ol','li','a','blockquote','code','pre','img','hr','table','thead','tbody','tr','th','td'], ALLOWED_ATTR: ['href','target','src','alt','class'] }) }}
         />
 

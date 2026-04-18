@@ -22,6 +22,7 @@ export interface Message {
   sender_id: string;
   message_text: string;
   created_at: string;
+  is_edited?: boolean;
   sender?: {
     name: string;
     avatar_url?: string;
