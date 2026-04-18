@@ -74,7 +74,13 @@
     "oneWay": "One Way",
     "cityOrHotel": "City or hotel name",
     "searchFlightsPlaceholder": "Search to see flight results",
-    "searchHotelsPlaceholder": "Search to see hotel results"
+    "searchHotelsPlaceholder": "Search to see hotel results",
+    "where": "Where to?",
+    "when": "When?",
+    "guestsLabel": "Guests",
+    "cityOrHotelPlaceholder": "City or hotel name",
+    "selectDates": "Select dates",
+    "guestsPlaceholder": "2 adults, 1 child"
   },
   "countries": {
     "title": "Countries",
@@ -216,6 +222,28 @@
       "travel": "Travel documents",
       "other": "Other"
     }
+  },
+  "hotels": {
+    "heroTitle": "Your",
+    "heroHighlight": "Journey,",
+    "heroLine2": "Your Choice.",
+    "heroSubtitle": "Find the world's most prestigious hotels and enjoy exclusive offers.",
+    "popularDestinations": "Popular Destinations",
+    "filters": "Filters",
+    "priceRange": "Price range",
+    "starRating": "Star rating",
+    "features": "Features",
+    "pool": "Pool",
+    "breakfast": "Breakfast",
+    "spaWellness": "SPA & Wellness",
+    "freeWifi": "Free Wi-Fi",
+    "viewOnMap": "View on Map",
+    "mapDesc": "Explore all available hotels on the map",
+    "openMap": "Open Map",
+    "perNight": "per night",
+    "premium": "Premium",
+    "bestSeller": "Best Seller",
+    "searchBtn": "Search"
   },
   "companions": {
     "title": "Find a Companion",

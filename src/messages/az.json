@@ -74,7 +74,13 @@
     "oneWay": "Bir istiqamət",
     "cityOrHotel": "Şəhər və ya otel adı",
     "searchFlightsPlaceholder": "Uçuşları görmək üçün axtarın",
-    "searchHotelsPlaceholder": "Otelləri görmək üçün axtarın"
+    "searchHotelsPlaceholder": "Otelləri görmək üçün axtarın",
+    "where": "Haraya?",
+    "when": "Nə vaxt?",
+    "guestsLabel": "Qonaqlar",
+    "cityOrHotelPlaceholder": "Şəhər və ya otel adı",
+    "selectDates": "Tarixləri seçin",
+    "guestsPlaceholder": "2 böyük, 1 uşaq"
   },
   "countries": {
     "title": "Ölkələr",
@@ -218,6 +224,28 @@
       "travel": "Səyahət sənədləri",
       "other": "Digər"
     }
+  },
+  "hotels": {
+    "heroTitle": "Sizin",
+    "heroHighlight": "Səyahət,",
+    "heroLine2": "Sizin Seçiminiz.",
+    "heroSubtitle": "Dünyanın ən prestijli otellərini tapın və eksklüziv təkliflərdən yararlanın.",
+    "popularDestinations": "Populyar Təyinatlar",
+    "filters": "Filtrlər",
+    "priceRange": "Qiymət aralığı",
+    "starRating": "Ulduz dərəcəsi",
+    "features": "Xüsusiyyətlər",
+    "pool": "Hovuz",
+    "breakfast": "Səhər yeməyi",
+    "spaWellness": "SPA & Wellness",
+    "freeWifi": "Pulsuz Wi-Fi",
+    "viewOnMap": "Xəritədə Baxın",
+    "mapDesc": "Bütün mövcud otelləri xəritə üzərində kəşf edin",
+    "openMap": "Xəritəni Aç",
+    "perNight": "bir gecə",
+    "premium": "Premium",
+    "bestSeller": "Best Seller",
+    "searchBtn": "Axtar"
   },
   "companions": {
     "title": "Yoldaş Tap",

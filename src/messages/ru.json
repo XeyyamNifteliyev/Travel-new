@@ -74,7 +74,13 @@
     "oneWay": "В одну сторону",
     "cityOrHotel": "Город или название отеля",
     "searchFlightsPlaceholder": "Ищите, чтобы увидеть рейсы",
-    "searchHotelsPlaceholder": "Ищите, чтобы увидеть отели"
+    "searchHotelsPlaceholder": "Ищите, чтобы увидеть отели",
+    "where": "Куда?",
+    "when": "Когда?",
+    "guestsLabel": "Гости",
+    "cityOrHotelPlaceholder": "Город или название отеля",
+    "selectDates": "Выберите даты",
+    "guestsPlaceholder": "2 взрослых, 1 ребёнок"
   },
   "countries": {
     "title": "Страны",
@@ -216,6 +222,28 @@
       "travel": "Туристические документы",
       "other": "Прочее"
     }
+  },
+  "hotels": {
+    "heroTitle": "Ваше",
+    "heroHighlight": "Путешествие,",
+    "heroLine2": "Ваш Выбор.",
+    "heroSubtitle": "Найдите самые престижные отели мира и воспользуйтесь эксклюзивными предложениями.",
+    "popularDestinations": "Популярные направления",
+    "filters": "Фильтры",
+    "priceRange": "Диапазон цен",
+    "starRating": "Рейтинг звёзд",
+    "features": "Удобства",
+    "pool": "Бассейн",
+    "breakfast": "Завтрак",
+    "spaWellness": "SPA и Велнес",
+    "freeWifi": "Бесплатный Wi-Fi",
+    "viewOnMap": "Смотреть на карте",
+    "mapDesc": "Исследуйте все доступные отели на карте",
+    "openMap": "Открыть карту",
+    "perNight": "за ночь",
+    "premium": "Премиум",
+    "bestSeller": "Бестселлер",
+    "searchBtn": "Поиск"
   },
   "companions": {
     "title": "Найти попутчика",
