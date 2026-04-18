@@ -13,11 +13,19 @@ import Link from 'next/link';
 import BlogComments from '@/components/blog/blog-comments';
 import DOMPurify from 'dompurify';
 
-const MONTHS_LONG = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avqust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
+const MONTHS_AZ = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avqust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
+const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const MONTHS_RU = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
 
-function formatDate(dateStr: string) {
+function getMonths(locale: string) {
+  if (locale === 'en') return MONTHS_EN;
+  if (locale === 'ru') return MONTHS_RU;
+  return MONTHS_AZ;
+}
+
+function formatDate(dateStr: string, locale: string) {
   const d = new Date(dateStr);
-  return `${d.getDate()} ${MONTHS_LONG[d.getMonth()]} ${d.getFullYear()}`;
+  return `${d.getDate()} ${getMonths(locale)[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 export default function BlogDetailPage() {
@@ -150,7 +158,7 @@ export default function BlogDetailPage() {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      setShareMsg('Link kopyalandı!');
+      setShareMsg(t('linkCopied'));
       setTimeout(() => { setCopied(false); setShareMsg(''); }, 2000);
     } catch {}
   };
@@ -173,11 +181,11 @@ export default function BlogDetailPage() {
         <div className="flex flex-wrap items-center gap-4 text-sm text-txt-sec mb-8">
           <span className="flex items-center gap-1.5 font-medium">
             <Calendar className="w-4 h-4" />
-            {formatDate(blog.created_at)}
+            {formatDate(blog.created_at, locale)}
           </span>
           <span className="flex items-center gap-1.5">
             <Eye className="w-4 h-4" />
-            {blog.views} baxış
+            {t('viewsCount', { count: blog.views })}
           </span>
           <button onClick={handleLike} disabled={likeLoading} className={`flex items-center gap-1.5 transition-colors font-medium ${liked ? 'text-red-400' : 'hover:text-red-400'}`}>
             <Heart className={`w-4 h-4 ${liked ? 'fill-red-400' : ''}`} />
@@ -191,7 +199,7 @@ export default function BlogDetailPage() {
               className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
             >
               <Share2 className="w-4 h-4" />
-              Paylaş
+              {t('share')}
             </button>
 
             {showShare && (
@@ -215,7 +223,7 @@ export default function BlogDetailPage() {
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-txt-sec hover:bg-white/5 transition-colors"
                 >
                   {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                  {copied ? 'Kopyalandı!' : 'Linki kopyala'}
+                  {copied ? t('copied') : t('copyLink')}
                 </button>
                 {shareMsg && (
                   <div className="px-4 py-1.5 text-xs text-emerald-400">{shareMsg}</div>

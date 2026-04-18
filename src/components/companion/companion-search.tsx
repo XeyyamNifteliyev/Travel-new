@@ -11,17 +11,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const REGIONS = [
-  'Türkiyə', 'Dubai', 'Rusiya', 'Gürcüstan', 'İran',
-  'Tailand', 'Yaponiya', 'Almaniya', 'Fransa', 'İtaliya',
-  'İspaniya', 'Misir', 'Maldiv', 'Bali', 'Koreya'
-];
-
-const INTERESTS = [
-  'Təbiət', 'Şəhər', 'Qastro', 'Mədəniyyət', 'Fotoqrafiya',
-  'Sərgi', 'Musiqi', 'İdman', 'Alış-veriş', 'Dəniz'
-];
-
 const LANGUAGES = ['az', 'ru', 'en', 'tr', 'ar'];
 
 const COVER_GRADIENTS = [
@@ -38,6 +27,11 @@ export default function CompanionSearch() {
   const locale = useLocale();
   const router = useRouter();
   const supabase = useMemo(() => createBrowserClient(), []);
+
+  const REGIONS: string[] = useMemo(() => t.raw('regions'), [t]);
+  const INTERESTS: string[] = useMemo(() => t.raw('interestOptions'), [t]);
+  const MONTHS_SHORT: string[] = useMemo(() => t.raw('months'), [t]);
+  const MONTHS_FULL: string[] = useMemo(() => t.raw('monthsFull'), [t]);
 
   const [companions, setCompanions] = useState<Companion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,7 +151,7 @@ export default function CompanionSearch() {
       });
     } else {
       const errorData = await res.json();
-      toast.error(errorData.error || 'Xəta baş verdi');
+      toast.error(errorData.error || t('errorOccurred'));
     }
   }
 
@@ -223,14 +217,12 @@ export default function CompanionSearch() {
 
   function formatDate(dateStr: string) {
     const d = new Date(dateStr);
-    const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
-    return `${d.getDate()} ${months[d.getMonth()]}`;
+    return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
   }
 
   function formatDateFull(dateStr: string) {
     const d = new Date(dateStr);
-    const months = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avqust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
-    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    return `${d.getDate()} ${MONTHS_FULL[d.getMonth()]} ${d.getFullYear()}`;
   }
 
   return (
@@ -239,9 +231,9 @@ export default function CompanionSearch() {
         {/* Hero Header */}
         <div className="mb-10 md:mb-14">
           <h1 className="text-4xl md:text-6xl font-bold text-txt tracking-tight leading-none mb-4">
-            Yoldaş{' '}
+            {t('heroTitle')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-300">
-              Tap
+              {t('heroHighlight')}
             </span>
           </h1>
           <p className="text-txt-sec max-w-2xl text-base md:text-lg leading-relaxed">
@@ -371,7 +363,7 @@ export default function CompanionSearch() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-widest text-primary mb-1.5">
-                    Cinsiniz
+                    {t('yourGender')}
                   </label>
                   <div className="flex gap-3">
                     <button
@@ -383,7 +375,7 @@ export default function CompanionSearch() {
                           : 'bg-bg-surface/80 text-txt-sec hover:bg-bg-surface-hover'
                       }`}
                     >
-                      Kişi
+                      {t('male')}
                     </button>
                     <button
                       type="button"
@@ -394,7 +386,7 @@ export default function CompanionSearch() {
                           : 'bg-bg-surface/80 text-txt-sec hover:bg-bg-surface-hover'
                       }`}
                     >
-                      Qadın
+                      {t('female')}
                     </button>
                   </div>
                 </div>
@@ -500,15 +492,15 @@ export default function CompanionSearch() {
                 <div
                   key={companion.id}
                   onClick={() => setSelectedCompanion(companion)}
-                  className="group relative bg-bg-surface/50 rounded-2xl overflow-hidden hover:shadow-[0_12px_30px_rgba(14,165,233,0.1)] transition-all duration-300 cursor-pointer"
+                  className="group relative bg-bg-surface/50 rounded-2xl overflow-hidden hover:shadow-[0_12px_30px_rgba(14,165,233,0.1)] transition-all duration-300 cursor-pointer border border-border/50 hover:border-primary/20"
                 >
                   <div className={`h-32 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
                     <div className="absolute inset-0 bg-black/10" />
                     <div className="absolute bottom-3 left-4 right-3 flex items-end justify-between">
-                      <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full font-semibold">
+                      <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-[11px] tracking-wide rounded-full font-semibold uppercase">
                         {companion.destinationCountry}
                       </span>
-                      <span className="text-white/80 text-xs font-medium">
+                      <span className="text-white/80 text-[11px] tracking-wide font-medium">
                         {formatDate(companion.departureDate)}
                         {companion.returnDate && ` — ${formatDate(companion.returnDate)}`}
                       </span>
@@ -524,33 +516,42 @@ export default function CompanionSearch() {
                           className="w-14 h-14 rounded-full border-[3px] border-bg-base object-cover"
                         />
                       ) : (
-                        <div className="w-14 h-14 rounded-full border-[3px] border-bg-base bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-lg font-bold text-primary">
+                        <div className="w-14 h-14 rounded-full border-[3px] border-bg-base bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-xl font-bold text-primary tracking-tight">
                           {initial}
                         </div>
                       )}
                     </div>
 
                     <div className="pt-8">
-                      <h3 className="text-base font-bold text-txt truncate">
-                        {companion.author?.name || 'Anonim'}
+                      <h3 className="text-[15px] font-bold text-txt tracking-tight truncate">
+                        {companion.author?.name || t('anonymous')}
                       </h3>
 
                       {companion.interests.length > 0 && (
-                        <p className="text-primary text-xs font-semibold mt-1 mb-2 truncate">
-                          {companion.interests.join(' · ')}
-                        </p>
+                        <div className="flex flex-wrap gap-1 mt-1.5 mb-2">
+                          {companion.interests.slice(0, 3).map((interest, idx) => (
+                            <span key={idx} className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] tracking-wide font-semibold rounded-full">
+                              {interest}
+                            </span>
+                          ))}
+                          {companion.interests.length > 3 && (
+                            <span className="px-2 py-0.5 bg-white/5 text-txt-muted text-[10px] tracking-wide font-medium rounded-full">
+                              +{companion.interests.length - 3}
+                            </span>
+                          )}
+                        </div>
                       )}
 
                       {companion.description && (
-                        <p className="text-txt-sec text-sm font-medium leading-snug line-clamp-2 mb-3">
+                        <p className="text-txt-sec text-[13px] font-normal leading-relaxed line-clamp-2 mb-3 tracking-wide">
                           {companion.description}
                         </p>
                       )}
 
                       <div className="flex flex-wrap gap-2">
                         {companion.languages.length > 0 && (
-                          <span className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full">
-                            {companion.languages.map(l => l.toUpperCase()).join(', ')}
+                          <span className="px-2.5 py-1 bg-primary/10 text-primary text-[10px] tracking-widest font-bold rounded-full uppercase">
+                            {companion.languages.map(l => l.toUpperCase()).join(' · ')}
                           </span>
                         )}
                       </div>
@@ -574,95 +575,121 @@ export default function CompanionSearch() {
             onClick={e => e.stopPropagation()}
           >
             {/* Modal Cover */}
-            <div className={`h-36 bg-gradient-to-br ${COVER_GRADIENTS[companions.indexOf(selectedCompanion) % COVER_GRADIENTS.length]} relative`}>
-              <div className="absolute inset-0 bg-black/10" />
+            <div className={`h-40 bg-gradient-to-br ${COVER_GRADIENTS[companions.indexOf(selectedCompanion) % COVER_GRADIENTS.length]} relative flex-shrink-0`}>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               <button
                 onClick={() => setSelectedCompanion(null)}
                 className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full text-white hover:bg-black/50 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
-              <div className="absolute bottom-3 left-4">
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs rounded-full font-medium">
+              <div className="absolute bottom-4 left-5 right-5">
+                <span className="inline-block px-3.5 py-1.5 bg-white/20 backdrop-blur-sm text-white text-[11px] tracking-wide rounded-full font-semibold uppercase">
                   {selectedCompanion.destinationCountry}
                   {selectedCompanion.destinationCity && `, ${selectedCompanion.destinationCity}`}
                 </span>
               </div>
             </div>
 
-            {/* Modal Content */}
-            <div className="p-5 relative overflow-y-auto">
-              {/* Avatar */}
-              <div className="absolute -top-7 left-5">
-                {selectedCompanion.author?.avatarUrl ? (
-                  <img
-                    src={selectedCompanion.author.avatarUrl}
-                    alt={selectedCompanion.author.name}
-                    className="w-14 h-14 rounded-full border-3 border-bg-base object-cover"
-                  />
-                ) : (
-                  <div className="w-14 h-14 rounded-full border-3 border-bg-base bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-xl font-bold text-primary">
-                    {selectedCompanion.author?.name?.[0]?.toUpperCase() || '?'}
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-8">
-                <h2 className="text-lg font-bold text-txt">
-                  {selectedCompanion.author?.name || 'Anonim'}
-                </h2>
-
-                {selectedCompanion.interests.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2 mb-4">
-                    {selectedCompanion.interests.map(i => (
-                      <span key={i} className="px-2.5 py-0.5 bg-primary/10 text-primary text-xs rounded-full">{i}</span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Info tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-3 py-1 bg-bg-surface text-txt-sec text-xs rounded-full flex items-center gap-1.5">
-                    <MapPin className="w-3 h-3" />
-                    {selectedCompanion.destinationCountry}
-                    {selectedCompanion.destinationCity && `, ${selectedCompanion.destinationCity}`}
-                  </span>
-                  <span className="px-3 py-1 bg-bg-surface text-txt-sec text-xs rounded-full flex items-center gap-1.5">
-                    <Calendar className="w-3 h-3" />
-                    {formatDateFull(selectedCompanion.departureDate)}
-                    {selectedCompanion.returnDate && ` — ${formatDateFull(selectedCompanion.returnDate)}`}
-                  </span>
-                  {selectedCompanion.languages.length > 0 && (
-                    <span className="px-3 py-1 bg-bg-surface text-txt-sec text-xs rounded-full flex items-center gap-1.5">
-                      <Globe className="w-3 h-3" />
-                      {selectedCompanion.languages.map(l => l.toUpperCase()).join(', ')}
-                    </span>
+            {/* Modal Content - scrollable area */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <div className="p-5 relative">
+                {/* Avatar */}
+                <div className="absolute -top-8 left-5">
+                  {selectedCompanion.author?.avatarUrl ? (
+                    <img
+                      src={selectedCompanion.author.avatarUrl}
+                      alt={selectedCompanion.author.name}
+                      className="w-16 h-16 rounded-full border-[3px] border-bg-base object-cover shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full border-[3px] border-bg-base bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-2xl font-bold text-primary tracking-tight shadow-lg">
+                      {selectedCompanion.author?.name?.[0]?.toUpperCase() || '?'}
+                    </div>
                   )}
                 </div>
 
-                {/* Full description */}
-                {selectedCompanion.description && (
-                  <div className="mb-5">
-                    <h4 className="text-xs font-medium uppercase tracking-widest text-txt-muted mb-2">Ətraflı</h4>
-                    <p className="text-txt-sec text-sm leading-relaxed whitespace-pre-wrap">
-                      {selectedCompanion.description}
-                    </p>
-                  </div>
-                )}
+                <div className="pt-10">
+                  <h2 className="text-xl font-bold text-txt tracking-tight">
+                    {selectedCompanion.author?.name || t('anonymous')}
+                  </h2>
 
-                {/* Message CTA */}
-                <button
-                  onClick={() => handleSendMessage(selectedCompanion.userId, selectedCompanion.id)}
-                  disabled={messagingId === selectedCompanion.id}
-                  className="w-full py-3 rounded-full bg-gradient-to-br from-primary to-sky-400 text-white font-bold hover:shadow-[0_0_30px_rgba(14,165,233,0.4)] transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {messagingId === selectedCompanion.id ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <MessageCircle className="w-4 h-4" />
+                  {/* Interest tags */}
+                  {selectedCompanion.interests.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-3 mb-4">
+                      {selectedCompanion.interests.map(i => (
+                        <span key={i} className="px-2.5 py-1 bg-primary/10 text-primary text-[11px] tracking-wide font-semibold rounded-full">{i}</span>
+                      ))}
+                    </div>
                   )}
-                  {messagingId === selectedCompanion.id ? t('sending') : t('sendMessage')}
-                </button>
+
+                  {/* Info cards */}
+                  <div className="space-y-2.5 mb-5">
+                    <div className="flex items-center gap-3 px-4 py-3 bg-bg-surface/80 rounded-xl border border-border/50">
+                      <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <MapPin className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-txt-muted uppercase tracking-widest font-medium">{t('destinationCountry')}</p>
+                        <p className="text-sm text-txt font-semibold tracking-wide truncate">
+                          {selectedCompanion.destinationCountry}
+                          {selectedCompanion.destinationCity && `, ${selectedCompanion.destinationCity}`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 px-4 py-3 bg-bg-surface/80 rounded-xl border border-border/50">
+                      <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-txt-muted uppercase tracking-widest font-medium">{t('departureDate')}</p>
+                        <p className="text-sm text-txt font-semibold tracking-wide">
+                          {formatDateFull(selectedCompanion.departureDate)}
+                          {selectedCompanion.returnDate && ` — ${formatDateFull(selectedCompanion.returnDate)}`}
+                        </p>
+                      </div>
+                    </div>
+                    {selectedCompanion.languages.length > 0 && (
+                      <div className="flex items-center gap-3 px-4 py-3 bg-bg-surface/80 rounded-xl border border-border/50">
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Globe className="w-4 h-4 text-primary" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[10px] text-txt-muted uppercase tracking-widest font-medium">{t('languages')}</p>
+                          <p className="text-sm text-txt font-semibold tracking-wide uppercase">
+                            {selectedCompanion.languages.map(l => l.toUpperCase()).join(' · ')}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  {selectedCompanion.description && (
+                    <div className="mb-5">
+                      <h4 className="text-[10px] font-bold uppercase tracking-[0.15em] text-txt-muted mb-2.5">{t('details')}</h4>
+                      <div className="bg-bg-surface/50 rounded-xl p-4 border border-border/30">
+                        <p className="text-txt-sec text-[13px] leading-relaxed break-words whitespace-pre-wrap tracking-wide">
+                          {selectedCompanion.description}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Message CTA */}
+                  <button
+                    onClick={() => handleSendMessage(selectedCompanion.userId, selectedCompanion.id)}
+                    disabled={messagingId === selectedCompanion.id}
+                    className="w-full py-3.5 rounded-full bg-gradient-to-br from-primary to-sky-400 text-white font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(14,165,233,0.4)] transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {messagingId === selectedCompanion.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <MessageCircle className="w-4 h-4" />
+                    )}
+                    {messagingId === selectedCompanion.id ? t('sending') : t('sendMessage')}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

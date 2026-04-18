@@ -29,7 +29,6 @@ export default function BlogListPage() {
           author:profiles!blogs_author_id_fkey(name, avatar_url)
         `)
         .eq('status', 'published')
-        .eq('language', locale)
         .order('created_at', { ascending: false });
 
       if (search) {
@@ -76,16 +75,16 @@ export default function BlogListPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         {/* Hero */}
         <div className="mb-12">
-          <span className="text-primary text-sm uppercase tracking-[0.2em] font-semibold">Səyahət Jurnalı</span>
+          <span className="text-primary text-sm uppercase tracking-[0.2em] font-semibold">{t('journal')}</span>
           <h1 className="text-4xl md:text-6xl font-bold text-txt tracking-tight leading-[1.1] mt-3 mb-4">
-            Dünyanı{' '}
+            {t('heroTitle')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-300">
-              Hekayələrlə
+              {t('heroHighlight')}
             </span>{' '}
-            Kəşf Et
+            {t('heroEnd')}
           </h1>
           <p className="text-txt-sec max-w-xl text-base md:text-lg leading-relaxed">
-            Ən yaxşı səyahətçilərdən, fotoqraflardan və kəşfiyyatçılardan ilhamverici məqalələr və bələdçilər.
+            {t('heroSubtitle')}
           </p>
         </div>
 
@@ -106,7 +105,7 @@ export default function BlogListPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full">
                   <span className="bg-primary text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg">
-                    Seçilmiş
+                    {t('featured')}
                   </span>
                   <h2 className="text-2xl md:text-3xl font-bold text-white mt-3 leading-tight max-w-2xl">
                     {featuredBlog.title}
@@ -120,13 +119,13 @@ export default function BlogListPage() {
                       />
                     ) : (
                       <div className="w-7 h-7 rounded-full bg-primary/30 flex items-center justify-center text-xs font-bold text-white">
-                        {(featuredBlog as any).author?.name?.[0] || 'A'}
+                        {(featuredBlog as any).author?.name?.[0] || t('anonymous')[0]}
                       </div>
                     )}
-                    <span>{(featuredBlog as any).author?.name || 'Anonim'}</span>
+                    <span>{(featuredBlog as any).author?.name || t('anonymous')}</span>
                     <span>·</span>
                     <Eye className="w-3.5 h-3.5" />
-                    <span>{featuredBlog.views} baxış</span>
+                    <span>{t('viewsCount', { count: featuredBlog.views })}</span>
                   </div>
                 </div>
               </div>
@@ -146,7 +145,7 @@ export default function BlogListPage() {
                     type="text"
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    placeholder="Blog axtar..."
+                    placeholder={t('searchPlaceholder')}
                     className="w-full bg-bg-surface/80 border-none rounded-xl pl-10 pr-4 py-3 text-sm text-txt placeholder:text-txt-muted focus:ring-2 focus:ring-primary transition-all"
                   />
                 </div>
@@ -171,7 +170,7 @@ export default function BlogListPage() {
                         : 'bg-bg-surface/80 text-txt-sec hover:bg-bg-surface-hover'
                     }`}
                   >
-                    Hamısı
+                    {t('allTags')}
                   </button>
                   {allTags.map(tag => (
                     <button
@@ -190,7 +189,7 @@ export default function BlogListPage() {
               )}
             </div>
 
-            <h3 className="text-xl font-bold text-txt mb-5">Ən Son Yazılar</h3>
+            <h3 className="text-xl font-bold text-txt mb-5">{t('latestPosts')}</h3>
 
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -225,7 +224,7 @@ export default function BlogListPage() {
               <div className="bg-bg-surface/50 rounded-2xl p-5 border border-border">
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp className="w-5 h-5 text-amber-400" />
-                  <h4 className="text-base font-bold text-txt">Trend Mövzular</h4>
+                  <h4 className="text-base font-bold text-txt">{t('trendingTopics')}</h4>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {allTags.map(tag => (
@@ -250,7 +249,7 @@ export default function BlogListPage() {
               <div className="bg-bg-surface/50 rounded-2xl p-5 border border-border">
                 <div className="flex items-center gap-2 mb-4">
                   <User className="w-5 h-5 text-primary" />
-                  <h4 className="text-base font-bold text-txt">Müəlliflər</h4>
+                  <h4 className="text-base font-bold text-txt">{t('authors')}</h4>
                 </div>
                 <div className="flex flex-col gap-3">
                   {topAuthors.map((author: any) => (
@@ -268,7 +267,7 @@ export default function BlogListPage() {
                       )}
                       <div>
                         <p className="text-sm font-semibold text-txt">{author.name}</p>
-                        <p className="text-xs text-txt-muted">Yazıçı</p>
+                        <p className="text-xs text-txt-muted">{t('writer')}</p>
                       </div>
                     </div>
                   ))}
