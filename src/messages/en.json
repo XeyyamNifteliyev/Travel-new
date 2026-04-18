@@ -243,7 +243,8 @@
     "perNight": "per night",
     "premium": "Premium",
     "bestSeller": "Best Seller",
-    "searchBtn": "Search"
+    "searchBtn": "Search",
+    "noResults": "No hotels found"
   },
   "companions": {
     "title": "Find a Companion",

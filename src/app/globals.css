@@ -111,3 +111,24 @@ a {
   background: rgba(14, 165, 233, 0.2);
   border-radius: 10px;
 }
+
+.leaflet-container {
+  background: #0b1326;
+  border-radius: 0.75rem;
+}
+
+.hotel-map-tooltip {
+  background: rgba(15, 23, 42, 0.9) !important;
+  backdrop-filter: blur(10px);
+  color: #f1f5f9 !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+}
+
+.hotel-map-tooltip::before {
+  border-top-color: rgba(15, 23, 42, 0.9) !important;
+}

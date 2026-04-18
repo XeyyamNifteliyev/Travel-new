@@ -245,7 +245,8 @@
     "perNight": "bir gecə",
     "premium": "Premium",
     "bestSeller": "Best Seller",
-    "searchBtn": "Axtar"
+    "searchBtn": "Axtar",
+    "noResults": "Otel tapılmadı"
   },
   "companions": {
     "title": "Yoldaş Tap",

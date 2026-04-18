@@ -243,7 +243,8 @@
     "perNight": "за ночь",
     "premium": "Премиум",
     "bestSeller": "Бестселлер",
-    "searchBtn": "Поиск"
+    "searchBtn": "Поиск",
+    "noResults": "Отели не найдены"
   },
   "companions": {
     "title": "Найти попутчика",
