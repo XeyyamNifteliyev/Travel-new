@@ -1,316 +1,386 @@
-# TravelAZ — Layihə Xülasəsi (AGENTS.md)
+# TravelAZ - Layihə Konteksti və Cari Roadmap
+
+## Cari Vəziyyət
+
+TravelAZ Next.js 15 üzərində qurulan çoxdilli travel platformadır. Layihədə lokalizasiya edilmiş route-lar, Supabase əsaslı data, AI planlaşdırıcı, viza alətləri, blog, chat, turlar və ölkə səhifələri var.
+
+Son tamamlanan işlər:
+
+- Repo kökündə `plan.md` yaradıldı və TravelAZ üçün əsas tamamlama roadmap-i ora yazıldı.
+- Ana səhifə sadə hero + 4 hardcoded ölkə kartından professional travel marketplace görünüşünə keçirildi.
+- Ana səhifəyə GlobeHero, search tab-ları, featured countries, AI planner spotlight, tours preview, community preview, visa CTA əlavə edildi.
+- Ölkələr səhifəsində kartlar üçün Unsplash travel şəkil xəritəsi əlavə edildi.
+- Open data migration-ları (020-022), city/place/review TypeScript tipləri, mapper-lər, import pipeline əlavə edildi.
+- İstanbul open-data seed migration-ı, city/place detail route-ları, review form və helpful vote UI əlavə edildi.
+- **i18n tam cleanup həyata keçirildi:** Bütün komponentlərdəki ~200+ hardcoded Azərbaycan mətni `messages/*.json` fayllarına çıxarıldı. Yeni namespace-lər: `profile` (genişləndirildi), `chat` (yeni), `blog` comments (genişləndi). AI planner sub-komponentlər, footer, confirm-dialog, theme-toggle i18n-ə keçirildi.
+- **Type tam cleanup həyata keçirildi:** 55 `any` istifadəsinin hamısı typed interfeyslərlə əvəz olundu. `src/types/supabase-helpers.ts` yaradıldı (User, ProfileRow, BlogListItem, CompanionItem, VideoItem, UserCountryItem). Supabase User import conflict-ləri `User as SupabaseUser` patterni ilə həll edildi. Locale `as any` → `typeof routing.locales[number]`, `catch (error: any)` → `catch (error: unknown)`, `Record<string, any>` → `Record<string, React.ComponentType<...>>` fixləri tətbiq edildi.
+- `docs/superpowers/specs/2026-05-04-i18n-type-cleanup-design.md` dizayn spek yazıldı.
+- **Key-siz API inteqrasiyası tamamlandı:** Open-Meteo (hava proqnozu), RestCountries (ölkə info), VisaList (viza yoxlama) API-ləri inteqrasiya edildi. Hər biri üçün server-side route, lib helper, client widget və i18n namespace yaradıldı.
+  - Open-Meteo: `src/lib/weather.ts`, `/api/weather`, `src/components/weather/weather-widget.tsx` — ölkə və şəhər səhifələrində
+  - RestCountries: `src/lib/countries-api.ts`, `/api/countries/[code]`, `src/components/country/country-info-card.tsx` — ölkə səhifəsində
+  - VisaList: `src/lib/visa/visalist-api.ts`, `/api/visa/check`, `src/components/visa/visa-check-widget.tsx` — viza, ölkə və şəhər səhifələrində
+  - `ExpandedCountry` interfeysinə `cca2?`, `lat?`, `lng?` field-ları əlavə edildi
+  - `api.md` inteqrasiya status cədvəli yeniləndi
+- **Image optimization tamamlandı:** 19 `<img>` istifadəsinin hamısı `next/image` ilə əvəz olundu. 12 fayl, 19 dəyişiklik (blog, chat, hotels, news, companion, profile, tour, video komponentləri). `next.config.ts`-ə `img.youtube.com` və `*.supabase.co` remote pattern-ləri əlavə edildi. `npm run lint` artıq 0 error, 0 warning qaytarır.
+
+Son yoxlamalar:
+
+- `npx tsc --noEmit` 0 error qaytarır.
+- `npm run lint` 0 error, 0 warning.
+- Profil, chat, blog, tour, company, video, leaderboard, AI planner, layout komponentlərinin hamısı typed və i18n-ə keçirilib.
 
 ## Texnologiyalar
-- **Next.js 15** (App Router, `[locale]` dinamik route)
-- **React 19**, **TypeScript 5.9**
-- **Tailwind CSS v4** (CSS-only config, `@theme inline` ilə globals.css-də)
-- **next-intl** (3 dil: az, en, ru → `src/messages/*.json`)
-- **Supabase** (Auth, DB 23 cədvəl, Realtime chat)
-- **Unsplash** (ölkə şəkilləri üçün CDN)
-- **TipTap** (rich text blog editor)
-- **sonner** (toast bildirişləri)
-- **lucide-react** (iconlar)
-- **DOMPurify** (HTML sanitizasiya)
-- **lucide-react** (iconlar)
+
+- Next.js 15 App Router
+- React 19
+- TypeScript 5.9
+- Tailwind CSS v4, CSS-only config `src/app/globals.css` içindədir
+- next-intl, dillər: `az`, `en`, `ru`
+- Supabase: auth, database, realtime chat
+- TipTap: blog editor
+- sonner: toast bildirişləri
+- lucide-react: iconlar
+- DOMPurify: HTML sanitizasiya
+- Unsplash CDN helper: ölkə və travel şəkilləri
+- Leaflet / react-leaflet: xəritə funksiyaları
 
 ## Əmrlər
-- `npm run dev` — Development server
-- `npx tsc --noEmit` — TypeScript yoxlama
 
----
+- `npm run dev` - development server, adətən port 3000
+- `npx tsc --noEmit` - TypeScript yoxlaması
+- `npm run lint` - ESLint yoxlaması
+- `npm run build` - production build
+- `npm run import:open-travel-data -- --check-db` - açıq data cədvəllərini və row count-ları yoxlayır
+- `npm run import:open-travel-data -- --city=istanbul --dry-run` - açıq data import preview
+- `npm run import:open-travel-data -- --city=istanbul --sql-out=supabase/imports/istanbul_open_data.sql` - Supabase SQL Editor üçün import SQL yaradır
+- `npm run import:open-travel-data -- --city=istanbul --apply` - açıq data importunu Supabase-ə yazır, `SUPABASE_SERVICE_ROLE_KEY` tələb edir
 
-## Qovluq Strukturu
+## Vacib Fayllar
 
-```
+- `plan.md` - cari mərhələnin əsas roadmap və backlog faylı
+- `AGENTS.md` - bu fayl, agentlər üçün layihə konteksti və iş qaydaları
+- `src/app/[locale]/page.tsx` - yenilənmiş ana səhifə
+- `src/components/home/home-search-panel.tsx` - ana səhifənin search tab paneli
+- `src/components/home/globe-hero.tsx` - animasiyalı qlobus vizualı
+- `src/components/country/country-card.tsx` - ölkə kartı UI və şəkil fallback məntiqi
+- `src/messages/*.json` - tərcümə faylları
+- `src/lib/supabase/server.ts` - server-side Supabase client
+- `src/lib/supabase/client.ts` - browser-side Supabase client
+- `src/lib/unsplash.ts` - Unsplash və flag helper-ləri
+- `src/lib/open-travel-data.ts` - city/place/review mapper-ləri
+- `src/types/place.ts` - open travel data TypeScript type-ları
+- `scripts/import-open-travel-data.js` - Overpass/Wikipedia import script-i
+- `src/app/[locale]/cities/[slug]/page.tsx` - city detail səhifəsi
+- `src/app/[locale]/places/[id]/page.tsx` - place detail və review oxuma səhifəsi
+- `src/components/place/place-review-form.tsx` - TravelAZ place review forması
+- `src/components/place/place-helpful-button.tsx` - place review helpful vote düyməsi
+- `supabase/imports/istanbul_open_data.sql` - İstanbul üçün generator çıxışı olan open-data SQL faylı
+- `supabase/migrations/021_seed_istanbul_open_data.sql` - İstanbul open-data seed migration-ı
+- `supabase/migrations/022_place_review_helpful_votes.sql` - review helpful vote migration-ı
+- `supabase/migrations/*` - database schema və seed migration-ları
+- `src/lib/weather.ts` - Open-Meteo hava proqnozu tipləri və mapper
+- `src/lib/countries-api.ts` - RestCountries ölkə info tipləri və mapper
+- `src/lib/visa/visalist-api.ts` - VisaList viza yoxlama tipləri və mapper
+- `src/components/weather/weather-widget.tsx` - hava proqnozu widget (full + compact)
+- `src/components/country/country-info-card.tsx` - ölkə info kartı
+- `src/components/visa/visa-check-widget.tsx` - real-time viza yoxlama widget
+
+## Cari Qovluq Strukturu
+
+```text
 src/
-├── app/
-│   ├── layout.tsx                    → Root layout (dark mode default)
-│   ├── page.tsx                      → / → /az redirect
-│   ├── globals.css                   → Tailwind v4 + tema CSS variables (dark/light)
-│   │
-│   ├── [locale]/                     → Bütün səhifələr (az/ru/en prefix)
-│   │   ├── layout.tsx                → Header + Footer + Toaster + NextIntlClientProvider
-│   │   ├── page.tsx                  → Ana səhifə (GlobeHero + destinasiyalar)
-│   │   ├── auth/login/page.tsx       → Login (email/password + Google OAuth)
-│   │   ├── auth/register/page.tsx    → Qeydiyyat
-│   │   ├── flights/page.tsx          → Bilet axtarışı (mock data)
-│   │   ├── hotels/page.tsx           → Otellər (mock data)
-│   │   ├── tours/page.tsx            → Daxili turlar (Supabase-dən)
-│   │   ├── countries/page.tsx        → Ölkələr siyahısı (Supabase-dən, 32 ölkə, ISR 24 saat)
-│   │   ├── countries/country-grid-client.tsx → Axtarış + kontinent filtri + grid
-│   │   ├── countries/[slug]/page.tsx → Ölkə detalı (Supabase, hero, xərc, video, yerlər)
-│   │   ├── countries/[slug]/country-detail-client.tsx → Detal UI (stat, xərc, aylar, video, viza CTA)
-│   │   ├── companions/page.tsx       → Yoldaş tap
-│   │   ├── visa/page.tsx             → Viza Mərkəzi (Supabase-dən, 185 ölkə, Wikipedia mənbə)
-│   │   ├── visa/[country]/page.tsx   → Viza detal (sənəd checklist, AI chat, AI generasiya)
-│   │   ├── news/page.tsx             → Xəbərlər siyahısı (Supabase-dən)
-│   │   ├── news/[id]/page.tsx        → Xəbər detal
-│   │   ├── blog/page.tsx             → Blog siyahısı (Supabase-dən)
-│   │   ├── blog/[id]/page.tsx        → Blog detalı (likes, comments, share)
-│   │   ├── blog/new/page.tsx         → Yeni blog (TipTap editor)
-│   │   ├── ai-planner/page.tsx       → AI planlaşdırıcı (2 rejim: Plan + En Ucuz)
-│   │   ├── ai-planner/ai-planner-client.tsx
-│   │   ├── chat/page.tsx             → Mesajlaşma (Realtime, auth tələb olunur)
-│   │   ├── profile/page.tsx          → Profil (6 section: dashboard, blogs, companions, videos, map, settings)
-│   │   ├── videos/page.tsx           → YouTube video paylaşım
-│   │   ├── leaderboard/page.tsx      → Liderlik cədvəli
-│   │   └── company/page.tsx          → Tur şirkəti qeydiyyatı
-│   │
-│   ├── auth/v1/callback/page.tsx     → Supabase OAuth callback
-│   │
-│   └── api/
-│       ├── ai/plan/route.ts          → POST: AI səyahət planı (PlanRequest → TravelPlan)
-│       ├── ai/cheap-dates/route.ts   → POST: En ucuz tarixlər (CheapDatesRequest → CheapDatesResponse)
-│       ├── blogs/route.ts            → GET, POST: Blog CRUD
-│       ├── comments/route.ts         → GET, POST, DELETE: Şərhlər
-│       ├── companions/route.ts       → GET, POST, PATCH, DELETE: Yoldaş elanları
-│       ├── companies/route.ts        → GET, POST, PATCH: Tur şirkətləri
-│       ├── tours/route.ts            → GET, POST: Turlar (11+ filtr, plan limiti: starter=5, pro=20, premium=999)
-│       ├── tours/[id]/route.ts       → GET: Tək tur
-│       ├── youtube/route.ts          → GET, POST, DELETE: YouTube videolar
-│       ├── visa/[country]/route.ts   → GET: Tək ölkə viza məlumatı
-│       ├── visa/ai-answer/route.ts   → POST: AI viza cavab (keşli)
-│       ├── visa/generate/route.ts    → POST: AI ilə yeni ölkə generasiyası
-│       ├── visa/scraper/route.ts     → POST: Wikipedia scraper (batch 25, 100+ ölkə)
-│       └── news/route.ts             → GET: Xəbərlər
-│
-├── components/
-│   ├── layout/
-│   │   ├── header.tsx                → Dropdown qruplu nav: Rezervasiya, Kəşf et, Xidmətlər, Blog
-│   │   ├── footer.tsx                → Footer (3 qrup sütun)
-│   │   ├── mobile-menu.tsx           → Mobil accordion menyular
-│   │   ├── language-switcher.tsx     → az/ru/en selector
-│   │   └── theme-toggle.tsx          → Dark/light toggle
-│   │
-│   ├── home/
-│   │   └── globe-hero.tsx            → SVG qlobus + JS requestAnimationFrame təyyarələr (tema-dəstəkli)
-│   │
-│   ├── ai-planner/
-│   │   ├── PlannerWizard.tsx         → Toggle: Planlaşdır (4 addım) | En Ucuz Tarix (2 addım)
-│   │   ├── PlannerLoading.tsx        → Yüklənmə animasiyası (plan/cheap rejimlər)
-│   │   ├── PlanResult.tsx            → Plan nəticə konteyner
-│   │   ├── PlanResultContent.tsx     → Plan detalları
-│   │   ├── PlanActions.tsx           → Paylaş, saxla düymələri
-│   │   ├── DayCard.tsx               → Gün kartı (aktivlik, yemək, nəqliyyat, xərc)
-│   │   ├── CostBreakdown.tsx         → Xərc bölgüsü vizual
-│   │   ├── CheapDatesResult.tsx      → Ucuz tarixlər nəticə kartları
-│   │   └── steps/
-│   │       ├── DestinationStep.tsx   → Ölkə seçimi (input + populyar grid)
-│   │       ├── DateStep.tsx          → Tarix + nəfər sayı
-│   │       ├── BudgetStep.tsx        → Büdcə (budget/mid/luxury)
-│   │       ├── InterestsStep.tsx     → Maraqlar (8 ikonkalı seçim)
-│   │       └── CheapDateStep.tsx     → Gün (manual input) + nəfər + fəsil seçimi (yaz/yay/payız/qış)
-│   │
-│   ├── blog/
-│   │   ├── blog-card.tsx             → Blog kart (şəkil, tag, author, tarix)
-│   │   ├── blog-editor.tsx           → TipTap rich text editor
-│   │   └── blog-comments.tsx         → Şərh bölməsi
-│   │
-│   ├── profile/
-│   │   ├── profile-layout.tsx        → Layout wrapper
-│   │   ├── dashboard-overview.tsx    → Dashboard statlar
-│   │   ├── my-blogs.tsx              → İstifadəçi bloqları
-│   │   ├── my-companions.tsx         → İstifadəçi yoldaş elanları
-│   │   ├── my-videos.tsx             → İstifadəçi videoları
-│   │   ├── my-map.tsx                → Ziyarət edilən ölkələr xəritəsi
-│   │   └── profile-settings.tsx      → Profil redaktə (ad, bio, sosial şəbəkələr)
-│   │
-│   ├── chat/
-│   │   ├── chat-list.tsx             → Söhbət siyahısı sidebar
-│   │   └── chat-window.tsx           → Mesaj göstərici + input
-│   │
-│   ├── search/
-│   │   ├── flight-search.tsx         → Uçuş axtarış forması
-│   │   └── hotel-search.tsx          → Otel axtarış forması
-│   │
-│   ├── country/
-│   │   ├── country-card.tsx          → Ölkə kart
-│   │   └── visa-info.tsx             → Viza məlumat kart
-│   │
-│   ├── visa/
-│   │   ├── visa-search-bar.tsx       → Viza axtarış inputu
-│   │   ├── visa-country-grid.tsx     → Ölkə grid (Wikipedia mənbə badge)
-│   │   ├── visa-detail-client.tsx    → Viza detal (emal, haqq, e-visa, AI chat, disclaimer)
-│   │   ├── visa-document-checklist.tsx → Sənəd checklist
-│   │   ├── visa-ai-chat.tsx          → AI viza sual-cavab
-│   │   └── visa-not-found-client.tsx → Ölkə tapılmadı → AI generasiya düyməsi
-│   │
-│   ├── news/
-│   │   └── news-card.tsx             → Xəbər kart
-│   │
-│   ├── tour/tour-list.tsx            → Tur siyahısı + filtrlər
-│   ├── companion/companion-search.tsx → Yoldaş axtarışı + filtrlər
-│   ├── company/company-register.tsx  → Şirkət qeydiyyat forması
-│   ├── video/video-list.tsx          → Video grid
-│   ├── community/leaderboard.tsx     → Liderlik cədvəli
-│   └── ui/confirm-dialog.tsx         → Təsdiq dialoqu (reusable)
-│   └── ui/youtube-lite.tsx           → Lite YouTube embed (thumbnail → klikdə iframe)
-│
-├── lib/
-│   ├── ai/
-│   │   ├── provider.ts              → AIProvider interface + getProvider() factory
-│   │   │                             AI_PROVIDER env-a görə: gemini|openai|claude|deepseek|groq|glm
-│   │   ├── providers/
-│   │   │   ├── gemini.ts             → gemini-2.5-flash (fallback: lite, v3-preview, 503-də növbəti)
-│   │   │   ├── openai.ts             → gpt-4o-mini
-│   │   │   ├── claude.ts             → claude-3.5-haiku
-│   │   │   ├── deepseek.ts           → deepseek-chat
-│   │   │   ├── groq.ts               → llama-3.3-70b-versatile
-│   │   │   └── glm.ts                → glm-4-flash (Zhipu AI)
-│   │   ├── prompts.ts                → buildPrompt() + buildCheapDatesPrompt() (10 ölkə kontekst, 3 dil)
-│   │   └── parser.ts                 → parseAIResponse() (code block, trailing comma fix, debug log)
-│   │
-│   └── supabase/
-│       ├── server.ts                 → Server-side Supabase client (@supabase/ssr)
-│       └── client.ts                 → Browser-side Supabase client
-│
-│   └── unsplash.ts                   → Unsplash CDN URL helper (WebP, avto-format)
-│
-├── types/
-│   ├── ai-planner.ts                 → PlanRequest, TravelPlan, PlanResponse, CheapDatesRequest/Response
-│   ├── blog.ts                       → Blog, BlogFormData
-│   ├── comment.ts                    → BlogComment
-│   ├── companion.ts                  → Companion, CompanionFormData
-│   ├── chat.ts                       → Conversation, Message
-│   ├── tour.ts                       → TourCompany, Tour, TourBooking, TourReview, TourFormData
-│   ├── country.ts                    → Country, VisaInfo, VisaDocument, VisaCountryData, ExpandedCountry, CountryHighlight
-│   ├── user.ts                       → Profile
-│   └── youtube.ts                    → YouTubeLink, YouTubeFormData
-│
-├── hooks/
-│   └── useChat.ts                    → Chat hook (conversations, messages, Realtime subscription)
-│
-├── i18n/
-│   ├── routing.ts                    → Locales: ['az','ru','en'], default: 'az'
-│   └── request.ts                    → Server-side message loading
-│
-├── messages/
-│   ├── az.json                       → Azərbaycan tərcümələri (əsas)
-│   ├── en.json                       → İngilis
-│   └── ru.json                       → Rus
-│
-└── middleware.ts                      → next-intl routing + Supabase auth (10 PUBLIC_PATHS)
+  app/
+    layout.tsx
+    page.tsx
+    globals.css
+    [locale]/
+      layout.tsx
+      page.tsx
+      auth/login/page.tsx
+      auth/register/page.tsx
+      flights/page.tsx
+      hotels/page.tsx
+      tours/page.tsx
+      countries/page.tsx
+      countries/country-grid-client.tsx
+      countries/[slug]/page.tsx
+      countries/[slug]/country-detail-client.tsx
+      cities/[slug]/page.tsx
+      places/[id]/page.tsx
+      companions/page.tsx
+      visa/page.tsx
+      visa/visa-page-client.tsx
+      visa/[country]/page.tsx
+      news/page.tsx
+      news/news-list-client.tsx
+      news/[id]/page.tsx
+      news/[id]/news-detail-client.tsx
+      blog/page.tsx
+      blog/[id]/page.tsx
+      blog/new/page.tsx
+      ai-planner/page.tsx
+      ai-planner/ai-planner-client.tsx
+      chat/page.tsx
+      profile/page.tsx
+      videos/page.tsx
+      leaderboard/page.tsx
+      company/page.tsx
+    auth/v1/callback/page.tsx
+    api/
+      ai/plan/route.ts
+      ai/cheap-dates/route.ts
+      blogs/route.ts
+      comments/route.ts
+      companions/route.ts
+      companies/route.ts
+      countries/[code]/route.ts
+      tours/route.ts
+      tours/[id]/route.ts
+      weather/route.ts
+      youtube/route.ts
+      visa/[country]/route.ts
+      visa/ai-answer/route.ts
+      visa/check/route.ts
+      visa/generate/route.ts
+      visa/scraper/route.ts
+      news/route.ts
+  components/
+    home/
+      globe-hero.tsx
+      home-search-panel.tsx
+    layout/
+    ai-planner/
+    blog/
+    chat/
+    companion/
+    company/
+    country/
+    map/
+    news/
+    place/
+    profile/
+    search/
+    tour/
+    ui/
+    video/
+    visa/
+    weather/
+  hooks/
+    useChat.ts
+    useUnreadMessages.ts
+  i18n/
+    request.ts
+    routing.ts
+  lib/
+    ai/
+    supabase/
+    open-travel-data.ts
+    unsplash.ts
+    weather.ts
+    countries-api.ts
+    visa/visalist-api.ts
+  messages/
+    az.json
+    en.json
+    ru.json
+  types/
 ```
 
----
+## Database və Migration-lar
 
-## Database (Supabase) — 23 Cədvəl
+Migration siyahısı hazırda `022_place_review_helpful_votes.sql` faylına qədər gedir:
 
-```
-profiles              → İstifadəçi profilləri (auto-create on signup)
-blogs                 → Blog yazıları (multilingual, tags, views, likes)
-countries             → Ölkə məlumatları (32 ölkə tam data, 185 ölkə viza sistemi)
-country_highlights    → Ölkə məşhur yerləri (şəkil, təsvir, 3 dil)
-visa_info             → Viza məlumatları (185 ölkə, Wikipedia-dan import)
-visa_documents        → Viza sənədləri checklist (ölkəyə görə)
-visa_qa_cache         → AI viza sual-cavab keşi
-visa_updates          → Viza dəyişiklik tarixçəsi (scraper tərəfindən)
-scraper_logs          → Scraper jurnalı (batch, status, xəta)
-news                  → Xəbərlər (trilingual, Supabase-dən)
-companions            → Yoldaş elanları (destination, dates, gender, interests)
-youtube_links         → YouTube video linkləri
-tour_companies        → Tur şirkətləri (starter/pro/premium plan)
-tours                 → Turlar (7 növ, region, qiymət, tarixlər)
-tour_bookings         → Tur rezervasiyaları
-tour_reviews          → Tur rəyləri
-blog_comments         → Blog şərhləri
-blog_likes            → Blog bəyənmələri (atomic RPC: increment/decrement)
-user_countries        → Ziyarət edilən ölkələr
-leaderboard_stats     → Liderlik statistikası
-notifications         → Bildirişlər
-conversations         → Söhbət (1:1, companion elanına bağlı)
-messages              → Mesajlar (Realtime aktiv)
-```
+- `001_initial_schema.sql`
+- `002_faza2_schema.sql`
+- `003_faza2.5_profile_social.sql`
+- `004_chat_system.sql`
+- `005_visa_system.sql`
+- `006_seed_countries.sql`
+- `007_seed_all.sql`
+- `008_visa_qa_cache.sql`
+- `009_news.sql`
+- `010_visa_scraper.sql`
+- `011_summary.json`
+- `011_wikipedia_visa_seed.sql`
+- `012_countries_expand.sql`
+- `013_countries_seed_50.sql`
+- `014_fix_data.sql`
+- `015_blocked_users.sql`
+- `016_chat_delete_policies.sql`
+- `017_message_update_policy.sql`
+- `018_companions_gender.sql`
+- `019_blog_views.sql`
+- `020_open_travel_data.sql`
+- `021_seed_istanbul_open_data.sql`
+- `022_place_review_helpful_votes.sql`
 
-**Migration faylları:** `supabase/migrations/001..013`
-- `005_visa_system.sql` — visa_info genişlənməsi + visa_documents cədvəli
-- `006_seed_countries.sql` — 10 ölkə seed
-- `007_seed_all.sql` — Bütün datanı təmizdən yazan SQL (countries + visa_info + visa_documents)
-- `008_visa_qa_cache.sql` — AI keş cədvəli
-- `009_news.sql` — News cədvəli + 3 seed xəbər
-- `010_visa_scraper.sql` — visa_updates + scraper_logs cədvəlləri
-- `011_wikipedia_visa_seed.sql` — 185 ölkə Wikipedia-dan (auto-generated by `scripts/import-wikipedia-visa.js`)
-- `012_countries_expand.sql` — 26 yeni sütun (şəkil, video, xərc, aylar və s.) + `country_highlights` cədvəli + 4 index
-- `013_countries_seed_50.sql` — 32 ölkə tam seed datası (Unsplash şəkillər, YouTube, xərc, məşhur yerlər)
+Məlum cari cədvəllər:
 
----
+- `profiles`
+- `blogs`
+- `blog_comments`
+- `blog_likes`
+- `countries`
+- `country_highlights`
+- `visa_info`
+- `visa_documents`
+- `visa_qa_cache`
+- `visa_updates`
+- `scraper_logs`
+- `news`
+- `companions`
+- `youtube_links`
+- `tour_companies`
+- `tours`
+- `tour_bookings`
+- `tour_reviews`
+- `user_countries`
+- `leaderboard_stats`
+- `notifications`
+- `conversations`
+- `messages`
+- `cities`
+- `places`
+- `place_reviews`
+- `place_review_helpful_votes`
+- `place_sources`
+- `external_import_logs`
 
 ## AI Provider Sistemi
 
-`.env.local`-da `AI_PROVIDER=gemini` yazmaqla dəyişir. Bütün provider-lar sırf `fetch`, SDK-sız.
+AI provider-lar SDK-sızdır və `fetch` istifadə edir.
 
-| Provider | Model | Env Key | Qiymət |
-|----------|-------|---------|--------|
-| gemini | gemini-2.5-flash (fallback: lite, v3-preview) | `GEMINI_API_KEY` | Pulsuz |
-| openai | gpt-4o-mini | `OPENAI_API_KEY` | ~$0.15/1M token |
-| claude | claude-3.5-haiku | `ANTHROPIC_API_KEY` | ~$0.25/1M token |
-| deepseek | deepseek-chat | `DEEPSEEK_API_KEY` | ~$0.27/1M token |
-| groq | llama-3.3-70b-versatile | `GROQ_API_KEY` | Pulsuz tier |
-| glm | glm-4-flash | `GLM_API_KEY` | Pulsuz/ucuz |
+`.env.local` içində `AI_PROVIDER` dəyişəni ilə provider seçilir.
 
----
+Dəstəklənən provider-lar:
 
-## AI Planner Rejimləri
+- `gemini` - `GEMINI_API_KEY`
+- `openai` - `OPENAI_API_KEY`
+- `claude` - `ANTHROPIC_API_KEY`
+- `deepseek` - `DEEPSEEK_API_KEY`
+- `groq` - `GROQ_API_KEY`
+- `glm` - `GLM_API_KEY`
 
-### 1. Planlaşdır (4 addım)
-Destinasiya → Tarix/Nəfər → Büdcə (budget/mid/luxury) → Maraqlar (8 seçim) → Tam günlük plan (JSON)
+Əsas fayllar:
 
-### 2. En Ucuz Tarix (2 addım)
-Destinasiya → Gün (manual input 1-30) + Nəfər (1-10) + Fəsil (yaz/yay/payız/qış) → Top 5 ucuz tarix (AI yalnız seçilən fəslin aylarını göstərir)
-
----
-
-## Tema Sistemi
-
-`globals.css`-də CSS variables:
-- **Dark** (`class="dark"`): tünd fon (#0F172A), mavi accent, neon glow
-- **Light** (`class="light"`): açıq fon (#F8FAFC), qlobus üçün tünd mavi gradient
-
-Qlobus (`globe-hero.tsx`): `.light .globe-sphere`, `.light .globe-continent` ilə separate styling.
-
----
+- `src/lib/ai/provider.ts`
+- `src/lib/ai/prompts.ts`
+- `src/lib/ai/parser.ts`
+- `src/lib/ai/providers/*`
 
 ## Əsas Konvensiyalar
 
-- Bütün səhifələr `app/[locale]/` altında
-- Server component-lər metadata generasiya edir, client component-lərə yönləndirir
-- Client component-lər `'use client'` directive ilə
-- Tərcümə: `useTranslations('namespace')` → `src/messages/{locale}.json`
-- Supabase: `createClient()` — server üçün `@/lib/supabase/server`, client üçün `@/lib/supabase/client`
-- AI sorğuları server-side API route-lar vasitəsilə (`/api/ai/*`)
-- Navigasiya: Header-də dropdown qruplar (Rezervasiya, Kəşf et, Xidmətlər, Blog)
-- Mock data: Flights və Hotels səhifələri real API deyil, hardcoded data istifadə edir
-- Ölkə məlumatları: `countries/page.tsx` Supabase-dən dinamik (32 ölkə, ISR 24 saat), `prompts.ts`-da 10 ölkə kontekst var
-- Viza məlumatları: Wikipedia-dan import (`scripts/import-wikipedia-visa.js`), 185 ölkə, `data_confidence=70`
-- Viza detail səhifələrində AI chat və AI generasiya mövcuddur (tapılmayan ölkələr üçün)
+- Bütün user-facing səhifələr `src/app/[locale]/` altında yerləşir.
+- Dəstəklənən dillər `az`, `en`, `ru`; default dil `az`.
+- Server component-lərdə `getTranslations`, client component-lərdə `useTranslations` istifadə et.
+- Server Supabase client `@/lib/supabase/server` içindən gəlir.
+- Browser Supabase client `@/lib/supabase/client` içindən gəlir.
+- AI çağırışları server-side API route-lar üzərindən edilir.
+- Tailwind v4 tema dəyişənləri `src/app/globals.css` içindədir.
+- UI control-lar üçün `lucide-react` iconlarından istifadə et.
+- Yeni abstraction əlavə etməzdən əvvəl mövcud route və component pattern-lərinə bax.
+- İstifadəçinin və ya başqa agentin dəyişikliklərini geri çevirmə.
+- Tripadvisor-dan icazəsiz scraping, review kopyalama və content kopyalama etmə.
 
----
+## Açıq Data Strategiyası
 
-## Public Assets
+Tripadvisor content-i icazəsiz scrape və ya copy edilməməlidir. Planlaşdırılan alternativ yanaşma:
 
+- Wikivoyage / Wikipedia / Wikimedia: ölkə və şəhər travel guide istinadları
+- OpenStreetMap / Overpass: POI, attraction, restoran, kafe, hotel və landmark datası
+- GeoNames: şəhər, population, koordinat və region seed datası
+- TravelAZ Reviews: platformanın öz istifadəçi rəyləri
+
+Gələcək open-data modulu mütləq source və license metadata saxlamalıdır.
+
+Open-data mərhələsi üçün əlavə edilən cədvəllər:
+
+- `cities`
+- `places`
+- `place_reviews`
+- `place_review_helpful_votes`
+- `place_sources`
+- `external_import_logs`
+
+## Natamam Qalanlar
+
+`plan.md` əsasında davam etdirilməli əsas işlər:
+
+1. **Flights real API**
+   - Cari vəziyyət: `src/app/[locale]/flights/page.tsx` hələ də `mockFlights` istifadə edir.
+   - Lazımdır: provider adapter layer, ilkin olaraq Amadeus Flight Offers, normalize olunmuş `FlightOffer`, API key yoxdursa empty/config state.
+
+2. **Hotels real API**
+   - Cari vəziyyət: `src/app/[locale]/hotels/page.tsx` hələ də `mockHotels` istifadə edir.
+   - Lazımdır: provider adapter layer, normalize olunmuş `HotelOffer`, real availability/search, API key yoxdursa empty/config state.
+
+3. **Cities / Places / Reviews data modeli**
+   - Cari vəziyyət: `020_open_travel_data.sql`, `src/types/place.ts` və `src/lib/open-travel-data.ts` əlavə edilib.
+   - Növbəti addım: migration-ı real Supabase DB-yə tətbiq edib import datasını doldurmaq.
+
+4. **Open data import pipeline**
+   - Cari vəziyyət: `scripts/import-open-travel-data.js` ilə Overpass + Wikipedia dry-run və `--apply` başlanğıcı var.
+   - Lazımdır: service role key əlavə ediləndən sonra `--apply` test etmək, GeoNames city seed variantı, daha geniş city preset-ləri və periodik sync.
+
+5. **City və place səhifələri**
+   - Cari vəziyyət: country detail preview, city detail route, place detail route, review submit forması və helpful vote UI hazırdır.
+   - Lazımdır: import datası DB-yə yazıldıqdan sonra real data ilə vizual yoxlama və review moderation.
+
+6. **README yenilənməsi**
+   - Cari vəziyyət: README hələ də əsasən default Next.js mətnidir.
+   - Lazımdır: setup, env dəyişənləri, Supabase migration-lar, AI provider, dev workflow və deployment qeydləri.
+
+7. **Booking/payment**
+   - Cari vəziyyət: birinci real-data mərhələsindən kənardadır.
+   - Sonra lazımdır: booking confirmation, payment flow, provider order API-ləri, cancellation/refund policy.
+
+## Növbəti Tövsiyə Olunan İcra Sırası
+
+1. Supabase-də yeni migration-ları tətbiq et: `020_open_travel_data.sql`, `021_seed_istanbul_open_data.sql` və `022_place_review_helpful_votes.sql`.
+2. Importdan sonra `/az/countries/turkey`, `/az/cities/istanbul` və yaradılan `/az/places/{id}` səhifələrini vizual yoxla.
+3. GeoNames city seed variantını import script-ə əlavə et.
+4. Review moderation status workflow-u əlavə et.
+5. Flights mock datasını provider adapter və API route ilə əvəz et.
+6. Hotels mock datasını provider adapter və API route ilə əvəz et.
+7. README-ni yenilə.
+
+## Yoxlama Bazası
+
+Hər böyük dəyişiklikdən əvvəl və sonra bunları run et:
+
+```bash
+npx tsc --noEmit
+npm run lint
 ```
-public/
-├── globe.svg     → Qlobus üçün SVG
-├── window.svg    → Pəncərə ikonu
-├── vercel.svg    → Vercel logo
-├── next.svg      → Next.js logo
-└── file.svg      → Fayl ikonu
+
+Ana səhifə və locale dəyişiklikləri üçün əlavə yoxla:
+
+```text
+http://localhost:3000/az
+http://localhost:3000/en
+http://localhost:3000/ru
 ```
 
----
+Ölkə kartları və şəkil fallback dəyişiklikləri üçün yoxla:
 
-## Arxitektura Qeydləri
+```text
+http://localhost:3000/az/countries
+http://localhost:3000/az/countries/turkey
+```
 
-1. **Tailwind v4** — Ayrı config faylı yoxdur, hamısı `globals.css`-də `@theme inline` blokunda
-2. **Gemini fallback** — 503 overload olanda avtomatik növbəti modeli sınayır
-3. **Blog likes** — Atomic PostgreSQL RPC funksiyaları ilə (race condition qarşısı alınır)
-4. **Chat Realtime** — Supabase Realtime channel ilə anında mesaj çatdırma
-5. **Tour plan limitləri** — starter=5 tur, pro=20 tur, premium=999 tur
-6. **Middleware** — Həm i18n routing, həm Supabase auth bir yerdə
-7. **Middleware PUBLIC_PATHS** — Login, register, callback, api və s. auth tələb etmir
-8. **Viza Wikipedia import** — `scripts/import-wikipedia-visa.js` ilə 185 ölkə import olunur, istənilən vaxt təkrar run edilə bilər
-9. **Viza AI generasiya** — Tapılmayan ölkələr üçün `/api/visa/generate` ilə AI məlumat yaradılır
-10. **Viza scraper** — GitHub Actions ilə periodically Wikipedia-dan dəyişiklikləri yoxlayır (batch 25)
-11. **Ölkələr genişləndirməsi** — 32 ölkə tam data (Unsplash şəkillər, YouTube, xərc, məşhur yerlər), Supabase-dən dinamik, ISR 24 saat
-12. **Country highlights** — `country_highlights` cədvəli, hər ölkə üçün məşhur yerlər (şəkil, təsvir, 3 dil)
-13. **YouTube Lite embed** — Thumbnail göstərir, klikdə iframe yükləyir (performance optimization)
+Open data import preview üçün yoxla:
+
+```bash
+npm run import:open-travel-data -- --city=istanbul --limit=8 --radius=2500 --dry-run
+npm run import:open-travel-data -- --check-db
+```
+
+## Gələcək Agentlər Üçün Qeydlər
+
+- User dəyişikliklərini və əlaqəsiz işləri revert etmə.
+- `plan.md` cari mərhələnin roadmap source of truth faylıdır.
+- Ana səhifə artıq yenilənib; növbəti mərhələdə real data və API işlərinə fokuslan.
+- Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq üçün `--apply` və `.env.local` içində `SUPABASE_SERVICE_ROLE_KEY` lazımdır.
+- Hazır `.env.local` yoxlamasında `SUPABASE_SERVICE_ROLE_KEY` görünmədi; ona görə cloud DB-yə yazı avtomatik edilməyib.
+- Ölkə kartları artıq ölkəyə uyğun travel şəkillərini UI fallback olaraq istifadə edir. Daha təmiz həll üçün gələcəkdə Supabase `countries.cover_photo_id` dəyərlərini migration ilə backfill etmək olar.
+- Layihə Tripadvisor-dan icazəsiz scraping etməməlidir. Oxşar product value açıq data və TravelAZ-a məxsus review sistemi ilə qurulmalıdır.

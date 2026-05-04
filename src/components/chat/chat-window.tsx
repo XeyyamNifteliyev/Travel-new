@@ -1,7 +1,9 @@
 'use client';
 
 import type { Message } from '@/types/chat';
+import { useTranslations } from 'next-intl';
 import { Send, Loader2, Info, CheckCheck, Trash2, ShieldBan, Pencil } from 'lucide-react';
+import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 
 interface ChatWindowProps {
@@ -35,6 +37,7 @@ export function ChatWindow({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
   const otherUserName = otherUser?.name || 'İstifadəçi';
+  const t = useTranslations('chat');
 
   const handleSend = () => {
     if (!text.trim() || sending || isBlocked) return;
@@ -104,8 +107,8 @@ export function ChatWindow({
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    if (days === 0) return 'Bugün';
-    if (days === 1) return 'Dünən';
+    if (days === 0) return t('today');
+    if (days === 1) return t('yesterday');
     return date.toLocaleDateString('az-AZ', { day: 'numeric', month: 'long' });
   };
 
@@ -122,7 +125,7 @@ export function ChatWindow({
       <div className="glass-panel h-20 px-8 flex justify-between items-center border-b border-border/10 shrink-0 relative">
         <div className="flex items-center gap-4">
           {otherUser?.avatar_url ? (
-            <img src={otherUser.avatar_url} alt={otherUserName} className="w-12 h-12 rounded-full object-cover" />
+            <Image src={otherUser.avatar_url} alt={otherUserName} width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
           ) : (
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-lg font-bold text-primary">
               {otherUserName[0]?.toUpperCase()}
@@ -133,7 +136,7 @@ export function ChatWindow({
             <div className="flex items-center gap-1.5">
               <span className={`w-2 h-2 rounded-full ${isBlocked ? 'bg-amber-400' : 'bg-emerald-400'}`} />
               <span className="text-[11px] text-txt-sec uppercase tracking-widest">
-                {isBlocked ? 'Bloklanıb' : 'Aktiv'}
+                {isBlocked ? t('statusBlocked') : t('statusActive')}
               </span>
             </div>
           </div>
@@ -154,14 +157,14 @@ export function ChatWindow({
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Söhbəti sil
+                  {t('deleteConversation')}
                 </button>
               ) : (
                 <div className="px-4 py-2">
-                  <p className="text-xs text-txt-sec mb-2">Söhbəti silmək istəyirsiniz?</p>
+                  <p className="text-xs text-txt-sec mb-2">{t('deleteConversationConfirm')}</p>
                   <div className="flex gap-2">
-                    <button onClick={() => { onDeleteConversation(); setShowConvMenu(false); }} className="flex-1 py-1.5 text-xs bg-red-500 text-white rounded-lg font-medium">Sil</button>
-                    <button onClick={() => setConfirmDeleteConv(false)} className="flex-1 py-1.5 text-xs bg-bg-base text-txt-sec rounded-lg font-medium">Ləğv et</button>
+                    <button onClick={() => { onDeleteConversation(); setShowConvMenu(false); }} className="flex-1 py-1.5 text-xs bg-red-500 text-white rounded-lg font-medium">{t('delete')}</button>
+                    <button onClick={() => setConfirmDeleteConv(false)} className="flex-1 py-1.5 text-xs bg-bg-base text-txt-sec rounded-lg font-medium">{t('cancel')}</button>
                   </div>
                 </div>
               )}
@@ -172,16 +175,16 @@ export function ChatWindow({
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-amber-400 hover:bg-amber-500/10 transition-colors"
                 >
                   <ShieldBan className="w-4 h-4" />
-                  {isBlocked ? 'Blokdan çıxar' : 'İstifadəçini blokla'}
+                  {isBlocked ? t('unblock') : t('blockUser')}
                 </button>
               ) : (
                 <div className="px-4 py-2">
-                  <p className="text-xs text-txt-sec mb-2">{otherUserName} {isBlocked ? 'blokdan çıxarılsın?' : 'bloklansın?'}</p>
+                  <p className="text-xs text-txt-sec mb-2">{otherUserName} {isBlocked ? t('unblockConfirm', { name: '' }).replace('?', '') : t('blockConfirm', { name: '' }).replace('?', '')}?</p>
                   <div className="flex gap-2">
                     <button onClick={() => { onBlockUser(otherUser?.id || ''); setShowConvMenu(false); }} className="flex-1 py-1.5 text-xs bg-amber-500 text-white rounded-lg font-medium">
-                      {isBlocked ? 'Çıxar' : 'Blokla'}
+                      {isBlocked ? t('unblock') : t('block')}
                     </button>
-                    <button onClick={() => setConfirmBlock(false)} className="flex-1 py-1.5 text-xs bg-bg-base text-txt-sec rounded-lg font-medium">Ləğv et</button>
+                    <button onClick={() => setConfirmBlock(false)} className="flex-1 py-1.5 text-xs bg-bg-base text-txt-sec rounded-lg font-medium">{t('cancel')}</button>
                   </div>
                 </div>
               )}
@@ -195,7 +198,7 @@ export function ChatWindow({
         {isBlocked && (
           <div className="flex justify-center my-4">
             <span className="px-4 py-2 bg-amber-500/10 text-amber-400 text-xs rounded-full font-medium">
-              Bu istifadəçi bloklanıb — mesaj göndərə bilməzsiniz
+              {t('blockedBanner')}
             </span>
           </div>
         )}
@@ -206,8 +209,8 @@ export function ChatWindow({
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-bg-surface/50 flex items-center justify-center">
                 <Send className="w-7 h-7 text-txt-muted/30" />
               </div>
-              <p className="text-txt-sec font-medium">Yazışmaya başlayın</p>
-              <p className="text-txt-muted text-sm mt-1">İlk mesajınızı göndərin</p>
+              <p className="text-txt-sec font-medium">{t('startConversation')}</p>
+              <p className="text-txt-muted text-sm mt-1">{t('startConversationSub')}</p>
             </div>
           </div>
         ) : (
@@ -240,8 +243,8 @@ export function ChatWindow({
                         className="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-txt text-sm"
                       />
                       <div className="flex justify-end gap-2 mt-2">
-                        <button onClick={cancelEdit} className="px-3 py-1 text-xs text-txt-sec hover:text-txt rounded-lg">Ləğv et</button>
-                        <button onClick={saveEdit} className="px-3 py-1 text-xs bg-primary text-white rounded-lg font-medium">Yadda saxla</button>
+                        <button onClick={cancelEdit} className="px-3 py-1 text-xs text-txt-sec hover:text-txt rounded-lg">{t('cancel')}</button>
+                        <button onClick={saveEdit} className="px-3 py-1 text-xs bg-primary text-white rounded-lg font-medium">{t('saveEdit')}</button>
                       </div>
                     </div>
                   </div>
@@ -256,7 +259,7 @@ export function ChatWindow({
                     <div className="flex items-center gap-1.5 mt-0.5 mr-1">
                       <span className="text-[10px] text-txt-muted">{formatTime(msg.created_at)}</span>
                       {msg.is_edited && (
-                        <span className="text-[10px] text-primary/60">redaktə olundu</span>
+                        <span className="text-[10px] text-primary/60">{t('edited')}</span>
                       )}
                       <CheckCheck className="w-3.5 h-3.5 text-primary" />
                     </div>
@@ -267,7 +270,7 @@ export function ChatWindow({
                     onContextMenu={(e) => handleContextMenu(e, msg.id, false)}
                   >
                     {otherUser?.avatar_url ? (
-                      <img src={otherUser.avatar_url} alt={otherUserName} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                      <Image src={otherUser.avatar_url} alt={otherUserName} width={32} height={32} className="w-8 h-8 rounded-full object-cover shrink-0" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                         {otherUserName[0]?.toUpperCase()}
@@ -301,7 +304,7 @@ export function ChatWindow({
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-txt-sec hover:bg-primary/10 hover:text-primary transition-colors"
             >
               <Pencil className="w-4 h-4" />
-              Redaktə et
+              {t('edit')}
             </button>
           )}
           <button
@@ -309,7 +312,7 @@ export function ChatWindow({
             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
           >
             <Trash2 className="w-4 h-4" />
-            Sil
+            {t('delete')}
           </button>
         </div>
       )}
@@ -322,7 +325,7 @@ export function ChatWindow({
             value={text}
             onChange={e => setText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={isBlocked ? 'İstifadəçi bloklanıb...' : 'Mesajınızı yazın...'}
+            placeholder={isBlocked ? t('placeholderBlocked') : t('placeholderDefault')}
             disabled={isBlocked}
             className="flex-grow bg-transparent border-none focus:ring-0 focus:outline-none text-txt placeholder:text-txt-muted text-sm py-3 min-w-0 disabled:opacity-40"
           />

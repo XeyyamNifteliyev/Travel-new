@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Calendar, Tag } from 'lucide-react';
 
 interface NewsItem {
@@ -40,7 +41,7 @@ export default function NewsCard({ item, locale }: { item: NewsItem; locale: str
     >
       {item.image_url && (
         <div className="aspect-video rounded-t-xl overflow-hidden bg-bg-surface">
-          <img src={item.image_url} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+          <Image src={item.image_url} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" fill />
         </div>
       )}
       <div className="p-5">

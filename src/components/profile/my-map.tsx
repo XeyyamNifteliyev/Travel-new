@@ -2,38 +2,63 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
+import type { User as SupabaseUser, UserCountryItem } from '@/types/supabase-helpers';
 import { Globe, Plus, Trash2, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirm-dialog';
 
 const COUNTRIES = [
-  { slug: 'turkiye', name: 'Türkiyə', flag: '🇹🇷' },
-  { slug: 'russia', name: 'Rusiya', flag: '🇷🇺' },
-  { slug: 'georgia', name: 'Gürcüstan', flag: '🇬🇪' },
-  { slug: 'iran', name: 'İran', flag: '🇮🇷' },
-  { slug: 'uae', name: 'Dubai', flag: '🇦🇪' },
-  { slug: 'thailand', name: 'Tailand', flag: '🇹🇭' },
-  { slug: 'japan', name: 'Yaponiya', flag: '🇯🇵' },
-  { slug: 'germany', name: 'Almaniya', flag: '🇩🇪' },
-  { slug: 'france', name: 'Fransa', flag: '🇫🇷' },
-  { slug: 'italy', name: 'İtaliya', flag: '🇮🇹' },
-  { slug: 'spain', name: 'İspaniya', flag: '🇪🇸' },
-  { slug: 'egypt', name: 'Misir', flag: '🇪🇬' },
-  { slug: 'maldives', name: 'Maldiv', flag: '🇲🇻' },
-  { slug: 'indonesia', name: 'Bali', flag: '🇮🇩' },
-  { slug: 'south-korea', name: 'Koreya', flag: '🇰🇷' },
-  { slug: 'usa', name: 'ABŞ', flag: '🇺🇸' },
-  { slug: 'uk', name: 'İngiltərə', flag: '🇬🇧' },
-  { slug: 'azerbaijan', name: 'Azərbaycan', flag: '🇦🇿' },
+  { slug: 'turkiye', flag: '🇹🇷' },
+  { slug: 'russia', flag: '🇷🇺' },
+  { slug: 'georgia', flag: '🇬🇪' },
+  { slug: 'iran', flag: '🇮🇷' },
+  { slug: 'uae', flag: '🇦🇪' },
+  { slug: 'thailand', flag: '🇹🇭' },
+  { slug: 'japan', flag: '🇯🇵' },
+  { slug: 'germany', flag: '🇩🇪' },
+  { slug: 'france', flag: '🇫🇷' },
+  { slug: 'italy', flag: '🇮🇹' },
+  { slug: 'spain', flag: '🇪🇸' },
+  { slug: 'egypt', flag: '🇪🇬' },
+  { slug: 'maldives', flag: '🇲🇻' },
+  { slug: 'indonesia', flag: '🇮🇩' },
+  { slug: 'south-korea', flag: '🇰🇷' },
+  { slug: 'usa', flag: '🇺🇸' },
+  { slug: 'uk', flag: '🇬🇧' },
+  { slug: 'azerbaijan', flag: '🇦🇿' },
 ];
+
+const COUNTRY_NAMES: Record<string, Record<string, string>> = {
+  turkiye: { az: 'Türkiyə', en: 'Turkey', ru: 'Турция' },
+  russia: { az: 'Rusiya', en: 'Russia', ru: 'Россия' },
+  georgia: { az: 'Gürcüstan', en: 'Georgia', ru: 'Грузия' },
+  iran: { az: 'İran', en: 'Iran', ru: 'Иран' },
+  uae: { az: 'Dubai', en: 'Dubai', ru: 'Дубай' },
+  thailand: { az: 'Tailand', en: 'Thailand', ru: 'Таиланд' },
+  japan: { az: 'Yaponiya', en: 'Japan', ru: 'Япония' },
+  germany: { az: 'Almaniya', en: 'Germany', ru: 'Германия' },
+  france: { az: 'Fransa', en: 'France', ru: 'Франция' },
+  italy: { az: 'İtaliya', en: 'Italy', ru: 'Италия' },
+  spain: { az: 'İspaniya', en: 'Spain', ru: 'Испания' },
+  egypt: { az: 'Misir', en: 'Egypt', ru: 'Египет' },
+  maldives: { az: 'Maldiv', en: 'Maldives', ru: 'Мальдивы' },
+  indonesia: { az: 'Bali', en: 'Bali', ru: 'Бали' },
+  'south-korea': { az: 'Koreya', en: 'Korea', ru: 'Корея' },
+  usa: { az: 'ABŞ', en: 'USA', ru: 'США' },
+  uk: { az: 'İngiltərə', en: 'UK', ru: 'Англия' },
+  azerbaijan: { az: 'Azərbaycan', en: 'Azerbaijan', ru: 'Азербайджан' },
+};
 
 export function MyMap() {
   const params = useParams();
-  const locale = params?.locale as string;
+  const locale = (params?.locale as string) || 'az';
   const supabase = createClient();
-  const [user, setUser] = useState<any>(null);
-  const [countries, setCountries] = useState<any[]>([]);
+  const t = useTranslations('profile');
+  const tc = useTranslations('common');
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [countries, setCountries] = useState<UserCountryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('');
@@ -52,7 +77,7 @@ export function MyMap() {
         .eq('user_id', user.id)
         .order('visited_at', { ascending: false });
 
-      if (data) setCountries(data);
+      if (data) setCountries(data as UserCountryItem[]);
       setLoading(false);
     };
     fetchData();
@@ -71,7 +96,7 @@ export function MyMap() {
       .select('*')
       .eq('user_id', user.id)
       .order('visited_at', { ascending: false });
-    if (data) setCountries(data);
+    if (data) setCountries(data as UserCountryItem[]);
     setShowAdd(false);
     setSelectedCountry('');
     setVisitDate('');
@@ -80,19 +105,23 @@ export function MyMap() {
 
   const handleDelete = async (id: string) => {
     const confirmed = await confirmDialog({
-      title: 'Ölkəni sil',
-      message: 'Bu ölkəni silmək istədiyinizə əminsiniz?',
-      confirmText: 'Sil',
-      cancelText: 'Ləğv et',
+      title: t('deleteCountryTitle'),
+      message: t('deleteCountryMsg'),
+      confirmText: tc('cancel'),
+      cancelText: tc('cancel'),
     });
     if (!confirmed) return;
     const { error } = await supabase.from('user_countries').delete().eq('id', id).eq('user_id', user?.id);
     if (error) {
-      toast.error('Silmək alınmadı');
+      toast.error(t('deleteFailed'));
     } else {
       setCountries((prev) => prev.filter((c) => c.id !== id));
-      toast.success('Ölkə uğurla silindi');
+      toast.success(t('deleteCountrySuccess'));
     }
+  };
+
+  const getCountryName = (slug: string) => {
+    return COUNTRY_NAMES[slug]?.[locale] || COUNTRY_NAMES[slug]?.['az'] || slug;
   };
 
   if (loading) {
@@ -104,34 +133,34 @@ export function MyMap() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <Globe className="w-6 h-6 text-yellow-400" />
-          Xəritəm
+          {t('mapTitle')}
         </h2>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Ölkə Əlavə Et
+          {t('addCountry')}
         </button>
       </div>
 
       {showAdd && (
         <div className="bg-bg-surface rounded-xl p-6 border border-border space-y-4">
           <div>
-            <label className="block text-sm font-medium text-txt-sec mb-1">Ölkə</label>
+            <label className="block text-sm font-medium text-txt-sec mb-1">{t('countryLabel')}</label>
             <select
               value={selectedCountry}
               onChange={(e) => setSelectedCountry(e.target.value)}
               className="w-full bg-bg-base/50 border border-border rounded-lg px-4 py-2.5 text-sm focus:border-primary focus:outline-none"
             >
-              <option value="">Ölkə seçin</option>
+              <option value="">{t('selectCountry')}</option>
               {COUNTRIES.map((c) => (
-                <option key={c.slug} value={c.slug}>{c.flag} {c.name}</option>
+                <option key={c.slug} value={c.slug}>{c.flag} {getCountryName(c.slug)}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-txt-sec mb-1">Səyahət tarixi (opsional)</label>
+            <label className="block text-sm font-medium text-txt-sec mb-1">{t('travelDateLabel')}</label>
             <input
               type="date"
               value={visitDate}
@@ -145,10 +174,10 @@ export function MyMap() {
               disabled={adding || !selectedCountry}
               className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
             >
-              Əlavə Et
+              {t('addBtn')}
             </button>
             <button onClick={() => setShowAdd(false)} className="px-6 py-2 text-txt-sec hover:text-white transition-colors">
-              Ləğv Et
+              {tc('cancel')}
             </button>
           </div>
         </div>
@@ -157,9 +186,9 @@ export function MyMap() {
       {countries.length === 0 ? (
         <div className="bg-bg-surface rounded-xl p-8 border border-border text-center">
           <MapPin className="w-12 h-12 text-txt-muted mx-auto mb-3" />
-          <p className="text-txt-sec mb-4">Hələ ölkə əlavə etməmisiniz</p>
+          <p className="text-txt-sec mb-4">{t('noCountries')}</p>
           <button onClick={() => setShowAdd(true)} className="text-primary hover:underline">
-            İlk ölkənizi əlavə edin →
+            {t('addFirstCountry')}
           </button>
         </div>
       ) : (
@@ -170,15 +199,15 @@ export function MyMap() {
               <div key={country.id} className="bg-bg-surface rounded-xl p-4 border border-border flex items-center justify-between group">
                 <div>
                   <span className="text-2xl">{countryInfo?.flag || '🌍'}</span>
-                  <p className="text-sm font-medium mt-1">{countryInfo?.name || country.country_slug}</p>
+                  <p className="text-sm font-medium mt-1">{getCountryName(country.country_slug)}</p>
                   {country.visited_at && (
-                    <p className="text-xs text-txt-muted">{new Date(country.visited_at).toLocaleDateString('az-AZ')}</p>
+                    <p className="text-xs text-txt-muted">{new Date(country.visited_at).toLocaleDateString(locale)}</p>
                   )}
                 </div>
                 <button
                   onClick={() => handleDelete(country.id)}
                    className="p-1 text-txt-muted hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
-                  title="Sil"
+                  title={t('deleteBtn')}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { Companion, CompanionFormData } from '@/types/companion';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
+import type { User } from '@/types/supabase-helpers';
 import {
   Search, MapPin, Calendar, Users,
   X, Plus, Loader2, Globe, MessageCircle, ArrowLeft
@@ -35,19 +37,28 @@ export default function CompanionSearch() {
 
   const [companions, setCompanions] = useState<Companion[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [messagingId, setMessagingId] = useState<string | null>(null);
   const [selectedCompanion, setSelectedCompanion] = useState<Companion | null>(null);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    country: string;
+    city: string;
+    departureDate: string;
+    genderPreference: 'any' | 'male' | 'female';
+    ageMin: string;
+    ageMax: string;
+    interests: string[];
+    languages: string[];
+  }>({
     country: '',
     city: '',
     departureDate: '',
-    genderPreference: 'any' as const,
+    genderPreference: 'any',
     ageMin: '',
     ageMax: '',
-    interests: [] as string[],
-    languages: [] as string[],
+    interests: [],
+    languages: [],
   });
 
   const [formData, setFormData] = useState<CompanionFormData>({
@@ -97,7 +108,25 @@ export default function CompanionSearch() {
 
     const res = await fetch(`/api/companions?${params}`);
     const data = await res.json();
-    const mapped = (data.companions || []).map((c: any) => ({
+    const mapped = (data.companions || []).map((c: {
+      id: string;
+      user_id: string;
+      destination_country: string;
+      destination_city: string | null;
+      departure_date: string;
+      return_date: string | null;
+      gender_preference: string;
+      gender: string | null;
+      age_min: number;
+      age_max: number;
+      interests: string[];
+      languages: string[];
+      description: string | null;
+      status: string;
+      created_at: string;
+      updated_at: string;
+      author: { name: string; avatar_url: string } | null;
+    }) => ({
       id: c.id,
       userId: c.user_id,
       destinationCountry: c.destination_country,
@@ -279,7 +308,7 @@ export default function CompanionSearch() {
               </label>
               <select
                 value={filters.genderPreference}
-                onChange={e => setFilters(prev => ({ ...prev, genderPreference: e.target.value as any }))}
+                onChange={e => setFilters(prev => ({ ...prev, genderPreference: e.target.value as 'any' | 'male' | 'female' }))}
                 className="w-full bg-bg-surface/80 border-none rounded-xl py-3 px-4 text-sm text-txt focus:ring-2 focus:ring-primary transition-all appearance-none"
               >
                 <option value="any">{t('anyGender')}</option>
@@ -510,10 +539,12 @@ export default function CompanionSearch() {
                   <div className="p-4 pb-5 relative">
                     <div className="absolute -top-7 left-4">
                       {companion.author?.avatarUrl ? (
-                        <img
+                        <Image
                           src={companion.author.avatarUrl}
                           alt={companion.author.name}
                           className="w-14 h-14 rounded-full border-[3px] border-bg-base object-cover"
+                          width={56}
+                          height={56}
                         />
                       ) : (
                         <div className="w-14 h-14 rounded-full border-[3px] border-bg-base bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-xl font-bold text-primary tracking-tight">
@@ -597,10 +628,12 @@ export default function CompanionSearch() {
                 {/* Avatar */}
                 <div className="absolute -top-8 left-5">
                   {selectedCompanion.author?.avatarUrl ? (
-                    <img
+                    <Image
                       src={selectedCompanion.author.avatarUrl}
                       alt={selectedCompanion.author.name}
                       className="w-16 h-16 rounded-full border-[3px] border-bg-base object-cover shadow-lg"
+                      width={64}
+                      height={64}
                     />
                   ) : (
                     <div className="w-16 h-16 rounded-full border-[3px] border-bg-base bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-2xl font-bold text-primary tracking-tight shadow-lg">

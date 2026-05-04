@@ -6,7 +6,8 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "import:open-travel-data": "node scripts/import-open-travel-data.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",

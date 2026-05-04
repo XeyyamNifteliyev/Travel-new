@@ -2,15 +2,18 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
+import type { User as SupabaseUser, ProfileRow } from '@/types/supabase-helpers';
 import { Save, Loader2, User, Camera, Video, Link as LinkIcon } from 'lucide-react';
 
 export function ProfileSettings() {
   const params = useParams();
   const locale = params?.locale as string;
   const supabase = useMemo(() => createClient(), []);
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const t = useTranslations('profile');
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
@@ -64,9 +67,9 @@ export function ProfileSettings() {
     }).eq('id', user.id);
     setSaving(false);
     if (error) {
-      setSaveMsg('Xəta baş verdi');
+      setSaveMsg(t('saveError'));
     } else {
-      setSaveMsg('Yadda saxlanıldı!');
+      setSaveMsg(t('saveSuccess'));
     }
     setTimeout(() => setSaveMsg(''), 3000);
   };
@@ -77,17 +80,16 @@ export function ProfileSettings() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Tənzimləmələr</h2>
+      <h2 className="text-2xl font-bold">{t('settingsTitle')}</h2>
 
       <div className="bg-bg-surface rounded-xl border border-border divide-y divide-border">
-        {/* Profile section */}
         <div className="p-6 space-y-4">
           <h3 className="font-semibold flex items-center gap-2">
             <User className="w-4 h-4" />
-            Profil Məlumatları
+            {t('profileInfo')}
           </h3>
           <div>
-            <label className="block text-sm font-medium text-txt-sec mb-1">Ad</label>
+            <label className="block text-sm font-medium text-txt-sec mb-1">{t('nameLabel')}</label>
             <input
               type="text"
               value={formData.name}
@@ -96,7 +98,7 @@ export function ProfileSettings() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-txt-sec mb-1">Bio</label>
+            <label className="block text-sm font-medium text-txt-sec mb-1">{t('bioLabel')}</label>
             <textarea
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
@@ -105,7 +107,7 @@ export function ProfileSettings() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-txt-sec mb-1">Avatar URL</label>
+            <label className="block text-sm font-medium text-txt-sec mb-1">{t('avatarUrlLabel')}</label>
             <input
               type="url"
               value={formData.avatar_url}
@@ -116,11 +118,10 @@ export function ProfileSettings() {
           </div>
         </div>
 
-        {/* Social section */}
         <div className="p-6 space-y-4">
           <h3 className="font-semibold flex items-center gap-2">
             <LinkIcon className="w-4 h-4" />
-            Sosial Şəbəkələr
+            {t('socialNetworks')}
           </h3>
           <div>
             <label className="block text-sm font-medium text-txt-sec mb-1 flex items-center gap-1">
@@ -175,9 +176,9 @@ export function ProfileSettings() {
         className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50"
       >
         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-        Yadda Saxla
+        {t('saveBtn')}
       </button>
-      {saveMsg && <p className={`text-sm ${saveMsg.includes('Xəta') ? 'text-red-400' : 'text-green-400'}`}>{saveMsg}</p>}
+      {saveMsg && <p className={`text-sm ${saveMsg === t('saveError') ? 'text-red-400' : 'text-green-400'}`}>{saveMsg}</p>}
     </div>
   );
 }

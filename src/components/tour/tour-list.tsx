@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Tour } from '@/types/tour';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
@@ -143,10 +144,11 @@ export default function ToursPage() {
                 {/* Image */}
                 <div className="relative h-48 bg-bg-input overflow-hidden">
                   {tour.images?.[0] ? (
-                    <img
+                    <Image
                       src={tour.images[0]}
                       alt={tour.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fill
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -217,10 +219,10 @@ export default function ToursPage() {
                   {tour.company && (
                     <div className="flex items-center gap-2 mb-4 pb-4 border-b border-border">
                       <div className="w-6 h-6 bg-bg-surface-hover rounded-full flex items-center justify-center text-xs text-txt">
-                        {(tour.company as any).company_name?.[0] || 'T'}
-                      </div>
-                      <span className="text-txt-sec text-sm">{(tour.company as any).company_name}</span>
-                      {(tour.company as any).is_verified && (
+                        {tour.company.companyName?.[0] || 'T'}
+                       </div>
+                       <span className="text-txt-sec text-sm">{tour.company.companyName}</span>
+                       {tour.company.isVerified && (
                         <span className="text-emerald-400 text-xs">✓</span>
                       )}
                     </div>

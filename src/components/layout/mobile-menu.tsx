@@ -4,8 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { X, Menu, User, LogOut, ChevronDown } from 'lucide-react';
+import { X, Menu, User as UserIcon, LogOut, ChevronDown } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import type { User } from '@/types/supabase-helpers';
 import { type LucideIcon } from 'lucide-react';
 
 interface NavLink {
@@ -32,7 +33,7 @@ interface MobileMenuProps {
 
 export function MobileMenu({ navGroups, chatLink, unreadCount = 0 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
   const t = useTranslations('common');
   const locale = useLocale();
@@ -44,11 +45,11 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0 }: MobileMenuP
     if (isMounted.current) return;
     isMounted.current = true;
 
-    supabase.auth.getUser().then(({ data: { user } }: { data: { user: any } }) => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
     });
 
-    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((_event: string, session: any) => {
+    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -190,7 +191,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0 }: MobileMenuP
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 px-4 py-3 text-txt-sec hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors"
                 >
-                  <User className="w-5 h-5" />
+                  <UserIcon className="w-5 h-5" />
                   <span>{t('profile')}</span>
                 </Link>
                 <button
@@ -207,7 +208,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0 }: MobileMenuP
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-primary text-dark font-semibold rounded-lg hover:bg-primary/90 transition-colors"
               >
-                <User className="w-5 h-5" />
+                <UserIcon className="w-5 h-5" />
                 <span>{t('login')}</span>
               </Link>
             )}

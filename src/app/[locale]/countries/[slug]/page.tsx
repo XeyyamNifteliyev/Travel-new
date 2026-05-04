@@ -1,7 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import CountryDetailClient from './country-detail-client';
+import { mapCityToSummary, mapPlaceToSummary } from '@/lib/open-travel-data';
 import type { Metadata } from 'next';
+import type { Locale } from '@/i18n/routing';
+import type { CitySummary, CityWithCountryRow, PlaceSummary, PlaceWithRelationsRow } from '@/types/place';
+import type { CountryHighlight } from '@/types/country';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -20,6 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CountryDetailPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await params;
+  const currentLocale = locale as Locale;
   const supabase = await createClient();
 
   const { data: country } = await supabase
@@ -49,11 +54,41 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
     .eq('country_id', country.id)
     .maybeSingle();
 
+  let cities: CitySummary[] = [];
+  const { data: cityRows, error: cityError } = await supabase
+    .from('cities')
+    .select('*, countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
+    .eq('country_id', country.id)
+    .order('is_featured', { ascending: false })
+    .order('popular_rank', { ascending: true })
+    .limit(6);
+
+  if (!cityError && cityRows) {
+    cities = (cityRows as CityWithCountryRow[]).map((city) => mapCityToSummary(city, currentLocale));
+  }
+
+  let places: PlaceSummary[] = [];
+  const { data: placeRows, error: placeError } = await supabase
+    .from('places')
+    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
+    .eq('country_id', country.id)
+    .eq('status', 'active')
+    .order('is_featured', { ascending: false })
+    .order('popular_rank', { ascending: true })
+    .order('rating_summary', { ascending: false })
+    .limit(8);
+
+  if (!placeError && placeRows) {
+    places = (placeRows as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale));
+  }
+
   return (
     <CountryDetailClient
       country={country}
-      highlights={(highlights as any) || []}
-      blogs={(blogs as any) || []}
+      highlights={(highlights as CountryHighlight[]) || []}
+      blogs={(blogs as unknown as { id: string; title: string; cover_image?: string; created_at: string; views: number; profiles?: { display_name: string } | null }[]) || []}
+      cities={cities}
+      places={places}
       locale={locale}
       hasVisaInfo={!!visaCheck}
     />

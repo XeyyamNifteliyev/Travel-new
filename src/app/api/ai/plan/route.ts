@@ -32,10 +32,11 @@ export async function POST(request: Request) {
         visaPage: `/${body.language}/visa`,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('AI Plan error:', error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: error.message || 'Plan hazırlanarkən xəta baş verdi' },
+      { error: message || 'Plan hazırlanarkən xəta baş verdi' },
       { status: 500 }
     );
   }

@@ -4,10 +4,14 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Plane, Hotel, Utensils, Clock, Phone, Globe, Shield } from 'lucide-react';
+import { ArrowLeft, Plane, Hotel, Utensils, Clock, Phone, Globe, Shield, MapPin, Star, ExternalLink, Building2 } from 'lucide-react';
 import YouTubeLite from '@/components/ui/youtube-lite';
+import { WeatherWidget } from '@/components/weather/weather-widget';
+import { CountryInfoCard } from '@/components/country/country-info-card';
+import { VisaCheckWidget } from '@/components/visa/visa-check-widget';
 import { getUnsplashUrl, getFlagUrl } from '@/lib/unsplash';
 import type { ExpandedCountry, CountryHighlight } from '@/types/country';
+import type { CitySummary, PlaceSummary } from '@/types/place';
 
 function HighlightImage({ photoId, name, countrySlug }: { photoId: string; name: string; countrySlug: string }) {
   const [error, setError] = useState(false);
@@ -65,11 +69,64 @@ interface Props {
   country: ExpandedCountry;
   highlights: CountryHighlight[];
   blogs: BlogItem[];
+  cities: CitySummary[];
+  places: PlaceSummary[];
   locale: string;
   hasVisaInfo?: boolean;
 }
 
-export default function CountryDetailClient({ country, highlights, blogs, locale, hasVisaInfo }: Props) {
+const CATEGORY_LABELS: Record<string, Record<string, string>> = {
+  az: {
+    attraction: 'Gormeli yer',
+    museum: 'Muzey',
+    landmark: 'Landmark',
+    restaurant: 'Restoran',
+    cafe: 'Kafe',
+    hotel: 'Otel',
+    viewpoint: 'Manzara',
+    historic: 'Tarixi yer',
+    park: 'Park',
+    beach: 'Cimerlik',
+    shopping: 'Alis-veris',
+    nightlife: 'Gecə həyatı',
+    transport: 'Neqliyyat',
+    other: 'Diger',
+  },
+  en: {
+    attraction: 'Attraction',
+    museum: 'Museum',
+    landmark: 'Landmark',
+    restaurant: 'Restaurant',
+    cafe: 'Cafe',
+    hotel: 'Hotel',
+    viewpoint: 'Viewpoint',
+    historic: 'Historic',
+    park: 'Park',
+    beach: 'Beach',
+    shopping: 'Shopping',
+    nightlife: 'Nightlife',
+    transport: 'Transport',
+    other: 'Other',
+  },
+  ru: {
+    attraction: 'Достопримечательность',
+    museum: 'Музей',
+    landmark: 'Ориентир',
+    restaurant: 'Ресторан',
+    cafe: 'Кафе',
+    hotel: 'Отель',
+    viewpoint: 'Смотровая',
+    historic: 'Историческое место',
+    park: 'Парк',
+    beach: 'Пляж',
+    shopping: 'Шопинг',
+    nightlife: 'Ночная жизнь',
+    transport: 'Транспорт',
+    other: 'Другое',
+  },
+};
+
+export default function CountryDetailClient({ country, highlights, blogs, cities, places, locale, hasVisaInfo }: Props) {
   const t = useTranslations('countries');
   const tc = useTranslations('common');
   const [heroError, setHeroError] = useState(false);
@@ -156,6 +213,17 @@ export default function CountryDetailClient({ country, highlights, blogs, locale
         ))}
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {country.cca2 && <CountryInfoCard code={country.cca2} />}
+        {country.lat && country.lng && (
+          <WeatherWidget lat={country.lat} lon={country.lng} compact />
+        )}
+      </div>
+
+      <div className="mb-8">
+        <VisaCheckWidget compact defaultDestination={country.cca2 ?? ''} />
+      </div>
+
       {(country.avg_flight_azn || country.avg_hotel_azn || country.avg_daily_azn) && (
         <div className="bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/5 rounded-2xl p-6 mb-8 border border-primary/10">
           <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -232,6 +300,94 @@ export default function CountryDetailClient({ country, highlights, blogs, locale
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {cities.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-end justify-between gap-4 mb-4">
+            <div>
+              <h2 className="font-bold text-lg flex items-center gap-2">
+                <span className="text-2xl">🏙️</span> {t('popularCities')}
+              </h2>
+              <p className="text-sm text-txt-sec mt-1">{t('popularCitiesSub')}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {cities.map(city => (
+              <Link key={city.id} href={`/${locale}/cities/${city.slug}`} className="block rounded-2xl border border-border bg-bg-surface p-4 hover:border-primary/30 hover:shadow-lg transition-all">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-semibold text-base">{city.name}</h3>
+                    {city.region && <p className="text-xs text-txt-sec mt-1">{city.region}</p>}
+                  </div>
+                  <Building2 className="w-5 h-5 text-primary shrink-0" />
+                </div>
+                {city.description && (
+                  <p className="text-sm text-txt-sec mt-3 line-clamp-3">{city.description}</p>
+                )}
+                <div className="flex items-center justify-between gap-3 mt-4 text-xs text-txt-sec">
+                  {city.population ? (
+                    <span>{city.population.toLocaleString(locale === 'ru' ? 'ru' : locale === 'en' ? 'en' : 'az')} {t('population')}</span>
+                  ) : <span />}
+                  {city.sourceUrl && (
+                    <span className="inline-flex items-center gap-1">
+                      {t('source')} <ExternalLink className="w-3 h-3" />
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {places.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-end justify-between gap-4 mb-4">
+            <div>
+              <h2 className="font-bold text-lg flex items-center gap-2">
+                <span className="text-2xl">⭐</span> {t('openDataPlaces')}
+              </h2>
+              <p className="text-sm text-txt-sec mt-1">{t('openDataPlacesSub')}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {places.map(place => (
+              <Link key={place.id} href={`/${locale}/places/${place.id}`} className="block rounded-2xl border border-border bg-bg-surface p-4 hover:border-primary/30 hover:shadow-lg transition-all">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-primary font-semibold">
+                    {(CATEGORY_LABELS[locale] || CATEGORY_LABELS.az)[place.category] || place.category}
+                  </span>
+                  {place.ratingSummary > 0 && (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
+                      <Star className="w-3 h-3 fill-current" />
+                      {place.ratingSummary.toFixed(1)}
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-semibold text-sm mt-3 line-clamp-2">{place.name}</h3>
+                {place.city?.name && (
+                  <p className="inline-flex items-center gap-1 text-xs text-txt-sec mt-2">
+                    <MapPin className="w-3 h-3" />
+                    {place.city.name}
+                  </p>
+                )}
+                {place.description && (
+                  <p className="text-xs text-txt-sec mt-2 line-clamp-3">{place.description}</p>
+                )}
+                <div className="flex items-center justify-between gap-3 mt-4 text-xs text-txt-sec">
+                  <span>{place.reviewCount} {tc('reviews')}</span>
+                  {place.sourceUrl && (
+                    <span className="inline-flex items-center gap-1">
+                      {t('source')} <ExternalLink className="w-3 h-3" />
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+          <p className="text-xs text-txt-sec mt-3">{t('openDataAttribution')}</p>
         </div>
       )}
 

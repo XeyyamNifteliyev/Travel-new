@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { createBrowserClient } from '@/lib/supabase/client';
+import type { User } from '@/types/supabase-helpers';
 import { Building2, CheckCircle, Loader2, Phone, Mail, Globe, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -10,8 +11,18 @@ export default function CompanyRegister() {
   const t = useTranslations('company');
   const supabase = createBrowserClient();
 
-  const [user, setUser] = useState<any>(null);
-  const [existingCompany, setExistingCompany] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [existingCompany, setExistingCompany] = useState<{
+    company_name: string;
+    status: string;
+    is_verified: boolean;
+    phone?: string;
+    whatsapp?: string;
+    email?: string;
+    website?: string;
+    plan_type: string;
+    plan_expires_at?: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -164,7 +175,7 @@ export default function CompanyRegister() {
           ].map(plan => (
             <button
               key={plan.key}
-              onClick={() => setFormData(prev => ({ ...prev, planType: plan.key as any }))}
+              onClick={() => setFormData(prev => ({ ...prev, planType: plan.key as 'starter' | 'pro' | 'premium' }))}
               className={`p-5 rounded-2xl border-2 transition-all text-left ${
                 formData.planType === plan.key
                   ? 'border-sky-500 bg-sky-500/10'

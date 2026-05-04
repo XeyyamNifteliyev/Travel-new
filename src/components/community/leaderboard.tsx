@@ -52,13 +52,14 @@ export default function LeaderboardPage() {
     if (!error && data) {
       const aggregated: Record<string, LeaderboardEntry> = {};
 
-      data.forEach((blog: any) => {
+      data.forEach((blog: { author_id: string; views: number; likes: number; author: { name: string | null; avatar_url: string | null }[] | null }) => {
         const authorId = blog.author_id;
+        const authorEntry = Array.isArray(blog.author) ? blog.author[0] : null;
         if (!aggregated[authorId]) {
           aggregated[authorId] = {
             userId: authorId,
-            userName: blog.author?.name || 'Anonim',
-            avatarUrl: blog.author?.avatar_url,
+            userName: authorEntry?.name || 'Anonim',
+            avatarUrl: authorEntry?.avatar_url ?? undefined,
             totalViews: 0,
             totalShares: 0,
             totalLikes: 0,

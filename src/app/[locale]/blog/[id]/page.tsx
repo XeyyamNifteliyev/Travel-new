@@ -10,6 +10,7 @@ import {
   Send, MessageCircle, Copy, Check
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import BlogComments from '@/components/blog/blog-comments';
 import DOMPurify from 'dompurify';
 
@@ -234,13 +235,13 @@ export default function BlogDetailPage() {
         </div>
 
         {blog.cover_image && (
-          <img src={blog.cover_image} alt={blog.title} className="w-full rounded-2xl mb-8 shadow-lg" />
+          <Image src={blog.cover_image} alt={blog.title} width={1200} height={600} className="w-full rounded-2xl mb-8 shadow-lg" />
         )}
 
         {author && (
           <div className="flex items-center gap-4 mb-8 p-4 bg-bg-surface/50 rounded-2xl border border-border">
             {author.avatar_url ? (
-              <img src={author.avatar_url} alt={author.name} className="w-12 h-12 rounded-full object-cover" />
+              <Image src={author.avatar_url} alt={author.name} width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
             ) : (
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-lg font-bold text-primary">
                 {author.name?.[0] || 'A'}

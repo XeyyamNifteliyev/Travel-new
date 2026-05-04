@@ -2,7 +2,9 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
+import type { User as SupabaseUser } from '@/types/supabase-helpers';
 import { useChat } from '@/hooks/useChat';
 import { ChatList } from '@/components/chat/chat-list';
 import { ChatWindow } from '@/components/chat/chat-window';
@@ -14,10 +16,11 @@ function ChatContent() {
   const searchParams = useSearchParams();
   const locale = params?.locale as string;
   const supabase = createClient();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [mobileShowChat, setMobileShowChat] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const t = useTranslations('chat');
 
   const markConvAsSeen = (convId: string) => {
     try {
@@ -44,7 +47,7 @@ function ChatContent() {
     isUserBlocked,
     setActiveConversation,
     setError,
-  } = useChat(user?.id);
+  } = useChat(user?.id ?? null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -120,7 +123,7 @@ function ChatContent() {
       {error && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 bg-red-500/10 border border-red-500/30 rounded-2xl text-red-400 text-sm backdrop-blur-xl flex items-center gap-3">
           {error}
-          <button onClick={() => setError(null)} className="underline font-medium">Bağla</button>
+          <button onClick={() => setError(null)} className="underline font-medium">{t('close')}</button>
         </div>
       )}
 
@@ -134,8 +137,8 @@ function ChatContent() {
               <MessageCircle className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Mesajlar</h1>
-              <p className="text-xs text-txt-muted">{conversations.length} yazışma</p>
+              <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+              <p className="text-xs text-txt-muted">{t('conversationsCount', { count: conversations.length })}</p>
             </div>
           </div>
 
@@ -145,7 +148,7 @@ function ChatContent() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="w-full bg-bg-surface/80 border-none rounded-full py-3.5 pl-11 pr-6 text-sm text-txt placeholder:text-txt-muted focus:ring-2 focus:ring-primary/40 transition-all"
-              placeholder="Axtar..."
+              placeholder={t('searchPlaceholder')}
               type="text"
             />
           </div>
@@ -186,7 +189,7 @@ function ChatContent() {
               className="md:hidden flex items-center gap-2 p-4 border-b border-border/10 text-sm text-txt-sec"
             >
               <ArrowLeft className="w-4 h-4" />
-              Geri
+              {t('back')}
             </button>
             <ChatWindow
               messages={messages}
@@ -216,8 +219,8 @@ function ChatContent() {
               <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-bg-surface/50 flex items-center justify-center">
                 <MessageCircle className="w-10 h-10 text-txt-muted/40" />
               </div>
-              <p className="text-txt-sec font-medium">Yazışma seçin</p>
-              <p className="text-txt-muted text-sm mt-1">Soldakı siyahıdan yazışma seçin</p>
+              <p className="text-txt-sec font-medium">{t('selectConversation')}</p>
+              <p className="text-txt-muted text-sm mt-1">{t('selectConversationSub')}</p>
             </div>
           </div>
         )}

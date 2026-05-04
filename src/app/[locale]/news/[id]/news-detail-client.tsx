@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, Calendar, Tag } from 'lucide-react';
 
@@ -37,7 +38,7 @@ export default function NewsDetailClient({ news, locale }: { news: Record<string
 
       {imageUrl && (
         <div className="aspect-video rounded-xl overflow-hidden mb-6">
-          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+          <Image src={imageUrl} alt={title} className="w-full h-full object-cover" fill />
         </div>
       )}
 

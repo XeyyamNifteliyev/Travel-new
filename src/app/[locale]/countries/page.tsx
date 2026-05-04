@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import CountryGrid from './country-grid-client';
+import type { ExpandedCountry } from '@/types/country';
 
 export default async function CountriesPage() {
   const supabase = await createClient();
@@ -11,7 +12,7 @@ export default async function CountriesPage() {
     .order('popular_rank', { ascending: true })
     .limit(60);
 
-  return <CountryGrid countries={(countries as any) || []} />;
+  return <CountryGrid countries={(countries as ExpandedCountry[]) || []} />;
 }
 
 export const revalidate = 86400;

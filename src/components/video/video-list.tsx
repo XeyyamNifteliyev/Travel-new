@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { YouTubeLink, YouTubeFormData } from '@/types/youtube';
 import { useTranslations } from 'next-intl';
 import { createBrowserClient } from '@/lib/supabase/client';
+import type { User } from '@/types/supabase-helpers';
 import {
   Play, Plus, X, Loader2, MapPin, Calendar, Eye,
   Heart, ExternalLink, Video
@@ -23,7 +25,7 @@ export default function VideosPage() {
 
   const [videos, setVideos] = useState<YouTubeLink[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [filterCountry, setFilterCountry] = useState('');
 
@@ -162,7 +164,7 @@ export default function VideosPage() {
                   <label className="block text-sm font-medium text-txt-sec mb-2">Dil</label>
                   <select
                     value={formData.language}
-                    onChange={e => setFormData(prev => ({ ...prev, language: e.target.value as any }))}
+                    onChange={e => setFormData(prev => ({ ...prev, language: e.target.value as 'az' | 'ru' | 'en' }))}
                     className="w-full bg-bg-input border border-border rounded-xl px-4 py-3 text-txt"
                   >
                     <option value="az">AZ</option>
@@ -226,12 +228,14 @@ export default function VideosPage() {
                 >
                   {/* Thumbnail */}
                   <div className="relative h-48 bg-bg-input overflow-hidden">
-                    <img
+                    <Image
                       src={video.thumbnailUrl || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
                       alt={video.title}
                       className="w-full h-full object-cover"
+                      fill
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
                       }}
                     />
                     <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

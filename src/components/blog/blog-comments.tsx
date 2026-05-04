@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { BlogComment } from '@/types/comment';
 import { useTranslations } from 'next-intl';
+import type { User as SupabaseUser } from '@/types/supabase-helpers';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { MessageSquare, Send, Trash2, Loader2, User } from 'lucide-react';
 import { toast } from 'sonner';
@@ -17,7 +18,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
 
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,7 +36,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
     setLoading(true);
     const res = await fetch(`/api/comments?blogId=${blogId}`);
     const data = await res.json();
-    const mapped = (data.comments || []).map((c: any) => ({
+    const mapped = (data.comments || []).map((c: { id: string; blog_id: string; user_id: string; content: string; created_at: string; updated_at: string; author?: { name: string; avatar_url?: string } }) => ({
       ...c,
       blogId: c.blog_id,
       userId: c.user_id,
@@ -68,10 +69,10 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
     const res = await fetch(`/api/comments?id=${id}`, { method: 'DELETE' });
     if (res.ok) {
       fetchComments();
-      toast.success('Şərh silindi');
+      toast.success(t('commentDeleted'));
     } else {
       const data = await res.json().catch(() => ({}));
-      toast.error(data.error || 'Şərhi silmək alınmadı');
+      toast.error(data.error || t('commentDeleteFailed'));
     }
   }
 
@@ -89,7 +90,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
     <div className="mt-8 pt-8 border-t border-border">
       <h3 className="text-lg font-semibold text-txt flex items-center gap-2 mb-6">
         <MessageSquare className="w-5 h-5" />
-        Şərhlər ({comments.length})
+        {t('comments')} ({comments.length})
       </h3>
 
       {/* Comment Form */}
@@ -104,7 +105,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
                 type="text"
                 value={content}
                 onChange={e => setContent(e.target.value)}
-                placeholder="Şərh yaz..."
+                placeholder={t('commentPlaceholder')}
                 className="flex-1 bg-bg-input border border-border rounded-xl px-4 py-2.5 text-txt placeholder-txt-muted focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
               <button
@@ -118,7 +119,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
           </div>
         </form>
       ) : (
-        <p className="text-txt-sec text-sm mb-6">Şərh yazmaq üçün daxil olun.</p>
+        <p className="text-txt-sec text-sm mb-6">{t('loginToComment')}</p>
       )}
 
       {/* Comments List */}
@@ -127,7 +128,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
           <Loader2 className="w-6 h-6 text-sky-400 animate-spin" />
         </div>
       ) : comments.length === 0 ? (
-        <p className="text-txt-muted text-center py-4">Hələ şərh yoxdur. İlk şərh yazın!</p>
+        <p className="text-txt-muted text-center py-4">{t('noComments')}</p>
       ) : (
         <div className="space-y-4">
           {comments.map(comment => (
@@ -139,7 +140,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
               </div>
               <div className="flex-1 bg-card-bg rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-txt text-sm font-medium">{comment.author?.name || 'Anonim'}</span>
+                  <span className="text-txt text-sm font-medium">{comment.author?.name || t('anonymousAuthor')}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-txt-muted text-xs">{formatDate(comment.createdAt)}</span>
                     {user && comment.userId === user.id && (

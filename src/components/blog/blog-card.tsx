@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { Calendar, Eye, Heart } from 'lucide-react';
 import type { Blog } from '@/types/blog';
@@ -27,7 +28,7 @@ interface BlogCardProps {
 export function BlogCard({ blog, index = 0 }: BlogCardProps) {
   const params = useParams();
   const locale = params?.locale as string;
-  const author = (blog as any).author;
+  const author = blog.author;
   const gradient = CARD_GRADIENTS[(index ?? 0) % CARD_GRADIENTS.length];
   const initial = author?.name?.[0]?.toUpperCase() || 'A';
 
@@ -36,10 +37,11 @@ export function BlogCard({ blog, index = 0 }: BlogCardProps) {
       <article className="bg-bg-surface/50 rounded-2xl overflow-hidden border border-border hover:border-primary/50 hover:shadow-[0_0_20px_rgba(14,165,233,0.15)] transition-all duration-300 group flex flex-col h-full">
         <div className="h-48 overflow-hidden relative">
           {blog.cover_image ? (
-            <img
+            <Image
               src={blog.cover_image}
               alt={blog.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-75 group-hover:brightness-100"
+              fill
             />
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${gradient} group-hover:scale-105 transition-transform duration-500`}>
@@ -75,10 +77,12 @@ export function BlogCard({ blog, index = 0 }: BlogCardProps) {
           <div className="flex items-center justify-between pt-3 border-t border-border/10">
             <div className="flex items-center gap-2.5">
               {author?.avatar_url ? (
-                <img
+                <Image
                   src={author.avatar_url}
                   alt={author.name}
                   className="w-7 h-7 rounded-full object-cover"
+                  width={28}
+                  height={28}
                 />
               ) : (
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-xs font-bold text-primary">

@@ -43,7 +43,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-txt-sec">
               <li><Link href={`/${locale}/companions`} className="hover:text-primary transition-colors flex items-center gap-1"><Users className="w-3 h-3" />{tc('companions')}</Link></li>
               <li><Link href={`/${locale}/visa`} className="hover:text-primary transition-colors">{t('visa')}</Link></li>
-              <li><Link href={`/${locale}/company`} className="hover:text-primary transition-colors flex items-center gap-1"><Building2 className="w-3 h-3" />Tur şirkəti</Link></li>
+              <li><Link href={`/${locale}/company`} className="hover:text-primary transition-colors flex items-center gap-1"><Building2 className="w-3 h-3" />{tc('services')}</Link></li>
             </ul>
           </div>
         </div>

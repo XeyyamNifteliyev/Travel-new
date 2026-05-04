@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
+import type { User as SupabaseUser } from '@/types/supabase-helpers';
 import { BlogCard } from '@/components/blog/blog-card';
 import type { Blog } from '@/types/blog';
 import { Plus, Search, TrendingUp, User , Eye} from 'lucide-react';
@@ -15,7 +17,7 @@ export default function BlogListPage() {
   const locale = params?.locale as string;
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [search, setSearch] = useState('');
   const [filterTag, setFilterTag] = useState('');
 
@@ -62,8 +64,8 @@ export default function BlogListPage() {
   const topAuthors = Array.from(
     new Map(
       blogs
-        .filter(b => (b as any).author?.name)
-        .map(b => [(b as any).author.name, (b as any).author])
+        .filter(b => b.author?.name)
+        .map(b => [b.author!.name, b.author!])
     ).values()
   ).slice(0, 5);
 
@@ -94,9 +96,10 @@ export default function BlogListPage() {
             <div className="group relative rounded-2xl overflow-hidden border border-border hover:border-primary/50 hover:shadow-[0_0_30px_rgba(14,165,233,0.2)] transition-all duration-500">
               <div className="h-64 md:h-96 relative overflow-hidden">
                 {featuredBlog.cover_image ? (
-                  <img
+                  <Image
                     src={featuredBlog.cover_image}
                     alt={featuredBlog.title}
+                    fill
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-75 group-hover:brightness-100"
                   />
                 ) : (
@@ -111,18 +114,20 @@ export default function BlogListPage() {
                     {featuredBlog.title}
                   </h2>
                   <div className="flex items-center gap-3 text-white/80 text-sm mt-3">
-                    {(featuredBlog as any).author?.avatar_url ? (
-                      <img
-                        src={(featuredBlog as any).author.avatar_url}
-                        alt={(featuredBlog as any).author.name}
+                    {featuredBlog.author?.avatar_url ? (
+                      <Image
+                        src={featuredBlog.author.avatar_url}
+                        alt={featuredBlog.author.name}
+                        width={28}
+                        height={28}
                         className="w-7 h-7 rounded-full border border-white/30"
                       />
                     ) : (
                       <div className="w-7 h-7 rounded-full bg-primary/30 flex items-center justify-center text-xs font-bold text-white">
-                        {(featuredBlog as any).author?.name?.[0] || t('anonymous')[0]}
+                        {featuredBlog.author?.name?.[0] || t('anonymous')[0]}
                       </div>
                     )}
-                    <span>{(featuredBlog as any).author?.name || t('anonymous')}</span>
+                    <span>{featuredBlog.author?.name || t('anonymous')}</span>
                     <span>·</span>
                     <Eye className="w-3.5 h-3.5" />
                     <span>{t('viewsCount', { count: featuredBlog.views })}</span>
@@ -252,12 +257,14 @@ export default function BlogListPage() {
                   <h4 className="text-base font-bold text-txt">{t('authors')}</h4>
                 </div>
                 <div className="flex flex-col gap-3">
-                  {topAuthors.map((author: any) => (
+                  {topAuthors.map((author: { name: string; avatar_url?: string }) => (
                     <div key={author.name} className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer">
                       {author.avatar_url ? (
-                        <img
+                        <Image
                           src={author.avatar_url}
                           alt={author.name}
+                          width={40}
+                          height={40}
                           className="w-10 h-10 rounded-full border-2 border-transparent hover:border-primary transition-all"
                         />
                       ) : (

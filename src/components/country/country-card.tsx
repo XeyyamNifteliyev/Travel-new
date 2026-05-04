@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Plane, Hotel, Shield } from 'lucide-react';
-import { getUnsplashUrl, getFlagUrl } from '@/lib/unsplash';
+import { getCountryCoverPhotoId, getUnsplashUrl, getFlagUrl } from '@/lib/unsplash';
 import type { ExpandedCountry } from '@/types/country';
 
 const SAFETY_COLORS: Record<string, string> = {
@@ -38,7 +38,8 @@ export function CountryCard({ country }: CountryCardProps) {
     : locale === 'ru' ? country.short_desc_ru
     : country.short_desc;
 
-  const showImage = country.cover_photo_id && !imgError;
+  const coverPhotoId = getCountryCoverPhotoId(country.slug, country.cover_photo_id);
+  const showImage = coverPhotoId && !imgError;
 
   return (
     <Link href={`/${locale}/countries/${country.slug}`} className="group block">
@@ -46,8 +47,8 @@ export function CountryCard({ country }: CountryCardProps) {
         <div className="relative h-52 bg-gray-200 dark:bg-gray-700 overflow-hidden">
           {showImage ? (
             <Image
-              src={getUnsplashUrl(country.cover_photo_id!, { w: 500, h: 320 })}
-              alt={country.cover_photo_alt || name}
+              src={getUnsplashUrl(coverPhotoId, { w: 600, h: 390, q: 78 })}
+              alt={country.cover_photo_alt || `${name} travel photo`}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover group-hover:scale-110 transition-transform duration-500"

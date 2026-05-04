@@ -2,13 +2,14 @@
 
 import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { HotelSearch } from '@/components/search/hotel-search';
 import { Star, MapPin, X, Check, Filter, Phone, Wifi, Waves, UtensilsCrossed, Sparkles, Maximize2 } from 'lucide-react';
 
 const HotelMap = dynamic(() => import('@/components/map/hotel-map'), { ssr: false });
 
-const FEATURE_ICONS: Record<string, any> = {
+const FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   pool: Waves,
   breakfast: UtensilsCrossed,
   spa: Sparkles,
@@ -96,10 +97,11 @@ export default function HotelsPage() {
                     onClick={() => setSelectedHotel(hotel)}
                     className="group relative overflow-hidden rounded-2xl aspect-[4/5] bg-bg-surface shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border border-border/30 hover:border-primary/30 hover:shadow-[0_20px_50px_rgba(14,165,233,0.15)]"
                   >
-                    <img
+                    <Image
                       alt={hotel.name}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       src={hotel.image}
+                      fill
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/30 to-transparent" />
                     <div className="absolute bottom-0 p-5 md:p-7 w-full">
@@ -238,10 +240,11 @@ export default function HotelsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-56 md:h-72 flex-shrink-0">
-              <img
+              <Image
                 src={selectedHotel.image}
                 alt={selectedHotel.name}
                 className="w-full h-full object-cover"
+                fill
               />
               <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-transparent to-transparent" />
               <button

@@ -29,31 +29,32 @@ export async function POST(request: Request) {
       }
     }
 
-    let parsed: any;
+    let parsed: Record<string, unknown>;
     try {
-      parsed = JSON.parse(jsonStr);
+      parsed = JSON.parse(jsonStr) as Record<string, unknown>;
     } catch {
       const cleaned = jsonStr.replace(/,\s*([}\]])/g, '$1');
-      parsed = JSON.parse(cleaned);
+      parsed = JSON.parse(cleaned) as Record<string, unknown>;
     }
 
     const result: CheapDatesResponse = {
-      destination: parsed.destination || body.destination,
-      options: (parsed.options || []).map((opt: any) => ({
-        period: opt.period || '',
-        flightPrice: opt.flightPrice || 0,
-        hotelPricePerNight: opt.hotelPricePerNight || 0,
-        totalPrice: opt.totalPrice || 0,
-        reason: opt.reason || '',
+      destination: (parsed.destination as string) || body.destination,
+      options: ((parsed.options ?? []) as Record<string, unknown>[]).map((opt) => ({
+        period: (opt.period as string) || '',
+        flightPrice: (opt.flightPrice as number) || 0,
+        hotelPricePerNight: (opt.hotelPricePerNight as number) || 0,
+        totalPrice: (opt.totalPrice as number) || 0,
+        reason: (opt.reason as string) || '',
       })),
-      tip: parsed.tip || '',
+      tip: (parsed.tip as string) || '',
     };
 
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Cheap Dates error:', error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: error.message || 'Ucuz tarixlər tapılarkən xəta baş verdi' },
+      { error: message || 'Ucuz tarixlər tapılarkən xəta baş verdi' },
       { status: 500 }
     );
   }

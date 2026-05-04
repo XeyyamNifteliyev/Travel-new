@@ -58,6 +58,9 @@ export interface ExpandedCountry {
   visa_required?: boolean;
   popular_rank?: number;
   is_featured?: boolean;
+  cca2?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface CountryHighlight {

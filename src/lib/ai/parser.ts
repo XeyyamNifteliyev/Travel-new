@@ -38,45 +38,50 @@ export function parseAIResponse(raw: string): TravelPlan {
   }
 }
 
-function mapToTravelPlan(parsed: any): TravelPlan {
+function mapToTravelPlan(parsed: Record<string, unknown>): TravelPlan {
+  const cost = (parsed.totalEstimatedCost ?? {}) as Record<string, unknown>;
+  const breakdown = (cost.breakdown ?? {}) as Record<string, unknown>;
   return {
-    summary: parsed.summary || '',
+    summary: (parsed.summary as string) || '',
     totalEstimatedCost: {
-      amount: parsed.totalEstimatedCost?.amount || 0,
-      currency: parsed.totalEstimatedCost?.currency || 'AZN',
+      amount: (cost.amount as number) || 0,
+      currency: (cost.currency as string) || 'AZN',
       breakdown: {
-        flights: parsed.totalEstimatedCost?.breakdown?.flights || 0,
-        accommodation: parsed.totalEstimatedCost?.breakdown?.accommodation || 0,
-        food: parsed.totalEstimatedCost?.breakdown?.food || 0,
-        activities: parsed.totalEstimatedCost?.breakdown?.activities || 0,
-        transport: parsed.totalEstimatedCost?.breakdown?.transport || 0,
+        flights: (breakdown.flights as number) || 0,
+        accommodation: (breakdown.accommodation as number) || 0,
+        food: (breakdown.food as number) || 0,
+        activities: (breakdown.activities as number) || 0,
+        transport: (breakdown.transport as number) || 0,
       },
     },
-    days: (parsed.days || []).map((day: any) => ({
-      day: day.day || 1,
-      title: day.title || '',
-      activities: (day.activities || []).map((a: any) => ({
-        time: a.time || '',
-        activity: a.activity || '',
-        location: a.location || '',
-        cost: a.cost || 0,
-        tip: a.tip || '',
-      })),
-      meals: {
-        breakfast: day.meals?.breakfast || '',
-        lunch: day.meals?.lunch || '',
-        dinner: day.meals?.dinner || '',
-      },
-      transport: day.transport || '',
-      estimatedCost: day.estimatedCost || 0,
-    })),
-    tips: parsed.tips || [],
+    days: ((parsed.days ?? []) as Record<string, unknown>[]).map((day) => {
+      const meals = (day.meals ?? {}) as Record<string, unknown>;
+      return {
+        day: (day.day as number) || 1,
+        title: (day.title as string) || '',
+        activities: ((day.activities ?? []) as Record<string, unknown>[]).map((a) => ({
+          time: (a.time as string) || '',
+          activity: (a.activity as string) || '',
+          location: (a.location as string) || '',
+          cost: (a.cost as number) || 0,
+          tip: (a.tip as string) || '',
+        })),
+        meals: {
+          breakfast: (meals.breakfast as string) || '',
+          lunch: (meals.lunch as string) || '',
+          dinner: (meals.dinner as string) || '',
+        },
+        transport: (day.transport as string) || '',
+        estimatedCost: (day.estimatedCost as number) || 0,
+      };
+    }),
+    tips: (parsed.tips as string[]) || [],
     visaInfo: {
-      required: parsed.visaInfo?.required || false,
-      type: parsed.visaInfo?.type || '',
-      processingTime: parsed.visaInfo?.processingTime || '',
+      required: ((parsed.visaInfo as Record<string, unknown>)?.required as boolean) || false,
+      type: ((parsed.visaInfo as Record<string, unknown>)?.type as string) || '',
+      processingTime: ((parsed.visaInfo as Record<string, unknown>)?.processingTime as string) || '',
     },
-    bestTimeToVisit: parsed.bestTimeToVisit || '',
-    packingList: parsed.packingList || [],
+    bestTimeToVisit: (parsed.bestTimeToVisit as string) || '',
+    packingList: (parsed.packingList as string[]) || [],
   };
 }

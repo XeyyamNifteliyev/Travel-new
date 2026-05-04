@@ -2,14 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
+import type { User as SupabaseUser } from '@/types/supabase-helpers';
 import { FileText, Users, Video, Globe, TrendingUp } from 'lucide-react';
 
 export function DashboardOverview() {
   const params = useParams();
   const locale = params?.locale as string;
   const supabase = createClient();
-  const [user, setUser] = useState<any>(null);
+  const t = useTranslations('profile');
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [stats, setStats] = useState({ blogs: 0, companions: 0, videos: 0, countries: 0, views: 0 });
   const [loading, setLoading] = useState(true);
 
@@ -54,16 +57,16 @@ export function DashboardOverview() {
   }
 
   const statCards = [
-    { label: 'Bloglar', value: stats.blogs, icon: <FileText className="w-6 h-6 text-blue-400" />, color: 'bg-blue-500/10' },
-    { label: 'Yoldaşlar', value: stats.companions, icon: <Users className="w-6 h-6 text-green-400" />, color: 'bg-green-500/10' },
-    { label: 'Videolar', value: stats.videos, icon: <Video className="w-6 h-6 text-red-400" />, color: 'bg-red-500/10' },
-    { label: 'Ölkələr', value: stats.countries, icon: <Globe className="w-6 h-6 text-yellow-400" />, color: 'bg-yellow-500/10' },
-    { label: 'Baxışlar', value: stats.views, icon: <TrendingUp className="w-6 h-6 text-purple-400" />, color: 'bg-purple-500/10' },
+    { label: t('statBlogs'), value: stats.blogs, icon: <FileText className="w-6 h-6 text-blue-400" />, color: 'bg-blue-500/10' },
+    { label: t('statCompanions'), value: stats.companions, icon: <Users className="w-6 h-6 text-green-400" />, color: 'bg-green-500/10' },
+    { label: t('statVideos'), value: stats.videos, icon: <Video className="w-6 h-6 text-red-400" />, color: 'bg-red-500/10' },
+    { label: t('statCountries'), value: stats.countries, icon: <Globe className="w-6 h-6 text-yellow-400" />, color: 'bg-yellow-500/10' },
+    { label: t('statViews'), value: stats.views, icon: <TrendingUp className="w-6 h-6 text-purple-400" />, color: 'bg-purple-500/10' },
   ];
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Xoş gəldin, {user?.user_metadata?.name || 'İstifadəçi'}!</h2>
+      <h2 className="text-2xl font-bold">{t('welcome', { name: user?.user_metadata?.name || t('user') })}</h2>
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {statCards.map((stat) => (

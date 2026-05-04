@@ -2,6 +2,7 @@ export interface Blog {
   id: string;
   author_id: string;
   title: string;
+  excerpt?: string;
   content: string;
   cover_image?: string;
   language: 'az' | 'ru' | 'en';
