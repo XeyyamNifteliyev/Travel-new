@@ -103,6 +103,7 @@ export function mapCityToSummary(city: CityWithCountryRow, locale: Locale): City
           slug: city.countries.slug,
           name: getLocalizedCountryName(city.countries, locale),
           flagEmoji: optionalString(city.countries.flag_emoji),
+          cca2: city.countries.cca2 ?? undefined,
         }
       : undefined,
   };

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 import { getProvider } from '@/lib/ai/provider';
 import { buildPrompt } from '@/lib/ai/prompts';
 import { parseAIResponse } from '@/lib/ai/parser';
@@ -6,6 +7,12 @@ import { PlanRequest } from '@/types/ai-planner';
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Giriş tələb olunur' }, { status: 401 });
+    }
+
     const body: PlanRequest = await request.json();
 
     if (!body.destination || !body.startDate || !body.endDate) {

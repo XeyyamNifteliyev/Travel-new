@@ -157,6 +157,7 @@ export interface CityCountryRef {
   name_en: string | null;
   name_ru: string | null;
   flag_emoji?: string | null;
+  cca2?: string | null;
 }
 
 export interface PlaceCityRef {
@@ -208,6 +209,7 @@ export interface CitySummary {
     slug: string;
     name: string;
     flagEmoji?: string;
+    cca2?: string;
   };
 }
 

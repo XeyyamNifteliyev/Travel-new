@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 import { getProvider } from '@/lib/ai/provider';
 import { buildCheapDatesPrompt } from '@/lib/ai/prompts';
 import { CheapDatesRequest, CheapDatesResponse } from '@/types/ai-planner';
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Giriş tələb olunur' }, { status: 401 });
+    }
+
     const body: CheapDatesRequest = await request.json();
 
     if (!body.destination || !body.duration || !body.travelers) {

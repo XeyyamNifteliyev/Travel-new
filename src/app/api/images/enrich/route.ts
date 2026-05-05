@@ -9,12 +9,27 @@ async function sleep(ms: number) {
 }
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (profile?.role !== 'admin') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   const body = await request.json().catch(() => ({}));
   const type = body.type === 'cities' ? 'cities' : body.type === 'all' ? 'all' : 'countries';
   const limit = Math.min(parseInt(body.limit || '10', 10), 30);
   const dryRun = body.dryRun !== false;
-
-  const supabase = await createClient();
 
   const enriched: Array<{ table: string; id: string; slug: string; photoId: string; query: string }> = [];
   const errors: Array<{ table: string; id: string; error: string }> = [];

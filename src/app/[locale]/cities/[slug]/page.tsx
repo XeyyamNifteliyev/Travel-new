@@ -38,7 +38,7 @@ export default async function CityDetailPage({ params }: PageProps) {
 
   const { data: cityRow } = await supabase
     .from('cities')
-    .select('*, countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
+    .select('*, countries(id, slug, name_az, name_en, name_ru, flag_emoji, cca2)')
     .eq('slug', slug)
     .maybeSingle();
 
@@ -103,7 +103,7 @@ export default async function CityDetailPage({ params }: PageProps) {
         {city.lat && city.lng && (
           <WeatherWidget lat={city.lat} lon={city.lng} />
         )}
-        <VisaCheckWidget compact />
+        <VisaCheckWidget compact defaultDestination={city.country?.cca2 ?? ''} />
       </div>
 
       <section>
