@@ -8,6 +8,8 @@ const intlMiddleware = createIntlMiddleware(routing);
 const PUBLIC_PATHS = [
   '/',
   '/countries',
+  '/cities',
+  '/places',
   '/blog',
   '/tours',
   '/flights',
