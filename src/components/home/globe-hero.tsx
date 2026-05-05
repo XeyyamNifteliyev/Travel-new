@@ -195,7 +195,7 @@ function useVerticalPlanes(containerRef: React.RefObject<HTMLDivElement | null>)
         }
 
         const half = size / 2;
-        el.style.transform = `translate(${x - half}px, ${y - half}px) rotate(-90deg)`;
+        el.style.transform = `translate(${x - half}px, ${y - half}px) rotate(-45deg)`;
         el.style.opacity = opacity.toString();
         el.style.zIndex = zIdx.toString();
       }
