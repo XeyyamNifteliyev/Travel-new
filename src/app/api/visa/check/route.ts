@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getSlugByISO } from '@/lib/unsplash';
 import { normalizeVisaResponse, type VisaStatus } from '@/lib/visa/visalist-api';
 
 const VISA_API_URL = process.env.VISA_API_URL || 'https://rough-sun-2523.fly.dev';
@@ -24,29 +25,32 @@ export async function GET(req: NextRequest) {
   if (passport.toUpperCase() === 'AZ') {
     try {
       const supabase = await createClient();
+      const countrySlug = getSlugByISO(destination);
 
-      const { data: country } = await supabase
-        .from('countries')
-        .select('id')
-        .eq('cca2', destination.toUpperCase())
-        .maybeSingle();
-
-      if (country) {
-        const { data: visaRow } = await supabase
-          .from('visa_info')
-          .select('requirement_type, notes_az, notes_en, processing_days_min, processing_days_max, max_stay_days, validity_days')
-          .eq('country_id', country.id)
+      if (countrySlug) {
+        const { data: country } = await supabase
+          .from('countries')
+          .select('id')
+          .eq('slug', countrySlug)
           .maybeSingle();
 
-        if (visaRow) {
-          return NextResponse.json({
-            passport,
-            destination,
-            status: SUPABASE_STATUS_MAP[visaRow.requirement_type] || 'unknown',
-            duration: visaRow.max_stay_days ? `${visaRow.max_stay_days} gün` : '',
-            notes: visaRow.notes_az || visaRow.notes_en || '',
-            raw: visaRow.requirement_type,
-          });
+        if (country) {
+          const { data: visaRow } = await supabase
+            .from('visa_info')
+            .select('requirement_type, notes_az, notes_en, processing_days_min, processing_days_max, max_stay_days, validity_days')
+            .eq('country_id', country.id)
+            .maybeSingle();
+
+          if (visaRow) {
+            return NextResponse.json({
+              passport,
+              destination,
+              status: SUPABASE_STATUS_MAP[visaRow.requirement_type] || 'unknown',
+              duration: visaRow.max_stay_days ? `${visaRow.max_stay_days} gün` : '',
+              notes: visaRow.notes_az || visaRow.notes_en || '',
+              raw: visaRow.requirement_type,
+            });
+          }
         }
       }
     } catch {

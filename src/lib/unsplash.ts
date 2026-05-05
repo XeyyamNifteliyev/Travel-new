@@ -130,6 +130,15 @@ export function getFlagUrl(slug: string, w: number = 640, cca2?: string): string
   return `https://flagcdn.com/w${w}/${code.toLowerCase()}.png`;
 }
 
+const ISO_TO_SLUG = Object.entries(SLUG_TO_ISO).reduce<Record<string, string>>((acc, [slug, code]) => {
+  if (!acc[code]) acc[code] = slug;
+  return acc;
+}, {});
+
+export function getSlugByISO(code: string): string | undefined {
+  return ISO_TO_SLUG[code.toLowerCase()];
+}
+
 export interface UnsplashSearchResult {
   id: string;
   slug: string;
