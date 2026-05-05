@@ -199,43 +199,53 @@ export default async function HomePage({
 
   return (
     <div className="overflow-hidden">
-      <section className="relative px-4 pt-28 pb-14 md:pt-36 md:pb-20">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,rgba(14,165,233,0.18),transparent_32%),radial-gradient(circle_at_85%_20%,rgba(245,158,11,0.14),transparent_28%)]" />
+      <section className="relative px-4 pt-28 pb-14 md:pt-36 md:pb-20 min-h-screen overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80"
+            alt=""
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        </div>
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/50 to-bg-base" />
         <div className="max-w-7xl mx-auto">
           <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
             <div>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm">
                 <Sparkles className="h-4 w-4" />
                 {t('heroEyebrow')}
               </div>
-              <h1 className="max-w-4xl text-4xl font-black leading-[1.04] tracking-tight text-txt md:text-6xl lg:text-7xl">
+              <h1 className="max-w-4xl text-4xl font-black leading-[1.04] tracking-tight text-white md:text-6xl lg:text-7xl drop-shadow-lg">
                 {t('heroTitleNew')}
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-sky-300 to-secondary">
                   {t('heroHighlightNew')}
                 </span>
               </h1>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-txt-sec md:text-lg">
+              <p className="mt-6 max-w-2xl text-base leading-8 text-white/80 md:text-lg drop-shadow">
                 {t('heroSubtitleNew')}
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href={`/${locale}/ai-planner`}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-txt px-6 py-3.5 text-sm font-bold text-bg-base transition-all hover:-translate-y-0.5 hover:shadow-xl"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-slate-900 transition-all hover:-translate-y-0.5 hover:shadow-xl"
                 >
                   <Bot className="h-4 w-4" />
                   {t('ctaPlanner')}
                 </Link>
                 <Link
                   href={`/${locale}/countries`}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-bg-surface/70 px-6 py-3.5 text-sm font-bold text-txt transition-all hover:border-primary/40 hover:text-primary"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-all hover:border-primary/60 hover:bg-white/20"
                 >
                   <Map className="h-4 w-4" />
                   {t('ctaCountries')}
                 </Link>
                 <Link
                   href={`/${locale}/visa`}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-bg-surface/70 px-6 py-3.5 text-sm font-bold text-txt transition-all hover:border-secondary/40 hover:text-secondary"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-all hover:border-secondary/60 hover:bg-white/20"
                 >
                   <Stamp className="h-4 w-4" />
                   {t('ctaVisa')}
@@ -247,18 +257,12 @@ export default async function HomePage({
               <div className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 md:h-[460px] md:w-[460px]">
                 <GlobeHero />
               </div>
-              <div className="absolute bottom-2 left-0 rounded-2xl border border-border bg-bg-surface/85 p-4 shadow-2xl backdrop-blur md:left-6">
-                <p className="text-xs uppercase tracking-widest text-txt-muted">{t('heroStatLabel')}</p>
-                <p className="mt-1 text-2xl font-black text-txt">185+</p>
-                <p className="text-sm text-txt-sec">{t('heroStatText')}</p>
+              <div className="absolute bottom-2 left-0 rounded-2xl border border-white/20 bg-black/40 p-4 shadow-2xl backdrop-blur md:left-6">
+                <p className="text-xs uppercase tracking-widest text-white/60">{t('heroStatLabel')}</p>
+                <p className="mt-1 text-2xl font-black text-white">185+</p>
+                <p className="text-sm text-white/70">{t('heroStatText')}</p>
               </div>
-              <div className="absolute right-0 top-8 rounded-2xl border border-border bg-bg-surface/85 p-4 shadow-2xl backdrop-blur">
-                <div className="flex items-center gap-2 text-sm font-bold text-txt">
-                  <Award className="h-5 w-5 text-secondary" />
-                  {t('heroBadge')}
-                </div>
-                <p className="mt-1 max-w-[190px] text-xs leading-5 text-txt-sec">{t('heroBadgeSub')}</p>
-              </div>
+
             </div>
           </div>
 

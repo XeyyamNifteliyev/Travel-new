@@ -100,7 +100,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
           }`}
         >
           <div className="flex items-center justify-between p-4 border-b border-border">
-            <span className="text-primary font-bold text-lg">{t('appName')}</span>
+            <span className="text-primary font-bold text-lg font-heading">{t('appName')}</span>
             <button
               onClick={() => setIsOpen(false)}
               className="p-2 text-txt-sec hover:text-primary transition-colors"
@@ -120,7 +120,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                     key={group.key}
                     href={group.link.href}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-txt-sec hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-base"
+                    className="flex items-center gap-3 px-4 py-3 text-txt hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-base font-medium"
                   >
                     <GroupIcon className="w-4 h-4" />
                     {group.label}
@@ -134,7 +134,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                 <div key={group.key}>
                   <button
                     onClick={() => setExpandedGroup(isExpanded ? null : group.key)}
-                    className="flex items-center justify-between w-full px-4 py-3 text-txt-sec hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-base"
+                    className="flex items-center justify-between w-full px-4 py-3 text-txt hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-base font-medium"
                   >
                     <span className="flex items-center gap-3">
                       <GroupIcon className="w-4 h-4" />
@@ -152,8 +152,8 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                             key={child.href}
                             href={child.href}
                             onClick={() => setIsOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-2.5 hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-sm ${
-                              child.highlight ? 'text-primary font-medium' : 'text-txt-sec'
+                            className={`flex items-center gap-3 px-4 py-2.5 hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-sm font-medium ${
+                              child.highlight ? 'text-primary font-semibold' : 'text-txt'
                             }`}
                           >
                             <ChildIcon className="w-3.5 h-3.5" />
@@ -171,7 +171,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
               <Link
                 href={chatLink.href}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-txt-sec hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-base relative"
+                className="flex items-center gap-3 px-4 py-3 text-txt hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors text-base font-medium relative"
               >
                 <chatLink.icon className="w-4 h-4" />
                 {chatLink.label}
@@ -190,7 +190,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                 <Link
                   href={isAdmin ? `/${locale}/admin` : `/${locale}/profile`}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 text-txt-sec hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 text-txt hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors font-medium"
                 >
                   <UserIcon className="w-5 h-5" />
                   <span>{t('profile')}</span>

@@ -140,7 +140,7 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-header-bg backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href={`/${locale}`} className="flex items-center gap-2 text-primary font-bold text-xl">
+          <Link href={`/${locale}`} className="flex items-center gap-2 text-primary font-bold text-xl font-heading">
             <Plane className="w-6 h-6" />
             <span>{t('appName')}</span>
           </Link>
@@ -154,7 +154,7 @@ export function Header() {
                   <Link
                     key={group.key}
                     href={group.link.href}
-                    className="hover:text-primary transition-colors text-sm flex items-center gap-1.5 text-txt-sec px-2 py-1.5 rounded-md"
+                    className="hover:text-primary transition-colors text-sm font-medium flex items-center gap-1.5 text-txt px-2 py-1.5 rounded-md"
                   >
                     <GroupIcon className="w-3.5 h-3.5" />
                     {group.label}
@@ -171,7 +171,7 @@ export function Header() {
                   onMouseLeave={handleGroupLeave}
                 >
                   <button
-                    className={`hover:text-primary transition-colors text-sm flex items-center gap-1.5 text-txt-sec px-2 py-1.5 rounded-md ${
+                    className={`hover:text-primary transition-colors text-sm font-medium flex items-center gap-1.5 text-txt px-2 py-1.5 rounded-md ${
                       openGroup === group.key ? 'text-primary bg-bg-surface-hover' : ''
                     }`}
                     onClick={() => setOpenGroup(openGroup === group.key ? null : group.key)}
@@ -190,8 +190,8 @@ export function Header() {
                             key={child.href}
                             href={child.href}
                             onClick={() => setOpenGroup(null)}
-                            className={`flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-bg-surface-hover transition-colors ${
-                              child.highlight ? 'text-primary font-medium' : 'text-txt-sec'
+                            className={`flex items-center gap-2.5 px-3 py-2 text-sm font-medium hover:bg-bg-surface-hover transition-colors ${
+                              child.highlight ? 'text-primary font-semibold' : 'text-txt'
                             }`}
                           >
                             <ChildIcon className="w-4 h-4" />
@@ -221,7 +221,7 @@ export function Header() {
             <LanguageSwitcher />
             <Link
               href={isLoggedIn ? (isAdmin ? `/${locale}/admin` : `/${locale}/profile`) : `/${locale}/auth/login`}
-              className="hidden md:flex items-center gap-1 text-sm text-txt-sec hover:text-primary transition-colors"
+              className="hidden md:flex items-center gap-1 text-sm font-medium text-txt hover:text-primary transition-colors"
             >
               <User className="w-4 h-4" />
               <span>{isLoggedIn ? t('profile') : t('login')}</span>

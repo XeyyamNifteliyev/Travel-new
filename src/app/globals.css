@@ -55,13 +55,19 @@
   --color-header-bg: var(--header-bg);
   --color-card-bg: var(--card-bg);
   --color-dropdown-bg: var(--dropdown-bg);
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-poppins), var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
 body {
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   transition: background-color 0.3s, color 0.3s;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: var(--font-poppins), var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
 button:not(:disabled),
