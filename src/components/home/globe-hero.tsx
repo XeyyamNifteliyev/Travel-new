@@ -149,10 +149,94 @@ function useAnimatedPlanes(containerRef: React.RefObject<HTMLDivElement | null>)
   }, []);
 }
 
+function useVerticalPlanes(containerRef: React.RefObject<HTMLDivElement | null>) {
+  const frameRef = useRef<number>(0);
+  const angleRef = useRef(0);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const currentEl = el;
+    let started = false;
+
+    function start() {
+      if (started) return;
+      started = true;
+
+      const p3 = currentEl.querySelector('[data-plane="3"]') as HTMLElement;
+      const p4 = currentEl.querySelector('[data-plane="4"]') as HTMLElement;
+
+      const cx = 140, cy = 140;
+      const FADE = 8;
+
+      function updatePlane(el: HTMLElement, offset: number, rx: number, ry: number, size: number) {
+        const angle = angleRef.current + offset;
+        const rad = (angle * Math.PI) / 180;
+        const aNorm = angle % 360;
+
+        const x = cx + rx * Math.sin(rad);
+        const y = cy + ry * Math.cos(rad);
+
+        let opacity: number;
+        let zIdx: number;
+        if (aNorm > 180) {
+          opacity = 0.06;
+          zIdx = 1;
+        } else if (aNorm < FADE) {
+          opacity = 0.06 + (aNorm / FADE) * 0.94;
+          zIdx = aNorm > FADE / 2 ? 10 : 1;
+        } else if (aNorm > 180 - FADE) {
+          opacity = 0.06 + ((180 - aNorm) / FADE) * 0.94;
+          zIdx = aNorm < 180 - FADE / 2 ? 10 : 1;
+        } else {
+          opacity = 1;
+          zIdx = 10;
+        }
+
+        const half = size / 2;
+        el.style.transform = `translate(${x - half}px, ${y - half}px) rotate(-90deg)`;
+        el.style.opacity = opacity.toString();
+        el.style.zIndex = zIdx.toString();
+      }
+
+      function animate() {
+        angleRef.current += 0.15;
+
+        if (p3) updatePlane(p3, 0, 8, 165, 16);
+        if (p4) updatePlane(p4, 180, 12, 185, 14);
+
+        frameRef.current = requestAnimationFrame(animate);
+      }
+
+      frameRef.current = requestAnimationFrame(animate);
+    }
+
+    const observer = new MutationObserver(() => {
+      if (!started && currentEl.querySelector('[data-plane="3"]') && currentEl.querySelector('[data-plane="4"]')) {
+        start();
+        observer.disconnect();
+      }
+    });
+
+    if (currentEl.querySelector('[data-plane="3"]') && currentEl.querySelector('[data-plane="4"]')) {
+      start();
+    } else {
+      observer.observe(currentEl, { childList: true, subtree: true });
+    }
+
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+      observer.disconnect();
+    };
+  }, []);
+}
+
 export function GlobeHero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   useAnimatedPlanes(containerRef);
+  useVerticalPlanes(containerRef);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -210,7 +294,7 @@ export function GlobeHero() {
       <div ref={containerRef} className="relative" style={{ width: '280px', height: '280px' }}>
         <div className="absolute inset-0 rounded-full globe-glow" />
 
-        <div className="absolute inset-0 rounded-full overflow-hidden globe-sphere">
+        <div className="absolute inset-0 rounded-full overflow-hidden globe-sphere" style={{ zIndex: 5 }}>
           <svg ref={svgRef} viewBox="0 0 280 280" className="absolute inset-0 w-full h-full" />
           <div className="absolute inset-0 rounded-full globe-shine" />
         </div>
@@ -222,6 +306,8 @@ export function GlobeHero() {
         >
           <circle cx="180" cy="180" r="160" fill="none" className="globe-orbit" strokeWidth="0.5" strokeDasharray="4 4" />
           <circle cx="180" cy="180" r="180" fill="none" className="globe-orbit-faint" strokeWidth="0.5" strokeDasharray="4 4" />
+          <ellipse cx="180" cy="180" rx="8" ry="165" fill="none" className="globe-orbit-vert" strokeWidth="0.4" />
+          <ellipse cx="180" cy="180" rx="12" ry="185" fill="none" className="globe-orbit-vert-faint" strokeWidth="0.4" />
         </svg>
 
         <div data-plane="1" className="absolute top-0 left-0" style={{ width: '16px', height: '16px', zIndex: 10 }}>
@@ -229,6 +315,12 @@ export function GlobeHero() {
         </div>
         <div data-plane="2" className="absolute top-0 left-0" style={{ width: '14px', height: '14px', zIndex: 10 }}>
           <Plane className="w-3.5 h-3.5 text-blue-400" style={{ filter: 'drop-shadow(0 0 6px rgba(96,165,250,0.6))' }} />
+        </div>
+        <div data-plane="3" className="absolute top-0 left-0" style={{ width: '16px', height: '16px', zIndex: 10 }}>
+          <Plane className="w-4 h-4 text-blue-400" style={{ filter: 'drop-shadow(0 0 8px rgba(96,165,250,0.5))' }} />
+        </div>
+        <div data-plane="4" className="absolute top-0 left-0" style={{ width: '14px', height: '14px', zIndex: 10 }}>
+          <Plane className="w-3.5 h-3.5 text-blue-400" style={{ filter: 'drop-shadow(0 0 8px rgba(96,165,250,0.5))' }} />
         </div>
       </div>
 
@@ -243,6 +335,8 @@ export function GlobeHero() {
         }
         .globe-orbit { stroke: rgba(14,165,233,0.12); }
         .globe-orbit-faint { stroke: rgba(14,165,233,0.08); }
+        .globe-orbit-vert { stroke: rgba(251,191,36,0.1); }
+        .globe-orbit-vert-faint { stroke: rgba(251,191,36,0.06); }
         .globe-sphere {
           background: radial-gradient(circle at 35% 35%, #1e3a5f 0%, #0f2440 40%, #0a1628 80%, #050d1a 100%);
           box-shadow: inset -20px -10px 40px rgba(0,0,0,0.5), 0 0 60px rgba(14,165,233,0.15), 0 0 120px rgba(14,165,233,0.08);
