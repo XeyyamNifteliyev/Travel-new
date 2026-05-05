@@ -12,6 +12,20 @@ const SUPABASE_STATUS_MAP: Record<string, VisaStatus> = {
   required: 'visaRequired',
 };
 
+const HARDCODED_VISA: Record<string, { status: VisaStatus; duration: string }> = {
+  TR: { status: 'visaFree', duration: '90 gün' },
+  GE: { status: 'visaFree', duration: '365 gün' },
+  RU: { status: 'visaFree', duration: '90 gün' },
+  AE: { status: 'visaOnArrival', duration: '30 gün' },
+  IR: { status: 'visaFree', duration: '30 gün' },
+  JP: { status: 'visaRequired', duration: '' },
+  IT: { status: 'visaRequired', duration: '' },
+};
+
+function buildResponse(passport: string, destination: string, status: VisaStatus, duration: string, notes: string, raw: string) {
+  return NextResponse.json({ passport, destination, status, duration, notes, raw });
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const passport = searchParams.get('passport');
@@ -21,8 +35,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'passport and destination are required' }, { status: 400 });
   }
 
-  // 1. Supabase visa_info fallback (AZ passport holders)
+  const destCode = destination.toUpperCase();
+
   if (passport.toUpperCase() === 'AZ') {
+    // 1. Hardcoded map — instant, no dependencies
+    const hardcoded = HARDCODED_VISA[destCode];
+    if (hardcoded) {
+      return buildResponse(passport, destination, hardcoded.status, hardcoded.duration, '', '');
+    }
+
+    // 2. Supabase visa_info fallback
     try {
       const supabase = await createClient();
       const countrySlug = getSlugByISO(destination);
@@ -37,19 +59,19 @@ export async function GET(req: NextRequest) {
         if (country) {
           const { data: visaRow } = await supabase
             .from('visa_info')
-            .select('requirement_type, notes_az, notes_en, processing_days_min, processing_days_max, max_stay_days, validity_days')
+            .select('requirement_type, notes_az, notes_en, max_stay_days')
             .eq('country_id', country.id)
             .maybeSingle();
 
           if (visaRow) {
-            return NextResponse.json({
+            return buildResponse(
               passport,
               destination,
-              status: SUPABASE_STATUS_MAP[visaRow.requirement_type] || 'unknown',
-              duration: visaRow.max_stay_days ? `${visaRow.max_stay_days} gün` : '',
-              notes: visaRow.notes_az || visaRow.notes_en || '',
-              raw: visaRow.requirement_type,
-            });
+              SUPABASE_STATUS_MAP[visaRow.requirement_type] || 'unknown',
+              visaRow.max_stay_days ? `${visaRow.max_stay_days} gün` : '',
+              visaRow.notes_az || visaRow.notes_en || '',
+              visaRow.requirement_type,
+            );
           }
         }
       }
@@ -58,10 +80,10 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // 2. External API
+  // 3. External API
   try {
     const res = await fetch(
-      `${VISA_API_URL}/${passport.toUpperCase()}/${destination.toUpperCase()}`,
+      `${VISA_API_URL}/${passport.toUpperCase()}/${destCode}`,
       { next: { revalidate: 3600 } }
     );
 
