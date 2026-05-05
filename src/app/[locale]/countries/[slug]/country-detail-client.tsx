@@ -9,17 +9,17 @@ import YouTubeLite from '@/components/ui/youtube-lite';
 import { WeatherWidget } from '@/components/weather/weather-widget';
 import { CountryInfoCard } from '@/components/country/country-info-card';
 import { VisaCheckWidget } from '@/components/visa/visa-check-widget';
-import { getUnsplashUrl, getFlagUrl } from '@/lib/unsplash';
+import { getUnsplashUrl, getFlagUrl, getCountryCoverPhotoId } from '@/lib/unsplash';
 import type { ExpandedCountry, CountryHighlight } from '@/types/country';
 import type { CitySummary, PlaceSummary } from '@/types/place';
 
-function HighlightImage({ photoId, name, countrySlug }: { photoId: string; name: string; countrySlug: string }) {
+function HighlightImage({ photoId, name, countrySlug, countryCca2 }: { photoId: string; name: string; countrySlug: string; countryCca2?: string }) {
   const [error, setError] = useState(false);
   if (error) {
     return (
       <div className="relative h-44 bg-bg-surface overflow-hidden">
         <Image
-          src={getFlagUrl(countrySlug, 320)}
+          src={getFlagUrl(countrySlug, 320, countryCca2)}
           alt={name}
           fill
           className="object-cover opacity-20"
@@ -141,6 +141,8 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
 
   const monthLabels = MONTH_LABELS[locale] || MONTH_LABELS.az;
   const allMonths = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const heroPhotoId = getCountryCoverPhotoId(country.slug, country.cover_photo_id);
+  const showHeroError = heroError && !country.cover_photo_id;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -149,10 +151,10 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
         {t('backToCountries')}
       </Link>
 
-      {country.cover_photo_id && !heroError ? (
+      {!showHeroError ? (
         <div className="relative h-72 md:h-[420px] rounded-3xl overflow-hidden mb-8">
           <Image
-            src={getUnsplashUrl(country.cover_photo_id, { w: 1400, h: 600 })}
+            src={getUnsplashUrl(heroPhotoId, { w: 1400, h: 600 })}
             alt={country.cover_photo_alt || name}
             fill
             className="object-cover"
@@ -176,7 +178,7 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
       ) : (
         <div className="relative h-48 md:h-64 rounded-3xl overflow-hidden mb-8 bg-bg-surface border border-border">
           <Image
-            src={getFlagUrl(country.slug, 640)}
+            src={getFlagUrl(country.slug, 640, country.cca2)}
             alt={name}
             fill
             className="object-cover opacity-15 blur-md scale-110"
@@ -184,7 +186,7 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
           />
           <div className="absolute inset-0 flex items-center gap-6 px-8">
             <Image
-              src={getFlagUrl(country.slug, 320)}
+              src={getFlagUrl(country.slug, 320, country.cca2)}
               alt={name}
               width={100}
               height={67}
@@ -286,7 +288,7 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
             {highlights.map(h => (
               <div key={h.id} className="rounded-2xl overflow-hidden border border-border bg-bg-surface hover:shadow-lg transition-shadow">
                 {h.photo_id && (
-                  <HighlightImage photoId={h.photo_id} name={h.name} countrySlug={country.slug} />
+                  <HighlightImage photoId={h.photo_id} name={h.name} countrySlug={country.slug} countryCca2={country.cca2} />
                 )}
                 <div className="p-4">
                   <h3 className="font-semibold">{h.name}</h3>

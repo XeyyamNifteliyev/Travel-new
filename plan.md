@@ -267,6 +267,8 @@ DB check status: `npm run import:open-travel-data -- --check-db` cədvəllərin 
 
 SQL fallback status: `supabase/imports/istanbul_open_data.sql` yaradılıb. Service role key olmadan ilkin importu Supabase SQL Editor-də bu faylla tətbiq etmək olar.
 
+Real DB status: Supabase check artiq Istanbul ucun `cities=1`, `places=8`, `place_sources=8` qaytarir. `/az/cities/istanbul` ve `/az/places/fac8f616-cd3f-425c-8ae7-b96b2cd12c01` real data ile `200` qaytarir.
+
 Country detail status: `src/app/[locale]/countries/[slug]/page.tsx` artiq `cities` ve `places` datasini oxuyur, `country-detail-client.tsx` ise data varsa "Populyar seherler" ve "Aciq data yerleri" bolmelerini gosterir. Data yoxdursa sehife qirilmir.
 
 City/place page status: `src/app/[locale]/cities/[slug]/page.tsx` ve `src/app/[locale]/places/[id]/page.tsx` yaradildi. Place detail sehifesinde source/license bloku ve TravelAZ review listesi var.
@@ -278,6 +280,8 @@ Helpful vote status: `src/components/place/place-helpful-button.tsx` yaradildi. 
 Istanbul seed status: `supabase/migrations/021_seed_istanbul_open_data.sql` yaradildi. Bu migration Istanbul ucun seher datasini ve ilk 8 OpenStreetMap place datasini seed edir.
 
 Fix status: Supabase-de `42P10 no unique or exclusion constraint matching the ON CONFLICT specification` xetasi ucun `021_seed_istanbul_open_data.sql` ve import generatorunda partial unique index sertleri elave edildi: `where source_place_id is not null` ve `where source_id is not null`.
+
+Import log status: `supabase/migrations/023_log_istanbul_open_data_import.sql` yaradildi. Bu migration Istanbul seed importunu `external_import_logs` cedvelinde idempotent sekilde qeyd edir.
 
 Qeyd: Import pipeline Tripadvisor-un pullu API-sini dolanmaq ve ya icazesiz content kopyalamaq ucun istifade olunmayacaq.
 
@@ -316,8 +320,8 @@ Qeyd: Import pipeline Tripadvisor-un pullu API-sini dolanmaq ve ya icazesiz cont
 7. PARTIAL: Olke detail sehifesinde cities/places preview bolmelerini gostermek.
 8. PARTIAL: `--check-db` ve `--sql-out` workflow elave etmek.
 9. DONE: Istanbul open-data seed migration-i elave etmek.
-10. `SUPABASE_SERVICE_ROLE_KEY` elave edilende `--apply` importunu kicik city batch ile yoxlamaq.
-11. PARTIAL: Ayrica city ve place detail sehifelerini qurmaq.
+10. DONE: Istanbul real DB datasini yoxlamaq: `cities=1`, `places=8`, `place_sources=8`.
+11. DONE: Ayrica city ve place detail sehifelerini real Istanbul datasinda yoxlamaq.
 12. DONE: TravelAZ review submit/read UI elave etmek.
 13. GeoNames city seed variantini elave etmek.
 14. PARTIAL: Review helpful votes migration/UI elave etmek; moderation novbeti addimdir.

@@ -10,6 +10,7 @@
     "blog": "Blog",
     "flights": "Biletlər",
     "hotels": "Otellər",
+    "restaurants": "Restoranlar",
     "tours": "Turlar",
     "companions": "Yoldaş Tap",
     "countries": "Ölkələr",
@@ -48,7 +49,8 @@
     "bestValue": "Ən Yaxşı",
     "nonStop": "Birbaşa",
     "direct": "Birbaşa",
-    "select": "Seç"
+    "select": "Seç",
+    "cities": "Şəhərlər"
   },
   "home": {
     "heroTitle": "Dünyanı Kəşf Et",
@@ -105,6 +107,7 @@
     "finalTitle": "TravelAZ-i real data, açıq mənbələr və icma rəyləri ilə böyüdürük.",
     "finalText": "Bu ana səhifə artıq platformanın xəritəsidir: booking, viza, AI plan, ölkələr, yerlər və icma eyni axında görünür.",
     "finalCta": "Viza mərkəzinə keç",
+    "viewAllCities": "Bütün şəhərlər",
     "search": {
       "flights": "Biletlər",
       "hotels": "Otellər",
@@ -194,7 +197,17 @@
     "source": "Mənbə",
     "openDataPlaces": "Açıq data yerləri",
     "openDataPlacesSub": "OpenStreetMap və TravelAZ rəyləri əsasında görməli yerlər.",
-    "openDataAttribution": "Məlumatlar açıq mənbələrdən gəlir və source/license attribution ilə saxlanır."
+"openDataAttribution": "Məlumatlar açıq mənbələrdən gəlir və source/license attribution ilə saxlanır."
+  },
+  "cities": {
+    "title": "Şəhərlər",
+    "subtitle": "Dünyanın ən maraqlı şəhərlərini kəşf edin — görməli yerlər, restoranlar və səyahət məsləhətləri.",
+    "search": "Şəhər axtar...",
+    "resultsCount": "şəhər tapıldı",
+    "noResults": "Şəhər tapılmadı.",
+    "population": "əhali",
+    "placesCount": "görməli yer",
+    "viewCity": "Kəşf et"
   },
   "places": {
     "back": "Geri",
@@ -226,7 +239,23 @@
     "reviewSubmitError": "Rəyi göndərmək alınmadı",
     "duplicateReview": "Bu məkan üçün artıq rəy yazmısan",
     "helpful": "faydalı",
-    "helpfulError": "Səsi yeniləmək alınmadı"
+    "helpfulError": "Səsi yeniləmək alınmadı",
+    "reviewPending": "Rəyiniz təsdiq gözləyir",
+    "moderation": "Rəy Moderasiyası",
+    "pendingReviews": "Gözləyən rəylər",
+    "approve": "Təsdiqlə",
+    "reject": "Rədd et",
+    "noPendingReviews": "Gözləyən rəy yoxdur",
+    "flaggedContent": "Qeyri-münasib məzmun ehtimalı",
+    "reviewApproved": "Rəy təsdiqləndi",
+"reviewRejected": "Rəy rədd edildi",
+    "all": "Hamısı",
+    "attractions": "Görməli yerlər",
+    "restaurants": "Restoranlar",
+    "hotels": "Otellər",
+    "nightlife": "Gecə həyatı",
+    "shopping": "Alış-veriş",
+    "emptyCategory": "Bu kateqoriyada hələ yer yoxdur"
   },
   "auth": {
     "loginTitle": "Hesabınıza daxil olun",
@@ -299,6 +328,7 @@
     "map": "Xəritəm",
     "settings": "Tənzimləmələr",
     "messages": "Mesajlar",
+    "moderation": "Moderasiya",
     "statBlogs": "Bloglar",
     "statCompanions": "Yoldaşlar",
     "statVideos": "Videolar",
@@ -735,5 +765,18 @@
     "notes": "Qeydlər",
     "loading": "Yoxlanılır...",
     "error": "Viza məlumatı tapılmadı"
+  },
+  "restaurants": {
+    "title": "Restoranlar və Kafelər",
+    "subtitle": "OpenStreetMap və TravelAZ rəyləri əsasında ən yaxşı yemək yerləri.",
+    "search": "Restoran axtar...",
+    "filterAll": "Hamısı",
+    "restaurants": "Restoranlar",
+    "cafes": "Kafelər",
+    "rating": "Reytinq",
+    "reviews": "rəy",
+    "inCity": "şəhərində",
+    "noResults": "Restoran tapılmadı",
+    "emptyState": "Hələ restoran datası yoxdur. Yeni şəhərlər import edildikcə burada görünəcək."
   }
 }

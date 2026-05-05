@@ -158,6 +158,10 @@ function parseArgs(argv) {
     out: null,
     sqlOut: null,
     checkDb: false,
+    mode: 'overpass',
+    geonamesUsername: null,
+    citiesPerCountry: 5,
+    enrichPresets: false,
   };
 
   for (const arg of argv) {
@@ -170,6 +174,10 @@ function parseArgs(argv) {
     else if (arg.startsWith('--limit=')) args.limit = Number(arg.slice('--limit='.length));
     else if (arg.startsWith('--out=')) args.out = arg.slice('--out='.length);
     else if (arg.startsWith('--sql-out=')) args.sqlOut = arg.slice('--sql-out='.length);
+    else if (arg.startsWith('--mode=')) args.mode = arg.slice('--mode='.length);
+    else if (arg.startsWith('--geonames-username=')) args.geonamesUsername = arg.slice('--geonames-username='.length);
+    else if (arg.startsWith('--cities-per-country=')) args.citiesPerCountry = Number(arg.slice('--cities-per-country='.length));
+    else if (arg === '--enrich-presets') args.enrichPresets = true;
   }
 
   return args;
@@ -193,6 +201,10 @@ Options:
   --check-db        Check Supabase tables and row counts without writing data
   --apply           Upsert city, places, sources, and import log into Supabase
   --dry-run         Fetch and preview only. This is the default.
+  --mode=<mode>     Import mode: 'overpass' (default) or 'geonames'
+  --geonames-username=<user>  GeoNames API username (or set GEONAMES_USERNAME)
+  --cities-per-country=<n>    Cities per country in geonames mode. Default: 5
+  --enrich-presets    Enrich CITY_PRESETS with GeoNames data
 
 Available cities:
   ${Object.keys(CITY_PRESETS).join(', ')}
@@ -265,6 +277,122 @@ async function fetchJson(url, options = {}) {
   }
 
   return response.json();
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchGeoNamesCities(countryCode, maxRows, username) {
+  const url = `https://api.geonames.org/searchJSON?country=${countryCode}&featureClass=P&orderby=population&maxRows=${maxRows}&username=${encodeURIComponent(username)}`;
+
+  try {
+    const data = await fetchJson(url);
+    if (data.status) {
+      throw new Error(`GeoNames error: ${data.status.message || JSON.stringify(data.status)}`);
+    }
+    return Array.isArray(data.geonames) ? data.geonames : [];
+  } catch (error) {
+    if (error.message && (error.message.includes('403') || error.message.includes('limit'))) {
+      console.log(`  Rate limited, waiting 5s and retrying...`);
+      await delay(5000);
+      const data = await fetchJson(url);
+      if (data.status) {
+        throw new Error(`GeoNames error after retry: ${data.status.message || JSON.stringify(data.status)}`);
+      }
+      return Array.isArray(data.geonames) ? data.geonames : [];
+    }
+    throw error;
+  }
+}
+
+async function fetchGeoNamesCityDetail(geonameId, username) {
+  const url = `https://api.geonames.org/getJSON?geonameId=${geonameId}&username=${encodeURIComponent(username)}`;
+
+  try {
+    const data = await fetchJson(url);
+    if (data.status) {
+      throw new Error(`GeoNames error: ${data.status.message || JSON.stringify(data.status)}`);
+    }
+    return data;
+  } catch (error) {
+    if (error.message && (error.message.includes('403') || error.message.includes('limit'))) {
+      console.log(`  Rate limited, waiting 5s and retrying...`);
+      await delay(5000);
+      const data = await fetchJson(url);
+      if (data.status) {
+        throw new Error(`GeoNames error after retry: ${data.status.message || JSON.stringify(data.status)}`);
+      }
+      return data;
+    }
+    throw error;
+  }
+}
+
+function extractAlternateName(alternateNames, langCode) {
+  if (!alternateNames) return null;
+
+  if (Array.isArray(alternateNames)) {
+    const match = alternateNames.find((alt) => alt.lang === langCode);
+    return match ? match.name : null;
+  }
+
+  return null;
+}
+
+const COUNTRY_CODE_MAP = {
+  turkey: 'TR', france: 'FR', italy: 'IT', dubai: 'AE', georgia: 'GE',
+  japan: 'JP', thailand: 'TH', uk: 'GB', iran: 'IR', russia: 'RU',
+  germany: 'DE', spain: 'ES', egypt: 'EG', usa: 'US', brazil: 'BR',
+  china: 'CN', india: 'IN', australia: 'AU', canada: 'CA', mexico: 'MX',
+  southkorea: 'KR', malaysia: 'MY', indonesia: 'ID', vietnam: 'VN',
+  philippines: 'PH', singapore: 'SG', netherlands: 'NL', belgium: 'BE',
+  switzerland: 'CH', austria: 'AT', portugal: 'PT', greece: 'GR',
+  czechrepublic: 'CZ', poland: 'PL', sweden: 'SE', norway: 'NO',
+  denmark: 'DK', finland: 'FI', ireland: 'IE', argentina: 'AR',
+  colombia: 'CO', chile: 'CL', peru: 'PE', morocco: 'MA',
+  southafrica: 'ZA', tanzania: 'TZ', kenya: 'KE', ethiopia: 'ET',
+  nigeria: 'NG', ghana: 'GH', pakistan: 'PK', bangladesh: 'BD',
+  uzbekistan: 'UZ', kazakhstan: 'KZ', azerbaijan: 'AZ', armenia: 'AM',
+  belarus: 'BY', ukraine: 'UA', moldova: 'MD', romania: 'RO',
+  bulgaria: 'BG', serbia: 'RS', croatia: 'HR', slovenia: 'SI',
+  slovakia: 'SK', hungary: 'HU', israel: 'IL', jordan: 'JO',
+  lebanon: 'LB', saudiarabia: 'SA', qatar: 'QA', kuwait: 'KW',
+  oman: 'OM', bahrain: 'BH', cyprus: 'CY', malta: 'MT',
+  iceland: 'IS', newzealand: 'NZ', cambodia: 'KH', myanmar: 'MM',
+  nepal: 'NP', srilanka: 'LK', mongolia: 'MN',
+};
+
+function deriveCountryCode(slug, cca2) {
+  if (cca2 && cca2.length === 2) return cca2.toUpperCase();
+  const normalized = (slug || '').toLowerCase().replace(/[^a-z]/g, '');
+  return COUNTRY_CODE_MAP[normalized] || null;
+}
+
+function mapGeoNamesToCityRow(geoCity, countryId) {
+  const name = geoCity.name || geoCity.toponymName;
+  if (!name) return null;
+
+  const nameRu = extractAlternateName(geoCity.alternateNames, 'ru');
+
+  return {
+    country_id: countryId,
+    slug: slugify(name),
+    name_az: name,
+    name_en: name,
+    name_ru: nameRu,
+    region: geoCity.adminName1 || null,
+    admin_region: geoCity.adminName2 || null,
+    lat: typeof geoCity.lat === 'number' ? geoCity.lat : null,
+    lng: typeof geoCity.lng === 'number' ? geoCity.lng : null,
+    population: typeof geoCity.population === 'number' ? geoCity.population : null,
+    source: 'geonames',
+    source_id: String(geoCity.geonameId),
+    source_url: `https://www.geonames.org/${geoCity.geonameId}`,
+    license: 'CC BY',
+    attribution_text: 'GeoNames',
+    last_synced_at: new Date().toISOString(),
+  };
 }
 
 async function fetchWikipediaSummary(city) {
@@ -534,6 +662,63 @@ function buildImportSql(city, wikiSummary, places) {
   return lines.join('\n');
 }
 
+function buildGeoNamesSeedSql(cities) {
+  const now = new Date().toISOString();
+  const lines = [];
+
+  lines.push('-- TravelAZ GeoNames city seed');
+  lines.push(`-- Generated: ${now}`);
+  lines.push('-- Source: GeoNames (CC BY)');
+  lines.push('-- Run this after supabase/migrations/020_open_travel_data.sql has been applied.');
+  lines.push('');
+  lines.push('begin;');
+  lines.push('');
+
+  for (const city of cities) {
+    const safeRef = (city.countrySlug || 'unknown').replace(/[^a-z0-9_]/gi, '_');
+    lines.push(`with country_ref_${safeRef} as (`);
+    lines.push(`  select id from countries where cca2 = ${sqlString(city.countryCode)} or slug = ${sqlString(city.countrySlug)} limit 1`);
+    lines.push(')');
+    lines.push('insert into cities (');
+    lines.push('  country_id, slug, name_az, name_en, name_ru, region, admin_region,');
+    lines.push('  lat, lng, population, source, source_id, source_url, license, attribution_text, last_synced_at');
+    lines.push(')');
+    lines.push('select');
+    lines.push(`  country_ref_${safeRef}.id, ${sqlString(city.slug)}, ${sqlString(city.name_az)}, ${sqlString(city.name_en)}, ${sqlString(city.name_ru)},`);
+    lines.push(`  ${sqlString(city.region)}, ${sqlString(city.admin_region)},`);
+    lines.push(`  ${sqlNumber(city.lat)}, ${sqlNumber(city.lng)}, ${sqlNumber(city.population)},`);
+    lines.push(`  ${sqlString(city.source)}, ${sqlString(city.source_id)}, ${sqlString(city.source_url)},`);
+    lines.push(`  ${sqlString(city.license)}, ${sqlString(city.attribution_text)}, now()`);
+    lines.push(`from country_ref_${safeRef}`);
+    lines.push('on conflict (country_id, slug) do update set');
+    lines.push('  name_az = excluded.name_az,');
+    lines.push('  name_en = excluded.name_en,');
+    lines.push('  name_ru = excluded.name_ru,');
+    lines.push('  region = excluded.region,');
+    lines.push('  admin_region = excluded.admin_region,');
+    lines.push('  lat = excluded.lat,');
+    lines.push('  lng = excluded.lng,');
+    lines.push('  population = excluded.population,');
+    lines.push('  source = excluded.source,');
+    lines.push('  source_id = excluded.source_id,');
+    lines.push('  source_url = excluded.source_url,');
+    lines.push('  license = excluded.license,');
+    lines.push('  attribution_text = excluded.attribution_text,');
+    lines.push('  last_synced_at = now()');
+    lines.push(';');
+    lines.push('');
+  }
+
+  lines.push('insert into external_import_logs (source, entity_type, status, imported_count, skipped_count, metadata, started_at, finished_at)');
+  lines.push(`select 'geonames', 'city', 'success', count(*), 0, ${sqlJson({ generated_at: now, mode: 'geonames_seed' })}, now(), now()`);
+  lines.push('from cities where source = \'geonames\';');
+  lines.push('');
+  lines.push('commit;');
+  lines.push('');
+
+  return lines.join('\n');
+}
+
 function createSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -702,6 +887,126 @@ async function applyImport(city, wikiSummary, places, args) {
   }
 }
 
+async function runGeoNamesSeed(args) {
+  const username = args.geonamesUsername || process.env.GEONAMES_USERNAME;
+  if (!username) {
+    throw new Error('GEONAMES_USERNAME is required. Set it in .env.local or pass --geonames-username.');
+  }
+
+  const supabase = createPublicSupabaseClient();
+  const { data: countries, error: countriesError } = await supabase
+    .from('countries')
+    .select('id, slug, cca2')
+    .order('slug');
+
+  if (countriesError) throw countriesError;
+
+  console.log(`Found ${countries.length} countries in database.`);
+
+  const allCityRows = [];
+  const skipped = [];
+
+  for (const country of countries) {
+    const code = deriveCountryCode(country.slug, country.cca2);
+    if (!code) {
+      console.log(`  Skipping ${country.slug}: no cca2 code available.`);
+      skipped.push({ slug: country.slug, reason: 'no cca2' });
+      continue;
+    }
+
+    console.log(`Fetching cities for ${country.slug} (${code})...`);
+
+    let geoCities;
+    try {
+      geoCities = await fetchGeoNamesCities(code, args.citiesPerCountry, username);
+      await delay(200);
+    } catch (error) {
+      console.log(`  Error fetching ${country.slug}: ${error.message}. Skipping.`);
+      skipped.push({ slug: country.slug, reason: error.message });
+      continue;
+    }
+
+    for (const geoCity of geoCities) {
+      const cityRow = mapGeoNamesToCityRow(geoCity, country.id);
+      if (cityRow) {
+        cityRow.countrySlug = country.slug;
+        cityRow.countryCode = code;
+        allCityRows.push(cityRow);
+      }
+    }
+  }
+
+  console.log(`\nTotal: ${allCityRows.length} cities from ${countries.length - skipped.length} countries.`);
+  if (skipped.length > 0) {
+    console.log(`Skipped ${skipped.length} countries: ${skipped.map((s) => s.slug).join(', ')}`);
+  }
+
+  return { cities: allCityRows, skipped };
+}
+
+async function enrichPresets(args) {
+  const username = args.geonamesUsername || process.env.GEONAMES_USERNAME;
+  if (!username) {
+    throw new Error('GEONAMES_USERNAME is required. Set it in .env.local or pass --geonames-username.');
+  }
+
+  const enrichedPresets = [];
+
+  for (const [key, preset] of Object.entries(CITY_PRESETS)) {
+    const code = deriveCountryCode(preset.countrySlug, null);
+    if (!code) {
+      console.log(`Skipping ${key}: no country code.`);
+      continue;
+    }
+
+    console.log(`Enriching ${preset.name} (${code})...`);
+
+    let geoCities;
+    try {
+      geoCities = await fetchGeoNamesCities(code, 10, username);
+      await delay(200);
+    } catch (error) {
+      console.log(`  Error: ${error.message}. Skipping.`);
+      continue;
+    }
+
+    const match = geoCities.find(
+      (g) => g.name === preset.wikiTitle || g.name === preset.name || g.toponymName === preset.name
+    );
+
+    if (!match) {
+      console.log(`  No GeoNames match for ${preset.name}.`);
+      continue;
+    }
+
+    let detail = match;
+    try {
+      detail = await fetchGeoNamesCityDetail(match.geonameId, username);
+      await delay(200);
+    } catch (error) {
+      console.log(`  Detail fetch failed for ${preset.name}: ${error.message}. Using search data.`);
+    }
+
+    const nameRu = extractAlternateName(detail.alternateNames, 'ru');
+
+    const enriched = {
+      ...preset,
+      population: typeof detail.population === 'number' ? detail.population : preset.population,
+      region: detail.adminName1 || null,
+      admin_region: detail.adminName2 || null,
+      geonameId: detail.geonameId,
+      nameRu: nameRu || preset.nameRu,
+      countryCode: code,
+      countrySlug: preset.countrySlug,
+    };
+
+    enrichedPresets.push(enriched);
+    console.log(`  Enriched: pop=${enriched.population}, region=${enriched.region}`);
+  }
+
+  return enrichedPresets;
+}
+
 async function main() {
   loadEnvFile(path.join(__dirname, '..', '.env.local'));
 
@@ -713,6 +1018,121 @@ async function main() {
 
   if (args.checkDb) {
     await checkDatabase();
+    return;
+  }
+
+  if (args.mode === 'geonames') {
+    const { cities, skipped } = await runGeoNamesSeed(args);
+
+    if (args.out) {
+      const outPath = path.resolve(process.cwd(), args.out);
+      fs.mkdirSync(path.dirname(outPath), { recursive: true });
+      fs.writeFileSync(outPath, JSON.stringify(cities, null, 2), 'utf8');
+      console.log(`Preview written to ${outPath}`);
+    }
+
+    if (args.sqlOut) {
+      const sqlOutPath = path.resolve(process.cwd(), args.sqlOut);
+      fs.mkdirSync(path.dirname(sqlOutPath), { recursive: true });
+      fs.writeFileSync(sqlOutPath, buildGeoNamesSeedSql(cities), 'utf8');
+      console.log(`SQL seed written to ${sqlOutPath}`);
+    }
+
+    if (args.apply) {
+      const supabase = createSupabaseClient();
+      const logId = await createImportLog(supabase, 'geonames', 'city', {
+        mode: 'geonames_seed',
+        cities_per_country: args.citiesPerCountry,
+      });
+
+      try {
+        const { data, error } = await supabase
+          .from('cities')
+          .upsert(
+            cities.map((c) => ({
+              country_id: c.country_id,
+              slug: c.slug,
+              name_az: c.name_az,
+              name_en: c.name_en,
+              name_ru: c.name_ru,
+              region: c.region,
+              admin_region: c.admin_region,
+              lat: c.lat,
+              lng: c.lng,
+              population: c.population,
+              source: c.source,
+              source_id: c.source_id,
+              source_url: c.source_url,
+              license: c.license,
+              attribution_text: c.attribution_text,
+              last_synced_at: c.last_synced_at,
+            })),
+            { onConflict: 'country_id,slug' }
+          );
+
+        if (error) throw error;
+
+        const imported = data ? data.length : cities.length;
+        await finishImportLog(supabase, logId, 'success', imported, skipped.length, null);
+        console.log(`Imported ${imported} cities to Supabase.`);
+      } catch (error) {
+        await finishImportLog(supabase, logId, 'failed', 0, cities.length, error.message);
+        throw error;
+      }
+    } else {
+      console.log(`\nMode: dry-run. Top cities:`);
+      for (const city of cities.slice(0, 20)) {
+        console.log(`- [${city.countrySlug}] ${city.name_az} (pop: ${city.population})`);
+      }
+    }
+
+    return;
+  }
+
+  if (args.enrichPresets) {
+    const enriched = await enrichPresets(args);
+
+    if (args.out) {
+      const outPath = path.resolve(process.cwd(), args.out);
+      fs.mkdirSync(path.dirname(outPath), { recursive: true });
+      fs.writeFileSync(outPath, JSON.stringify(enriched, null, 2), 'utf8');
+      console.log(`Enriched presets written to ${outPath}`);
+    }
+
+    if (args.sqlOut) {
+      const sqlOutPath = path.resolve(process.cwd(), args.sqlOut);
+      fs.mkdirSync(path.dirname(sqlOutPath), { recursive: true });
+      const cityRows = enriched
+        .map((p) => {
+          const row = mapGeoNamesToCityRow(
+            {
+              name: p.name,
+              lat: p.lat,
+              lng: p.lng,
+              population: p.population,
+              geonameId: p.geonameId,
+              adminName1: p.region,
+              adminName2: p.admin_region,
+              alternateNames: null,
+            },
+            null
+          );
+          if (row) {
+            row.countrySlug = p.countrySlug;
+            row.countryCode = p.countryCode;
+          }
+          return row;
+        })
+        .filter(Boolean);
+      fs.writeFileSync(sqlOutPath, buildGeoNamesSeedSql(cityRows), 'utf8');
+      console.log(`SQL written to ${sqlOutPath}`);
+    }
+
+    console.log(`\nEnriched ${enriched.length} presets.`);
+    for (const p of enriched) {
+      console.log(`- ${p.name}: pop=${p.population}, region=${p.region}, geonameId=${p.geonameId}`);
+    }
+
     return;
   }
 

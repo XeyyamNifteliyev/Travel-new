@@ -52,7 +52,7 @@ export default function PlaceReviewForm({ placeId, locale }: PlaceReviewFormProp
       title: title.trim() || null,
       content: content.trim(),
       visit_date: visitDate || null,
-      status: 'published',
+      status: 'pending',
     });
 
     setSubmitting(false);
@@ -66,7 +66,7 @@ export default function PlaceReviewForm({ placeId, locale }: PlaceReviewFormProp
       return;
     }
 
-    toast.success(t('reviewSubmitted'));
+    toast.success(t('reviewPending'));
     setRating(5);
     setTitle('');
     setContent('');

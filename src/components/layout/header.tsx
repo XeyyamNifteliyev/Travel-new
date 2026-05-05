@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from './language-switcher';
 import { ThemeToggle } from './theme-toggle';
 import { MobileMenu } from './mobile-menu';
-import { Plane, User, ChevronDown, PlaneTakeoff, Hotel, MapPin, Users, ShieldCheck, BookOpen, MessageSquareText, Sparkles, Globe, Newspaper } from 'lucide-react';
+import { Plane, User, ChevronDown, PlaneTakeoff, Hotel, MapPin, Users, ShieldCheck, BookOpen, MessageSquareText, Sparkles, Globe, Newspaper, UtensilsCrossed, Building2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { type LucideIcon } from 'lucide-react';
@@ -32,6 +32,7 @@ export function Header() {
   const locale = useLocale();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -43,6 +44,14 @@ export function Header() {
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
       setUserId(user?.id ?? null);
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        setIsAdmin(profile?.role === 'admin');
+      }
     }
     checkUser();
 
@@ -89,6 +98,7 @@ export function Header() {
       children: [
         { href: `/${locale}/flights`, label: t('flights'), icon: PlaneTakeoff },
         { href: `/${locale}/hotels`, label: t('hotels'), icon: Hotel },
+        { href: `/${locale}/restaurants`, label: t('restaurants'), icon: UtensilsCrossed },
         { href: `/${locale}/tours`, label: t('tours'), icon: MapPin },
       ],
     },
@@ -98,6 +108,7 @@ export function Header() {
       icon: Globe,
       children: [
         { href: `/${locale}/countries`, label: t('countries'), icon: Globe },
+        { href: `/${locale}/cities`, label: t('cities'), icon: Building2 },
         { href: `/${locale}/ai-planner`, label: t('aiPlanner'), icon: Sparkles, highlight: true },
       ],
     },
@@ -209,13 +220,13 @@ export function Header() {
             )}
             <LanguageSwitcher />
             <Link
-              href={isLoggedIn ? `/${locale}/profile` : `/${locale}/auth/login`}
+              href={isLoggedIn ? (isAdmin ? `/${locale}/admin` : `/${locale}/profile`) : `/${locale}/auth/login`}
               className="hidden md:flex items-center gap-1 text-sm text-txt-sec hover:text-primary transition-colors"
             >
               <User className="w-4 h-4" />
               <span>{isLoggedIn ? t('profile') : t('login')}</span>
             </Link>
-            <MobileMenu navGroups={navGroups} chatLink={chatLink} unreadCount={unreadCount} />
+            <MobileMenu navGroups={navGroups} chatLink={chatLink} unreadCount={unreadCount} isAdmin={isAdmin} />
           </div>
         </div>
       </div>

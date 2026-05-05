@@ -7,7 +7,7 @@ export default async function CountriesPage() {
 
   const { data: countries } = await supabase
     .from('countries')
-    .select('id, name_az, name_en, name_ru, slug, continent, cover_photo_id, cover_photo_alt, short_desc, short_desc_en, short_desc_ru, avg_flight_azn, avg_hotel_azn, visa_required, popular_rank, is_featured, safety_level, best_months, capital')
+    .select('id, name_az, name_en, name_ru, slug, continent, cover_photo_id, cover_photo_alt, short_desc, short_desc_en, short_desc_ru, avg_flight_azn, avg_hotel_azn, visa_required, popular_rank, is_featured, safety_level, best_months, capital, cca2')
     .not('name_az', 'is', null)
     .order('popular_rank', { ascending: true })
     .limit(60);

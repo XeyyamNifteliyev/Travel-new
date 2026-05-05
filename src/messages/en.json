@@ -11,6 +11,7 @@
     "blog": "Blog",
     "flights": "Flights",
     "hotels": "Hotels",
+    "restaurants": "Restaurants",
     "tours": "Tours",
     "companions": "Find Companion",
     "countries": "Countries",
@@ -48,7 +49,8 @@
     "bestValue": "Best Value",
     "nonStop": "Non-stop",
     "direct": "Direct",
-    "select": "Select"
+    "select": "Select",
+    "cities": "Cities"
   },
   "home": {
     "heroTitle": "Explore the World",
@@ -105,6 +107,7 @@
     "finalTitle": "We are growing TravelAZ with real data, open sources, and community reviews.",
     "finalText": "This homepage is now the map of the platform: booking, visa, AI planning, countries, places, and community appear in one flow.",
     "finalCta": "Open visa center",
+    "viewAllCities": "All cities",
     "search": {
       "flights": "Flights",
       "hotels": "Hotels",
@@ -194,7 +197,17 @@
     "source": "Source",
     "openDataPlaces": "Open data places",
     "openDataPlacesSub": "Places to visit from OpenStreetMap and TravelAZ reviews.",
-    "openDataAttribution": "Data comes from open sources and is stored with source/license attribution."
+"openDataAttribution": "Data comes from open sources and is stored with source/license attribution."
+  },
+  "cities": {
+    "title": "Cities",
+    "subtitle": "Discover the world's most fascinating cities — attractions, restaurants, and travel tips.",
+    "search": "Search cities...",
+    "resultsCount": "cities found",
+    "noResults": "No cities found.",
+    "population": "people",
+    "placesCount": "places",
+    "viewCity": "Explore"
   },
   "places": {
     "back": "Back",
@@ -226,7 +239,23 @@
     "reviewSubmitError": "Could not submit the review",
     "duplicateReview": "You have already reviewed this place",
     "helpful": "helpful",
-    "helpfulError": "Could not update the vote"
+    "helpfulError": "Could not update the vote",
+    "reviewPending": "Your review is pending approval",
+    "moderation": "Review Moderation",
+    "pendingReviews": "Pending reviews",
+    "approve": "Approve",
+    "reject": "Reject",
+    "noPendingReviews": "No pending reviews",
+    "flaggedContent": "Potentially inappropriate content",
+    "reviewApproved": "Review approved",
+"reviewRejected": "Review rejected",
+    "all": "All",
+    "attractions": "Attractions",
+    "restaurants": "Restaurants",
+    "hotels": "Hotels",
+    "nightlife": "Nightlife",
+    "shopping": "Shopping",
+    "emptyCategory": "No places in this category yet"
   },
   "auth": {
     "loginTitle": "Login to your account",
@@ -297,6 +326,7 @@
     "map": "My Map",
     "settings": "Settings",
     "messages": "Messages",
+    "moderation": "Moderation",
     "statBlogs": "Blogs",
     "statCompanions": "Companions",
     "statVideos": "Videos",
@@ -733,5 +763,18 @@
     "notes": "Notes",
     "loading": "Checking...",
     "error": "Visa data not found"
+  },
+  "restaurants": {
+    "title": "Restaurants & Cafes",
+    "subtitle": "Find the best dining spots based on OpenStreetMap and TravelAZ reviews.",
+    "search": "Search restaurants...",
+    "filterAll": "All",
+    "restaurants": "Restaurants",
+    "cafes": "Cafes",
+    "rating": "Rating",
+    "reviews": "reviews",
+    "inCity": "in",
+    "noResults": "No restaurants found",
+    "emptyState": "No restaurant data yet. As new cities are imported, restaurants will appear here."
   }
 }

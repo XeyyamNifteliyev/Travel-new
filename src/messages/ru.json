@@ -10,6 +10,7 @@
     "blog": "Блог",
     "flights": "Авиабилеты",
     "hotels": "Отели",
+    "restaurants": "Рестораны",
     "tours": "Туры",
     "companions": "Попутчик",
     "countries": "Страны",
@@ -48,7 +49,8 @@
     "bestValue": "Лучшее",
     "nonStop": "Без пересадок",
     "direct": "Прямой",
-    "select": "Выбрать"
+    "select": "Выбрать",
+    "cities": "Города"
   },
   "home": {
     "heroTitle": "Откройте мир",
@@ -105,6 +107,7 @@
     "finalTitle": "Мы развиваем TravelAZ на реальных данных, открытых источниках и отзывах сообщества.",
     "finalText": "Эта главная страница теперь показывает всю платформу: бронирование, визы, AI-план, страны, места и сообщество.",
     "finalCta": "Открыть визовый центр",
+    "viewAllCities": "Все города",
     "search": {
       "flights": "Рейсы",
       "hotels": "Отели",
@@ -194,7 +197,17 @@
     "source": "Источник",
     "openDataPlaces": "Места из открытых данных",
     "openDataPlacesSub": "Места для посещения из OpenStreetMap и отзывов TravelAZ.",
-    "openDataAttribution": "Данные поступают из открытых источников и сохраняются с указанием source/license."
+"openDataAttribution": "Данные поступают из открытых источников и сохраняются с указанием source/license."
+  },
+  "cities": {
+    "title": "Города",
+    "subtitle": "Откройте для себя самые интересные города мира — достопримечательности, рестораны и советы.",
+    "search": "Поиск городов...",
+    "resultsCount": "городов найдено",
+    "noResults": "Города не найдены.",
+    "population": "жителей",
+    "placesCount": "мест",
+    "viewCity": "Открыть"
   },
   "places": {
     "back": "Назад",
@@ -226,7 +239,23 @@
     "reviewSubmitError": "Не удалось отправить отзыв",
     "duplicateReview": "Вы уже оставили отзыв для этого места",
     "helpful": "полезно",
-    "helpfulError": "Не удалось обновить голос"
+    "helpfulError": "Не удалось обновить голос",
+    "reviewPending": "Ваш отзыв ожидает подтверждения",
+    "moderation": "Модерация отзывов",
+    "pendingReviews": "Ожидающие отзывы",
+    "approve": "Одобрить",
+    "reject": "Отклонить",
+    "noPendingReviews": "Нет ожидающих отзывов",
+    "flaggedContent": "Возможно неприемлемое содержание",
+    "reviewApproved": "Отзыв одобрен",
+"reviewRejected": "Отзыв отклонён",
+    "all": "Все",
+    "attractions": "Достопримечательности",
+    "restaurants": "Рестораны",
+    "hotels": "Отели",
+    "nightlife": "Ночная жизнь",
+    "shopping": "Шоппинг",
+    "emptyCategory": "В этой категории пока нет мест"
   },
   "auth": {
     "loginTitle": "Войдите в аккаунт",
@@ -297,6 +326,7 @@
     "map": "Моя карта",
     "settings": "Настройки",
     "messages": "Сообщения",
+    "moderation": "Модерация",
     "statBlogs": "Блоги",
     "statCompanions": "Попутчики",
     "statVideos": "Видео",
@@ -733,5 +763,18 @@
     "notes": "Примечания",
     "loading": "Проверка...",
     "error": "Данные о визе не найдены"
+  },
+  "restaurants": {
+    "title": "Рестораны и кафе",
+    "subtitle": "Лучшие места для еды на основе OpenStreetMap и отзывов TravelAZ.",
+    "search": "Поиск ресторанов...",
+    "filterAll": "Все",
+    "restaurants": "Рестораны",
+    "cafes": "Кафе",
+    "rating": "Рейтинг",
+    "reviews": "отзывов",
+    "inCity": "в",
+    "noResults": "Рестораны не найдены",
+    "emptyState": "Данных о ресторанах пока нет. Они появятся после импорта новых городов."
   }
 }

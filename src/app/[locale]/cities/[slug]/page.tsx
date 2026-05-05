@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { mapCityToSummary, mapPlaceToSummary } from '@/lib/open-travel-data';
 import { WeatherWidget } from '@/components/weather/weather-widget';
 import { VisaCheckWidget } from '@/components/visa/visa-check-widget';
+import { CategoryTabs } from '@/components/place/category-tabs';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { CityWithCountryRow, PlaceWithRelationsRow } from '@/types/place';
@@ -19,13 +20,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const supabase = await createClient();
   const { data } = await supabase
     .from('cities')
-    .select('name_az, short_desc_az, short_desc_en')
+    .select('name_az, description_az, description_en')
     .eq('slug', slug)
     .maybeSingle();
 
   return {
     title: data?.name_az ? `${data.name_az} - TravelAZ` : 'City - TravelAZ',
-    description: data?.short_desc_az || data?.short_desc_en || '',
+    description: data?.description_az || data?.description_en || '',
   };
 }
 
@@ -113,30 +114,7 @@ export default async function CityDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {places.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {places.map((place) => (
-              <Link key={place.id} href={`/${locale}/places/${place.id}`} className="rounded-2xl border border-border bg-bg-surface p-4 hover:border-primary/30 hover:shadow-lg transition-all">
-                <div className="flex items-start justify-between gap-3">
-                  <span className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-primary font-semibold capitalize">{place.category}</span>
-                  {place.ratingSummary > 0 && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
-                      <Star className="w-3 h-3 fill-current" />
-                      {place.ratingSummary.toFixed(1)}
-                    </span>
-                  )}
-                </div>
-                <h3 className="font-semibold mt-3 line-clamp-2">{place.name}</h3>
-                {place.address && <p className="text-xs text-txt-sec mt-2 line-clamp-2">{place.address}</p>}
-                <p className="text-xs text-txt-sec mt-4">{place.reviewCount} {t('reviews')}</p>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-border bg-bg-surface p-8 text-center text-txt-sec">
-            {t('emptyPlaces')}
-          </div>
-        )}
+        <CategoryTabs places={places} locale={locale} />
       </section>
     </main>
   );

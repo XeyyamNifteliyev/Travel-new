@@ -22,7 +22,7 @@ import {
 import { GlobeHero } from '@/components/home/globe-hero';
 import { HomeSearchPanel } from '@/components/home/home-search-panel';
 import { createClient } from '@/lib/supabase/server';
-import { getUnsplashUrl } from '@/lib/unsplash';
+import { getUnsplashUrl, getCountryCoverPhotoId } from '@/lib/unsplash';
 import type { ExpandedCountry } from '@/types/country';
 
 export const revalidate = 3600;
@@ -125,10 +125,10 @@ const fallbackCountries: ExpandedCountry[] = [
 ];
 
 const cityHighlights = [
-  { name: 'Istanbul', country: 'Turkiye', image: '1524231757912-21f4fe3a7200', href: '/countries/turkey' },
-  { name: 'Dubai', country: 'BAE', image: '1512453979798-5ea266f8880c', href: '/countries/uae' },
-  { name: 'Tbilisi', country: 'Gurcustan', image: '1565008576549-57569a49371d', href: '/countries/georgia' },
-  { name: 'Tokyo', country: 'Yaponiya', image: '1493976040374-85c8e12f0c0e', href: '/countries/japan' },
+  { name: 'Istanbul', country: 'Turkiye', image: '1524231757912-21f4fe3a7200', href: '/cities/istanbul' },
+  { name: 'Dubai', country: 'BAE', image: '1512453979798-5ea266f8880c', href: '/cities/dubai' },
+  { name: 'Tbilisi', country: 'Gurcustan', image: '1565008576549-57569a49371d', href: '/cities/tbilisi' },
+  { name: 'Tokyo', country: 'Yaponiya', image: '1493976040374-85c8e12f0c0e', href: '/cities/tokyo' },
 ];
 
 const placeIdeas = [
@@ -157,7 +157,7 @@ async function getHomeData() {
     const [countriesResult, toursResult, blogsResult] = await Promise.all([
       supabase
         .from('countries')
-        .select('id, slug, name_az, name_en, name_ru, flag_emoji, capital, continent, cover_photo_id, cover_photo_alt, short_desc, short_desc_en, short_desc_ru, avg_flight_azn, avg_hotel_azn, best_months, visa_required, popular_rank, is_featured, safety_level')
+        .select('id, slug, name_az, name_en, name_ru, flag_emoji, capital, continent, cover_photo_id, cover_photo_alt, short_desc, short_desc_en, short_desc_ru, avg_flight_azn, avg_hotel_azn, best_months, visa_required, popular_rank, is_featured, safety_level, cca2')
         .order('is_featured', { ascending: false })
         .order('popular_rank', { ascending: true })
         .limit(8),
@@ -307,26 +307,20 @@ export default async function HomePage({
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {countries.map((country) => {
-            const photo = country.cover_photo_id
-              ? getUnsplashUrl(country.cover_photo_id, { w: 900, h: 1100, q: 78 })
-              : null;
+            const photoId = getCountryCoverPhotoId(country.slug, country.cover_photo_id);
             return (
               <Link
                 key={country.id}
                 href={`/${locale}/countries/${country.slug}`}
                 className="group relative min-h-[360px] overflow-hidden rounded-2xl border border-border bg-bg-surface shadow-lg"
               >
-                {photo ? (
-                  <Image
-                    src={photo}
-                    alt={country.cover_photo_alt || localizedCountryName(country, locale)}
-                    fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/20" />
-                )}
+                <Image
+                  src={getUnsplashUrl(photoId, { w: 900, h: 1100, q: 78 })}
+                  alt={country.cover_photo_alt || localizedCountryName(country, locale)}
+                  fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
                 <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-slate-900">
                   {country.visa_required ? t('visaRequired') : t('visaFree')}
@@ -400,6 +394,15 @@ export default async function HomePage({
                 </div>
               </Link>
             ))}
+            <Link
+              href={`/${locale}/cities`}
+              className="group flex items-center justify-center min-h-[220px] rounded-2xl border border-dashed border-primary/30 bg-primary/5 text-primary transition-all hover:border-primary/60 hover:bg-primary/10"
+            >
+              <div className="text-center">
+                <Map className="h-8 w-8 mx-auto mb-2 text-primary/60 group-hover:text-primary transition-colors" />
+                <span className="font-bold text-sm">{t('viewAllCities')}</span>
+              </div>
+            </Link>
           </div>
         </div>
       </section>

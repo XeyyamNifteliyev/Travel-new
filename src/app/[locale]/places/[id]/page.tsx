@@ -109,7 +109,7 @@ export default async function PlaceDetailPage({ params }: PageProps) {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="font-semibold">{review.title || t('review')}</h3>
-                        <p className="text-xs text-txt-sec mt-1">{review.author?.name || t('anonymous')} · {new Date(review.createdAt).toLocaleDateString(locale === 'ru' ? 'ru' : locale === 'en' ? 'en' : 'az')}</p>
+                        <p className="text-xs text-txt-sec mt-1">{review.author?.name || t('anonymous')} | {new Date(review.createdAt).toLocaleDateString(locale === 'ru' ? 'ru' : locale === 'en' ? 'en' : 'az')}</p>
                       </div>
                       <span className="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 dark:text-amber-300">
                         <Star className="w-4 h-4 fill-current" />

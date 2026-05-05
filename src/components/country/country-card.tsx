@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Plane, Hotel, Shield } from 'lucide-react';
-import { getCountryCoverPhotoId, getUnsplashUrl, getFlagUrl } from '@/lib/unsplash';
+import { getCountryCoverPhotoId, getUnsplashUrl } from '@/lib/unsplash';
 import type { ExpandedCountry } from '@/types/country';
 
 const SAFETY_COLORS: Record<string, string> = {
@@ -19,6 +19,8 @@ const MONTH_SHORT: Record<string, string> = {
   jan: 'Yan', feb: 'Fev', mar: 'Mar', apr: 'Apr', may: 'May', jun: 'İyn',
   jul: 'İyl', aug: 'Avq', sep: 'Sen', oct: 'Okt', nov: 'Noy', dec: 'Dek',
 };
+
+const FALLBACK_PHOTO = '1558005137-d9619a5c539f';
 
 interface CountryCardProps {
   country: ExpandedCountry;
@@ -39,46 +41,23 @@ export function CountryCard({ country }: CountryCardProps) {
     : country.short_desc;
 
   const coverPhotoId = getCountryCoverPhotoId(country.slug, country.cover_photo_id);
-  const showImage = coverPhotoId && !imgError;
+  const photoId = imgError ? FALLBACK_PHOTO : coverPhotoId;
 
   return (
     <Link href={`/${locale}/countries/${country.slug}`} className="group block">
       <div className="relative rounded-2xl overflow-hidden border border-border bg-bg-surface hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
         <div className="relative h-52 bg-gray-200 dark:bg-gray-700 overflow-hidden">
-          {showImage ? (
-            <Image
-              src={getUnsplashUrl(coverPhotoId, { w: 600, h: 390, q: 78 })}
-              alt={country.cover_photo_alt || `${name} travel photo`}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="object-cover group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
-              placeholder="blur"
-              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-bg-surface">
-              <div className="relative w-full h-full">
-                <Image
-                  src={getFlagUrl(country.slug, 640)}
-                  alt={name}
-                  fill
-                  className="object-cover opacity-30 blur-sm scale-110"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Image
-                    src={getFlagUrl(country.slug, 160)}
-                    alt={name}
-                    width={80}
-                    height={54}
-                    className="rounded-lg shadow-2xl drop-shadow-xl"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+          <Image
+            src={getUnsplashUrl(photoId, { w: 600, h: 390, q: 78 })}
+            alt={country.cover_photo_alt || `${name} travel photo`}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover group-hover:scale-110 transition-transform duration-500"
+            loading="lazy"
+            placeholder="blur"
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+            onError={() => { if (!imgError) setImgError(true); }}
+          />
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 

@@ -29,9 +29,10 @@ interface MobileMenuProps {
   navGroups: NavGroup[];
   chatLink: NavLink | null;
   unreadCount?: number;
+  isAdmin?: boolean;
 }
 
-export function MobileMenu({ navGroups, chatLink, unreadCount = 0 }: MobileMenuProps) {
+export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = false }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
@@ -187,7 +188,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0 }: MobileMenuP
             {user ? (
               <div className="flex flex-col gap-3">
                 <Link
-                  href={`/${locale}/profile`}
+                  href={isAdmin ? `/${locale}/admin` : `/${locale}/profile`}
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 px-4 py-3 text-txt-sec hover:text-primary hover:bg-bg-surface-hover rounded-lg transition-colors"
                 >
