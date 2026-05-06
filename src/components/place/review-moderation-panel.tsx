@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, X, Trash2, AlertTriangle, Loader2, Star } from 'lucide-react';
 import { toast } from 'sonner';
-import Image from 'next/image';
+
 
 interface Review {
   id: string;
@@ -111,7 +111,8 @@ export function ReviewModerationPanel() {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                     {review.profiles?.avatar_url ? (
-                      <Image src={review.profiles.avatar_url} alt="" width={40} height={40} className="w-full h-full object-cover" />
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={review.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-sm font-semibold text-primary">
                         {(review.profiles?.display_name || review.profiles?.name || '?')[0]}

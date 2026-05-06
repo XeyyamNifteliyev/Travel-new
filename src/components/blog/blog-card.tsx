@@ -77,12 +77,11 @@ export function BlogCard({ blog, index = 0 }: BlogCardProps) {
           <div className="flex items-center justify-between pt-3 border-t border-border/10">
             <div className="flex items-center gap-2.5">
               {author?.avatar_url ? (
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={author.avatar_url}
                   alt={author.name}
                   className="w-7 h-7 rounded-full object-cover"
-                  width={28}
-                  height={28}
                 />
               ) : (
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-xs font-bold text-primary">
