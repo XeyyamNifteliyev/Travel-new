@@ -90,14 +90,16 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
         }`}
       >
         <div
-          className="absolute inset-0 bg-black/80"
+          className="absolute inset-0"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.92)' }}
           onClick={() => setIsOpen(false)}
         />
 
         <div
-          className={`absolute right-0 top-0 h-full w-72 bg-[#0F172A] border-l border-[#334155] transform transition-transform duration-300 ${
+          className={`absolute right-0 top-0 h-full w-72 border-l border-[#334155] transform transition-transform duration-300 ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
+          style={{ backgroundColor: '#0F172A' }}
         >
           <div className="flex items-center justify-between p-4 border-b border-border">
             <span className="text-primary font-bold text-lg font-heading">{t('appName')}</span>

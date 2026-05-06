@@ -300,8 +300,8 @@ export function GlobeHero() {
         </div>
 
         <svg
-          className="absolute"
-          style={{ width: '360px', height: '360px', left: '-40px', top: '-40px' }}
+          className="absolute overflow-hidden"
+          style={{ width: '128.57%', height: '128.57%', left: '-14.29%', top: '-14.29%' }}
           viewBox="0 0 360 360"
         >
           <circle cx="180" cy="180" r="160" fill="none" className="globe-orbit" strokeWidth="0.5" strokeDasharray="4 4" />

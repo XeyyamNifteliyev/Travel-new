@@ -64,6 +64,10 @@ body {
   color: var(--text-primary);
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   transition: background-color 0.3s, color 0.3s;
+  overflow-x: hidden;
+}
+html {
+  overflow-x: hidden;
 }
 
 h1, h2, h3, .font-heading {

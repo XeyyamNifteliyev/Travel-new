@@ -253,8 +253,8 @@ export default async function HomePage({
               </div>
             </div>
 
-            <div className="relative min-h-[360px] overflow-hidden">
-              <div className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 md:h-[460px] md:w-[460px]">
+            <div className="relative min-h-[300px] overflow-hidden max-w-full">
+              <div className="absolute left-1/2 top-1/2 w-[300px] h-[300px] -translate-x-1/2 -translate-y-1/2 md:h-[460px] md:w-[460px] max-w-full">
                 <GlobeHero />
               </div>
               <div className="absolute bottom-2 left-0 rounded-2xl border border-white/20 bg-black/40 p-4 shadow-2xl backdrop-blur md:left-6">
