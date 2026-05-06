@@ -36,11 +36,22 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+  const [isLight, setIsLight] = useState(false);
   const t = useTranslations('common');
   const locale = useLocale();
   const router = useRouter();
   const supabase = createClient();
   const isMounted = useRef(false);
+
+  useEffect(() => {
+    const checkTheme = () => {
+      setIsLight(document.documentElement.classList.contains('light'));
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (isMounted.current) return;
@@ -74,12 +85,19 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
     router.push(`/${locale}`);
   };
 
+  const bg = isLight ? '#0F172A' : '#F8FAFC';
+  const text = isLight ? '#F1F5F9' : '#0F172A';
+  const textSec = isLight ? '#94A3B8' : '#475569';
+  const border = isLight ? '#334155' : '#D1D5DB';
+  const hover = isLight ? '#1E293B' : '#E2E8F0';
+  const overlay = isLight ? 'rgba(15,23,42,0.7)' : 'rgba(248,250,252,0.7)';
+
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
         className="md:hidden p-2 transition-colors"
-        style={{ color: 'var(--menu-text)' }}
+        style={{ color: text }}
         aria-label="Menu"
       >
         <Menu className="w-6 h-6" />
@@ -92,22 +110,22 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
       >
         <div
           className="absolute inset-0"
-          style={{ backgroundColor: 'var(--menu-overlay, rgba(0,0,0,0.6))' }}
+          style={{ backgroundColor: overlay }}
           onClick={() => setIsOpen(false)}
         />
 
         <div
-          className={`absolute right-0 top-0 h-full w-72 border-l transform transition-transform duration-300 ${
+          className={`absolute right-0 top-0 h-full w-72 transform transition-transform duration-300 ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
-          style={{ backgroundColor: 'var(--menu-bg, #0F172A)', borderColor: 'var(--menu-border, #334155)' }}
+          style={{ backgroundColor: bg, borderLeft: `1px solid ${border}` }}
         >
-          <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--menu-border, #334155)' }}>
-            <span className="font-bold text-lg font-heading" style={{ color: 'var(--menu-text)' }}>{t('appName')}</span>
+          <div className="flex items-center justify-between p-4" style={{ borderBottom: `1px solid ${border}` }}>
+            <span className="font-bold text-lg font-heading" style={{ color: text }}>{t('appName')}</span>
             <button
               onClick={() => setIsOpen(false)}
               className="p-2 transition-colors"
-              style={{ color: 'var(--menu-text-sec)' }}
+              style={{ color: textSec }}
               aria-label="Close menu"
             >
               <X className="w-5 h-5" />
@@ -125,9 +143,9 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                     href={group.link.href}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-base font-medium"
-                    style={{ color: 'var(--menu-text)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--menu-hover)'; e.currentTarget.style.color = 'var(--primary)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--menu-text)'; }}
+                    style={{ color: text }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; e.currentTarget.style.color = '#0EA5E9'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = text; }}
                   >
                     <GroupIcon className="w-4 h-4" />
                     {group.label}
@@ -142,8 +160,8 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                   <button
                     onClick={() => setExpandedGroup(isExpanded ? null : group.key)}
                     className="flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors text-base font-medium"
-                    style={{ color: 'var(--menu-text)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--menu-hover)'; }}
+                    style={{ color: text }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
                     onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
                     <span className="flex items-center gap-3">
@@ -154,7 +172,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                   </button>
 
                   {isExpanded && group.children && (
-                    <div className="ml-4 pl-3" style={{ borderLeft: '2px solid var(--menu-border, #334155)' }}>
+                    <div className="ml-4 pl-3" style={{ borderLeft: `2px solid ${border}` }}>
                       {group.children.map((child) => {
                         const ChildIcon = child.icon;
                         return (
@@ -163,8 +181,8 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                             href={child.href}
                             onClick={() => setIsOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm font-medium"
-                            style={{ color: child.highlight ? 'var(--primary)' : 'var(--menu-text-sec)' }}
-                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--menu-hover)'; }}
+                            style={{ color: child.highlight ? '#0EA5E9' : textSec }}
+                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
                             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                           >
                             <ChildIcon className="w-3.5 h-3.5" />
@@ -183,8 +201,8 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                 href={chatLink.href}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-base font-medium relative"
-                style={{ color: 'var(--menu-text)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--menu-hover)'; }}
+                style={{ color: text }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
                 <chatLink.icon className="w-4 h-4" />
@@ -198,15 +216,15 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
             )}
           </nav>
 
-          <div className="absolute bottom-0 left-0 right-0 p-4" style={{ borderTop: '1px solid var(--menu-border, #334155)' }}>
+          <div className="absolute bottom-0 left-0 right-0 p-4" style={{ borderTop: `1px solid ${border}` }}>
             {user ? (
               <div className="flex flex-col gap-3">
                 <Link
                   href={isAdmin ? `/${locale}/admin` : `/${locale}/profile`}
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-medium"
-                  style={{ color: 'var(--menu-text)' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--menu-hover)'; }}
+                  style={{ color: text }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                 >
                   <UserIcon className="w-5 h-5" />

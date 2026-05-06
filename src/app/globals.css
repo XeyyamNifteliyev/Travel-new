@@ -20,12 +20,6 @@
   --header-bg: rgba(15, 23, 42, 0.8);
   --card-bg: rgba(30, 41, 59, 0.5);
   --dropdown-bg: #1E293B;
-  --menu-bg: #F8FAFC;
-  --menu-text: #0F172A;
-  --menu-text-sec: #475569;
-  --menu-border: #E2E8F0;
-  --menu-hover: #F1F5F9;
-  --menu-overlay: rgba(248, 250, 252, 0.75);
 }
 
 .light {
@@ -41,12 +35,6 @@
   --header-bg: rgba(248, 250, 252, 0.8);
   --card-bg: rgba(255, 255, 255, 0.8);
   --dropdown-bg: #FFFFFF;
-  --menu-bg: #0F172A;
-  --menu-text: #F1F5F9;
-  --menu-text-sec: #94A3B8;
-  --menu-border: #334155;
-  --menu-hover: #1E293B;
-  --menu-overlay: rgba(15, 23, 42, 0.75);
 }
 
 /*noinspection CssUnknownAtRule*/
@@ -67,12 +55,6 @@
   --color-header-bg: var(--header-bg);
   --color-card-bg: var(--card-bg);
   --color-dropdown-bg: var(--dropdown-bg);
-  --color-menu-bg: var(--menu-bg);
-  --color-menu-text: var(--menu-text);
-  --color-menu-text-sec: var(--menu-text-sec);
-  --color-menu-border: var(--menu-border);
-  --color-menu-hover: var(--menu-hover);
-  --color-menu-overlay: var(--menu-overlay);
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
   --font-heading: var(--font-poppins), var(--font-inter), system-ui, -apple-system, sans-serif;
 }
