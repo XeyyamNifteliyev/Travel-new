@@ -60,7 +60,31 @@
   - `src/components/layout/mobile-menu.tsx` — admin linki mobil menyuda
   - `src/messages/{az,en,ru}.json` — 10 yeni i18n açarı
 
-## Cari Vəziyyət
+## 2026-05-06 Status Update
+
+- **GlobeHero-a 2 vertikal təyyarə əlavə edildi.** Cənubdan şimala doğru hərəkət, globe arxasından keçib yenidən cənubdan çıxır. Mövcud 2 mavi təyyarəyə əlavə olaraq yeni 2 təyyarə eyni blueprintdə.
+  - `src/components/home/globe-hero.tsx` — `useVerticalPlanes` hook-u, `data-plane="3"` və `data-plane="4"`
+
+- **Təhlükəsizlik xətaları düzəldildi:**
+  - `src/app/api/ai/plan/route.ts` — `createClient()` + `getUser()` auth yoxlaması (login tələb olunur, 401)
+  - `src/app/api/ai/cheap-dates/route.ts` — eyni auth yoxlaması
+  - `src/app/api/images/enrich/route.ts` — auth + `profiles.role === 'admin'` yoxlaması (403)
+  - Məlum kritik təhlükəsizlik boşluqları bağlandı.
+
+- **Viza pipeline düzəldildi:**
+  - `src/types/place.ts` — `CityCountryRef`-ə `cca2?` sahəsi əlavə edildi
+  - `src/app/[locale]/cities/[slug]/page.tsx` — SQL sorğusuna `cca2`, `VisaCheckWidget`-ə `defaultDestination` əlavə edildi
+  - `src/lib/open-travel-data.ts` — `mapCityToSummary`-də `cca2` ötürülür
+  - `src/app/api/visa/check/route.ts` — JOIN sorğusu ilə `visa_info`-dan birbaşa oxuyur (eyni pattern `/api/visa/[country]`). Priority: Supabase `visa_info` (~185 ölkə) → hardcoded map (7 ölkə) → external API
+  - `src/lib/unsplash.ts` — `getSlugByISO()` funksiyası, `SLUG_TO_ISO`-dan reverse map
+
+- **Visa seçim siyahısı genişləndirildi.** `COUNTRY_OPTIONS` 21-dən 45-ə qaldırıldı (visa-check-widget.tsx)
+
+- **Middleware PUBLIC_PATHS yeniləndi.** `/cities` və `/places` artıq public path-lərə əlavə edildi.
+
+- **Konfiqurasiya təmizliyi:**
+  - `next.config.ts` — `dangerouslyAllowSVG: true` silindi
+  - `.env.example` — UNSPLASH_ACCESS_KEY, DUFFEL_ACCESS_TOKEN, YOUTUBE_API_KEY, VISA_API_URL, CRON_SECRET əlavə edildi
 
 TravelAZ Next.js 15 üzərində qurulan çoxdilli travel platformadır. Layihədə lokalizasiya edilmiş route-lar, Supabase əsaslı data, AI planlaşdırıcı, viza alətləri, blog, chat, turlar və ölkə səhifələri var.
 
@@ -134,7 +158,7 @@ Son yoxlamalar:
 - `src/messages/*.json` - tərcümə faylları
 - `src/lib/supabase/server.ts` - server-side Supabase client
 - `src/lib/supabase/client.ts` - browser-side Supabase client
-- `src/lib/unsplash.ts` - Unsplash və flag helper-ləri
+- `src/lib/unsplash.ts` - Unsplash və flag helper-ləri, `SLUG_TO_ISO` (~180 ölkə), `getSlugByISO()`, `ISO_TO_SLUG` reverse map
 - `src/lib/open-travel-data.ts` - city/place/review mapper-ləri
 - `src/types/place.ts` - open travel data TypeScript type-ları
 - `scripts/import-open-travel-data.js` - Overpass/Wikipedia import script-i
@@ -157,6 +181,7 @@ Son yoxlamalar:
 - `src/types/hotel.ts` - HotelOffer, HotelSearchParams
 - `src/components/weather/weather-widget.tsx` - hava proqnozu widget (full + compact)
 - `src/components/country/country-info-card.tsx` - ölkə info kartı
+- `src/app/api/visa/check/route.ts` - viza yoxlama API (Supabase JOIN + hardcoded map + external API fallback)
 - `src/components/visa/visa-check-widget.tsx` - real-time viza yoxlama widget
 - `src/app/[locale]/admin/page.tsx` - admin moderation səhifəsi
 - `src/app/api/reviews/moderate/route.ts` - GET/PATCH/DELETE admin API
@@ -270,7 +295,7 @@ src/
 
 ## Database və Migration-lar
 
-Migration siyahısı hazırda `022_place_review_helpful_votes.sql` faylına qədər gedir:
+Migration siyahısı hazırda `026_seed_5_cities_open_data.sql` faylına qədər gedir:
 
 - `001_initial_schema.sql`
 - `002_faza2_schema.sql`
@@ -295,6 +320,10 @@ Migration siyahısı hazırda `022_place_review_helpful_votes.sql` faylına qəd
 - `020_open_travel_data.sql`
 - `021_seed_istanbul_open_data.sql`
 - `022_place_review_helpful_votes.sql`
+- `023_log_istanbul_open_data_import.sql`
+- `024_countries_cca2.sql`
+- `025_profiles_role.sql`
+- `026_seed_5_cities_open_data.sql`
 
 Məlum cari cədvəllər:
 
@@ -398,23 +427,32 @@ Open-data mərhələsi üçün əlavə edilən cədvəllər:
 
 5. ~~**City və place səhifələri**~~ — **TAMAMLANDI.** Review moderation workflow-u əlavə edildi. Yeni review-lar `pending` status ilə göndərilir, admin `/az/admin` səhifəsindən approve/reject edir.
 
-6. **README yenilənməsi**
+6. ~~**Təhlükəsizlik açıqları**~~ — **TAMAMLANDI.** AI route-larına auth, enrich-ə admin gate, middleware PUBLIC_PATHS yeniləndi.
+
+7. ~~**Viza widget düzəlişi**~~ — **TAMAMLANDI.** `cca2` pipeline, Supabase fallback, COUNTRY_OPTIONS genişləndirildi.
+
+8. ~~**Konfiqurasiya təmizliyi**~~ — **TAMAMLANDI.** `dangerouslyAllowSVG` silindi, `.env.example` genişləndi.
+
+9. **README yenilənməsi**
    - Cari vəziyyət: README hələ də əsasən default Next.js mətnidir.
    - Lazımdır: setup, env dəyişənləri, Supabase migration-lar, AI provider, dev workflow və deployment qeydləri.
 
-7. **Booking/payment**
-   - Cari vəziyyət: birinci real-data mərhələsindən kənardadır.
-   - Sonra lazımdır: booking confirmation, payment flow, provider order API-ləri, cancellation/refund policy.
+10. **Booking/payment**
+    - Cari vəziyyət: birinci real-data mərhələsindən kənardadır.
+    - Sonra lazımdır: booking confirmation, payment flow, provider order API-ləri, cancellation/refund policy.
 
 ## Növbəti Tövsiyə Olunan İcra Sırası
 
 1. ~~Supabase-də yeni migration-ları tətbiq et: `020_open_travel_data.sql`, `021_seed_istanbul_open_data.sql` və `022_place_review_helpful_votes.sql`.~~ **TAMAMLANDI.**
 2. ~~Importdan sonra `/az/countries/turkey`, `/az/cities/istanbul` və yaradılan `/az/places/{id}` səhifələrini vizual yoxla.~~ **TAMAMLANDI.**
 3. ~~GeoNames city seed variantını import script-ə əlavə et.~~ **TAMAMLANDI.**
-5. ~~Review moderation status workflow-u əlavə et.~~ **TAMAMLANDI.**
-6. ~~Flights mock datasını provider adapter və API route ilə əvəz et.~~ **TAMAMLANDI.**
-7. ~~Hotels mock datasını provider adapter və API route ilə əvəz et.~~ **TAMAMLANDI.**
-8. README-ni yenilə.
+4. ~~Review moderation status workflow-u əlavə et.~~ **TAMAMLANDI.**
+5. ~~Flights mock datasını provider adapter və API route ilə əvəz et.~~ **TAMAMLANDI.**
+6. ~~Hotels mock datasını provider adapter və API route ilə əvəz et.~~ **TAMAMLANDI.**
+7. ~~Təhlükəsizlik açıqlarını bağla (AI route auth, enrich admin gate, middleware).~~ **TAMAMLANDI.**
+8. ~~Viza widget düzəlişi (cca2 pipeline, Supabase fallback, COUNTRY_OPTIONS).~~ **TAMAMLANDI.**
+9. ~~Konfiqurasiya təmizliyi (dangerouslyAllowSVG, .env.example).~~ **TAMAMLANDI.**
+10. README-ni yenilə.
 
 ## Yoxlama Bazası
 
