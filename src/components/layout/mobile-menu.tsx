@@ -85,19 +85,29 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
     router.push(`/${locale}`);
   };
 
-  const bg = isLight ? '#0F172A' : '#F8FAFC';
-  const text = isLight ? '#F1F5F9' : '#0F172A';
-  const textSec = isLight ? '#94A3B8' : '#475569';
-  const border = isLight ? '#334155' : '#D1D5DB';
-  const hover = isLight ? '#1E293B' : '#E2E8F0';
-  const overlay = isLight ? 'rgba(15,23,42,0.7)' : 'rgba(248,250,252,0.7)';
+  const bg = '#FFFFFF';
+  const text = '#0F172A';
+  const textSec = '#334155';
+  const border = 'rgba(15, 23, 42, 0.12)';
+  const hover = '#E2E8F0';
+  const overlay = 'rgba(15, 23, 42, 0.18)';
+  const navItemBg = '#F8FAFC';
+  const submenuBg = '#F1F5F9';
+  const triggerBg = isLight ? 'rgba(255,255,255,0.96)' : 'rgba(15,23,42,0.96)';
+  const triggerText = isLight ? '#0F172A' : '#F8FAFC';
+  const triggerBorder = isLight ? 'rgba(15,23,42,0.12)' : 'rgba(248,250,252,0.18)';
 
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden p-2 transition-colors"
-        style={{ color: text }}
+        className="md:hidden p-2 rounded-xl border shadow-sm backdrop-blur transition-colors"
+        style={{
+          color: triggerText,
+          backgroundColor: triggerBg,
+          borderColor: triggerBorder,
+          boxShadow: isLight ? '0 8px 24px rgba(15, 23, 42, 0.12)' : '0 8px 24px rgba(0, 0, 0, 0.28)',
+        }}
         aria-label="Menu"
       >
         <Menu className="w-6 h-6" />
@@ -118,17 +128,37 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
           className={`absolute right-0 top-0 h-full w-72 transform transition-transform duration-300 ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
-          style={{ backgroundColor: bg, borderLeft: `1px solid ${border}` }}
+          style={{
+            backgroundColor: bg,
+            borderLeft: `1px solid ${border}`,
+            boxShadow: '-24px 0 64px rgba(15, 23, 42, 0.18)',
+          }}
         >
-          <div className="flex items-center justify-between p-4" style={{ borderBottom: `1px solid ${border}` }}>
-            <span className="font-bold text-lg font-heading" style={{ color: text }}>{t('appName')}</span>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-2 transition-colors"
-              style={{ color: textSec }}
-              aria-label="Close menu"
+          <div className="flex items-center justify-between gap-4 p-4" style={{ borderBottom: `1px solid ${border}` }}>
+            <span
+              className="block min-w-0 max-w-37.5 truncate text-sm font-semibold font-heading leading-none"
+              style={{ color: text }}
             >
-              <X className="w-5 h-5" />
+              {t('appName')}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              onPointerDown={(event) => {
+                event.stopPropagation();
+                setIsOpen(false);
+              }}
+              className="relative z-20 shrink-0 p-3 rounded-xl border transition-colors pointer-events-auto"
+              style={{
+                color: text,
+                backgroundColor: navItemBg,
+                borderColor: border,
+              }}
+              aria-label="Close menu"
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = navItemBg; }}
+            >
+              <X className="w-5 h-5 stroke-[2.5]" />
             </button>
           </div>
 
@@ -143,9 +173,9 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                     href={group.link.href}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-base font-medium"
-                    style={{ color: text }}
+                    style={{ color: text, backgroundColor: navItemBg }}
                     onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; e.currentTarget.style.color = '#0EA5E9'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = text; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = navItemBg; e.currentTarget.style.color = text; }}
                   >
                     <GroupIcon className="w-4 h-4" />
                     {group.label}
@@ -160,9 +190,9 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                   <button
                     onClick={() => setExpandedGroup(isExpanded ? null : group.key)}
                     className="flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors text-base font-medium"
-                    style={{ color: text }}
+                    style={{ color: text, backgroundColor: isExpanded ? hover : navItemBg }}
                     onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isExpanded ? hover : navItemBg; }}
                   >
                     <span className="flex items-center gap-3">
                       <GroupIcon className="w-4 h-4" />
@@ -172,7 +202,14 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                   </button>
 
                   {isExpanded && group.children && (
-                    <div className="ml-4 pl-3" style={{ borderLeft: `2px solid ${border}` }}>
+                    <div
+                      className="mt-2 ml-3 rounded-xl p-2"
+                      style={{
+                        backgroundColor: submenuBg,
+                        border: `1px solid ${border}`,
+                        boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.75)',
+                      }}
+                    >
                       {group.children.map((child) => {
                         const ChildIcon = child.icon;
                         return (
@@ -201,9 +238,9 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                 href={chatLink.href}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-base font-medium relative"
-                style={{ color: text }}
+                style={{ color: text, backgroundColor: navItemBg }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = navItemBg; }}
               >
                 <chatLink.icon className="w-4 h-4" />
                 {chatLink.label}
@@ -243,10 +280,10 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
               <Link
                 href={`/${locale}/auth/login`}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-primary font-semibold rounded-lg transition-colors"
+                className="inline-flex w-fit items-center justify-start gap-2 px-3 py-2 bg-primary text-sm font-semibold rounded-lg transition-colors"
                 style={{ color: '#0F172A' }}
               >
-                <UserIcon className="w-5 h-5" />
+                <UserIcon className="w-4 h-4" />
                 <span>{t('login')}</span>
               </Link>
             )}

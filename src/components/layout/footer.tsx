@@ -3,13 +3,60 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { Plane, Map, Users, Video, Trophy, Building2 } from 'lucide-react';
+import {
+  BookOpen,
+  Building2,
+  Globe,
+  Hotel,
+  Map,
+  MapPin,
+  Newspaper,
+  Plane,
+  PlaneTakeoff,
+  ShieldCheck,
+  Sparkles,
+  Trophy,
+  Users,
+  UtensilsCrossed,
+  Video,
+} from 'lucide-react';
+import { type LucideIcon } from 'lucide-react';
+
+interface FooterLink {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
 
 export function Footer() {
   const t = useTranslations('common');
   const tc = useTranslations('community');
   const params = useParams();
   const locale = params?.locale as string;
+  const linkClass = 'hover:text-primary transition-colors flex items-center gap-2';
+
+  const reservationLinks: FooterLink[] = [
+    { href: `/${locale}/flights`, label: t('flights'), icon: PlaneTakeoff },
+    { href: `/${locale}/hotels`, label: t('hotels'), icon: Hotel },
+    { href: `/${locale}/restaurants`, label: t('restaurants'), icon: UtensilsCrossed },
+    { href: `/${locale}/tours`, label: tc('tours'), icon: Map },
+  ];
+
+  const exploreLinks: FooterLink[] = [
+    { href: `/${locale}/countries`, label: t('countries'), icon: Globe },
+    { href: `/${locale}/cities`, label: t('cities'), icon: MapPin },
+    { href: `/${locale}/ai-planner`, label: t('aiPlanner'), icon: Sparkles },
+    { href: `/${locale}/blog`, label: t('blog'), icon: BookOpen },
+    { href: `/${locale}/news`, label: t('news'), icon: Newspaper },
+  ];
+
+  const serviceLinks: FooterLink[] = [
+    { href: `/${locale}/companions`, label: tc('companions'), icon: Users },
+    { href: `/${locale}/visa`, label: t('visa'), icon: ShieldCheck },
+    { href: `/${locale}/company`, label: tc('services'), icon: Building2 },
+    { href: `/${locale}/videos`, label: tc('videos'), icon: Video },
+    { href: `/${locale}/leaderboard`, label: tc('leaderboard'), icon: Trophy },
+  ];
 
   return (
     <footer className="bg-bg-surface border-t border-border">
@@ -25,25 +72,49 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-3 text-txt">{t('reservation')}</h3>
             <ul className="space-y-2 text-sm text-txt-sec font-medium">
-              <li><Link href={`/${locale}/flights`} className="hover:text-primary transition-colors">{t('flights')}</Link></li>
-              <li><Link href={`/${locale}/hotels`} className="hover:text-primary transition-colors">{t('hotels')}</Link></li>
-              <li><Link href={`/${locale}/tours`} className="hover:text-primary transition-colors flex items-center gap-1"><Map className="w-3 h-3" />{tc('tours')}</Link></li>
+              {reservationLinks.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.href}>
+                    <Link href={item.href} className={linkClass}>
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <div>
             <h3 className="font-semibold mb-3 text-txt">{t('explore')}</h3>
             <ul className="space-y-2 text-sm text-txt-sec font-medium">
-              <li><Link href={`/${locale}/countries`} className="hover:text-primary transition-colors">{t('countries')}</Link></li>
-              <li><Link href={`/${locale}/ai-planner`} className="hover:text-primary transition-colors">{t('aiPlanner')}</Link></li>
-              <li><Link href={`/${locale}/blog`} className="hover:text-primary transition-colors">{t('blog')}</Link></li>
+              {exploreLinks.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.href}>
+                    <Link href={item.href} className={linkClass}>
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <div>
             <h3 className="font-semibold mb-3 text-txt">{t('services')}</h3>
             <ul className="space-y-2 text-sm text-txt-sec font-medium">
-              <li><Link href={`/${locale}/companions`} className="hover:text-primary transition-colors flex items-center gap-1"><Users className="w-3 h-3" />{tc('companions')}</Link></li>
-              <li><Link href={`/${locale}/visa`} className="hover:text-primary transition-colors">{t('visa')}</Link></li>
-              <li><Link href={`/${locale}/company`} className="hover:text-primary transition-colors flex items-center gap-1"><Building2 className="w-3 h-3" />{tc('services')}</Link></li>
+              {serviceLinks.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.href}>
+                    <Link href={item.href} className={linkClass}>
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

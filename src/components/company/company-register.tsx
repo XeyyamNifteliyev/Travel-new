@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { createBrowserClient } from '@/lib/supabase/client';
 import type { User } from '@/types/supabase-helpers';
 import { Building2, CheckCircle, Loader2, Phone, Mail, Globe, MessageCircle } from 'lucide-react';
@@ -9,6 +11,8 @@ import { toast } from 'sonner';
 
 export default function CompanyRegister() {
   const t = useTranslations('company');
+  const tc = useTranslations('common');
+  const locale = useLocale();
   const supabase = createBrowserClient();
 
   const [user, setUser] = useState<User | null>(null);
@@ -44,7 +48,10 @@ export default function CompanyRegister() {
 
   async function checkAuth() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setUser(user);
 
     const res = await fetch(`/api/companies?userId=${user.id}`);
@@ -79,6 +86,24 @@ export default function CompanyRegister() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg-base via-bg-surface to-bg-base flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-bg-base via-bg-surface to-bg-base flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-card-bg backdrop-blur-sm border border-border rounded-2xl p-8 text-center">
+          <Building2 className="w-12 h-12 text-sky-400 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-txt">{t('title')}</h1>
+          <p className="text-txt-sec mt-2">{t('subtitle')}</p>
+          <Link
+            href={`/${locale}/auth/login`}
+            className="mt-6 inline-flex items-center justify-center gap-2 px-5 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl font-medium transition-colors"
+          >
+            {tc('login')}
+          </Link>
+        </div>
       </div>
     );
   }
