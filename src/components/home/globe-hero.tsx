@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import { Plane } from 'lucide-react';
 
 const CX = 140, CY = 140, R = 120;
+const PLANE_CX = CX - 100;
+const PLANE_CY = CY - 100;
 
 const LAND: number[][][] = [
   [[-168,65],[-155,71],[-140,72],[-125,70],[-110,70],[-95,73],[-80,72],
@@ -82,34 +84,47 @@ function gridParallel(lat: number): string {
   return `M${(CX - 3 * R).toFixed(1)} ${y.toFixed(1)} L${(CX + 3 * R).toFixed(1)} ${y.toFixed(1)}`;
 }
 
-type OrbitType = 'equatorial' | 'polar';
-
 interface PlaneConfig {
   id: number;
-  rx: number;
-  ry: number;
   speed: number;
-  startAngle: number;
-  dir: number;
+  routeAngle: number;
+  startProgress: number;
+  routeRadius: number;
+  bend: number;
   size: number;
   sizeClass: string;
   glowAlpha: number;
-  orbit: OrbitType;
+  colorClass: string;
 }
 
 const PLANE_CONFIGS: PlaneConfig[] = [
-  { id: 1, rx: 160, ry: 160, speed: 0.18, startAngle: 30,  dir: 1,  size: 16, sizeClass: 'w-4 h-4',     glowAlpha: 0.7, orbit: 'equatorial' },
-  { id: 2, rx: 180, ry: 180, speed: 0.12, startAngle: 200,  dir: 1,  size: 14, sizeClass: 'w-3.5 h-3.5', glowAlpha: 0.6, orbit: 'equatorial' },
-  { id: 3, rx: 10,  ry: 165, speed: 0.20, startAngle: 0,    dir: 1,  size: 16, sizeClass: 'w-4 h-4',     glowAlpha: 0.6, orbit: 'polar' },
-  { id: 4, rx: 14,  ry: 185, speed: 0.14, startAngle: 120,  dir: -1, size: 14, sizeClass: 'w-3.5 h-3.5', glowAlpha: 0.5, orbit: 'polar' },
-  { id: 5, rx: 140, ry: 140, speed: 0.25, startAngle: 150,  dir: -1, size: 12, sizeClass: 'w-3 h-3',     glowAlpha: 0.5, orbit: 'equatorial' },
-  { id: 6, rx: 170, ry: 170, speed: 0.09, startAngle: 300,  dir: 1,  size: 13, sizeClass: 'w-3 h-3',     glowAlpha: 0.45, orbit: 'equatorial' },
-  { id: 7, rx: 20,  ry: 152, speed: 0.17, startAngle: 250,  dir: 1,  size: 11, sizeClass: 'w-2.5 h-2.5', glowAlpha: 0.45, orbit: 'polar' },
+  { id: 1, speed: 0.0012, routeAngle: 0,   startProgress: 0.06, routeRadius: 96,  bend: -12, size: 16, sizeClass: 'w-4 h-4',     glowAlpha: 0.7,  colorClass: 'text-blue-400' },
+  { id: 2, speed: 0.0010, routeAngle: 180, startProgress: 0.62, routeRadius: 100, bend: 14,  size: 14, sizeClass: 'w-3.5 h-3.5', glowAlpha: 0.62, colorClass: 'text-blue-300' },
+  { id: 3, speed: 0.0013, routeAngle: 90,  startProgress: 0.22, routeRadius: 94,  bend: 9,   size: 16, sizeClass: 'w-4 h-4',     glowAlpha: 0.62, colorClass: 'text-amber-300' },
+  { id: 4, speed: 0.0011, routeAngle: 270, startProgress: 0.78, routeRadius: 102, bend: -10, size: 14, sizeClass: 'w-3.5 h-3.5', glowAlpha: 0.55, colorClass: 'text-amber-200' },
+  { id: 5, speed: 0.0015, routeAngle: 215, startProgress: 0.38, routeRadius: 92,  bend: 12,  size: 12, sizeClass: 'w-3 h-3',     glowAlpha: 0.5,  colorClass: 'text-sky-300' },
+  { id: 6, speed: 0.0009, routeAngle: 45,  startProgress: 0.84, routeRadius: 104, bend: -13, size: 13, sizeClass: 'w-3 h-3',     glowAlpha: 0.48, colorClass: 'text-cyan-300' },
+  { id: 7, speed: 0.0014, routeAngle: 315, startProgress: 0.48, routeRadius: 90,  bend: 10,  size: 11, sizeClass: 'w-2.5 h-2.5', glowAlpha: 0.45, colorClass: 'text-blue-200' },
 ];
+
+function routePoint(cfg: PlaneConfig, progress: number) {
+  const routeRad = (cfg.routeAngle * Math.PI) / 180;
+  const axisX = Math.cos(routeRad);
+  const axisY = Math.sin(routeRad);
+  const perpX = -axisY;
+  const perpY = axisX;
+  const travel = 1 - progress * 2;
+  const bend = Math.sin(progress * Math.PI) * cfg.bend;
+
+  return {
+    x: PLANE_CX + axisX * cfg.routeRadius * travel + perpX * bend,
+    y: PLANE_CY + axisY * cfg.routeRadius * travel + perpY * bend,
+  };
+}
 
 function useAllPlanes(containerRef: React.RefObject<HTMLDivElement | null>) {
   const frameRef = useRef<number>(0);
-  const angleRefs = useRef(PLANE_CONFIGS.map(c => c.startAngle));
+  const progressRefs = useRef(PLANE_CONFIGS.map(c => c.startProgress));
 
   useEffect(() => {
     const el = containerRef.current;
@@ -126,67 +141,31 @@ function useAllPlanes(containerRef: React.RefObject<HTMLDivElement | null>) {
         currentEl.querySelector(`[data-plane="${c.id}"]`) as HTMLElement | null
       );
 
-      const cx = 140, cy = 140;
-
       function animate() {
         for (let i = 0; i < PLANE_CONFIGS.length; i++) {
           const cfg = PLANE_CONFIGS[i];
           const plane = planes[i];
           if (!plane) continue;
 
-          angleRefs.current[i] += cfg.speed * cfg.dir;
-          const angle = angleRefs.current[i];
-          const rad = (angle * Math.PI) / 180;
+          progressRefs.current[i] = (progressRefs.current[i] + cfg.speed) % 1;
+          const progress = progressRefs.current[i];
+          const nextProgress = (progress + 0.004) % 1;
+          const current = routePoint(cfg, progress);
+          const next = nextProgress > progress ? routePoint(cfg, nextProgress) : routePoint(cfg, progress + 0.004);
+          const vx = next.x - current.x;
+          const vy = next.y - current.y;
 
-          let x: number, y: number, vx: number, vy: number;
+          const rotation = Math.atan2(vy, vx) * 180 / Math.PI + 45;
 
-          if (cfg.orbit === 'equatorial') {
-            x = cx + cfg.rx * Math.cos(rad);
-            y = cy + cfg.ry * Math.sin(rad);
-            vx = -cfg.rx * Math.sin(rad) * cfg.dir;
-            vy = cfg.ry * Math.cos(rad) * cfg.dir;
-          } else {
-            x = cx + cfg.rx * Math.sin(rad);
-            y = cy + cfg.ry * Math.cos(rad);
-            vx = cfg.rx * Math.cos(rad) * cfg.dir;
-            vy = -cfg.ry * Math.sin(rad) * cfg.dir;
-          }
-
-          const rotation = Math.atan2(vy, vx) * 180 / Math.PI;
-
-          const aNorm = ((angle % 360) + 360) % 360;
-          let opacity: number;
-          let zIdx: number;
-
-          if (cfg.orbit === 'polar') {
-            const inFront = aNorm < 180;
-            const FADE = 12;
-            if (!inFront) {
-              opacity = 0.08;
-              zIdx = 1;
-            } else if (aNorm < FADE) {
-              opacity = 0.08 + (aNorm / FADE) * 0.92;
-              zIdx = 10;
-            } else if (aNorm > 180 - FADE) {
-              opacity = 0.08 + ((180 - aNorm) / FADE) * 0.92;
-              zIdx = 10;
-            } else {
-              opacity = 1;
-              zIdx = 10;
-            }
-          } else {
-            const inFront = aNorm <= 90 || aNorm >= 270;
-            if (!inFront) {
-              opacity = 0.08;
-              zIdx = 1;
-            } else {
-              opacity = 1;
-              zIdx = 10;
-            }
-          }
+          const hiddenEdge = progress < 0.08 || progress > 0.92;
+          const behindGlobe = progress > 0.5;
+          const fadeIn = Math.min(1, progress / 0.08);
+          const fadeOut = Math.min(1, (1 - progress) / 0.08);
+          const opacity = hiddenEdge ? Math.max(0.2, Math.min(fadeIn, fadeOut)) : behindGlobe ? 0.42 : 1;
+          const zIdx = behindGlobe ? 9 : 12;
 
           const half = cfg.size / 2;
-          plane.style.transform = `translate(${x - half}px, ${y - half}px) rotate(${rotation}deg)`;
+          plane.style.transform = `translate(${current.x - half}px, ${current.y - half}px) rotate(${rotation}deg)`;
           plane.style.opacity = opacity.toString();
           plane.style.zIndex = zIdx.toString();
         }
@@ -291,9 +270,10 @@ export function GlobeHero() {
         <circle cx="180" cy="180" r="180" fill="none" className="globe-orbit-faint" strokeWidth="0.5" strokeDasharray="3 5" />
         <circle cx="180" cy="180" r="140" fill="none" className="globe-orbit-faint" strokeWidth="0.4" strokeDasharray="2 6" />
         <circle cx="180" cy="180" r="170" fill="none" className="globe-orbit-faint" strokeWidth="0.4" strokeDasharray="2 6" />
-        <ellipse cx="180" cy="180" rx="10" ry="165" fill="none" className="globe-orbit-vert" strokeWidth="0.4" />
-        <ellipse cx="180" cy="180" rx="14" ry="185" fill="none" className="globe-orbit-vert-faint" strokeWidth="0.4" />
-        <ellipse cx="180" cy="180" rx="20" ry="152" fill="none" className="globe-orbit-vert" strokeWidth="0.3" strokeDasharray="3 5" />
+        <ellipse cx="180" cy="180" rx="18" ry="165" fill="none" className="globe-orbit-vert" strokeWidth="0.4" />
+        <ellipse cx="180" cy="180" rx="165" ry="18" fill="none" className="globe-orbit-vert-faint" strokeWidth="0.4" />
+        <ellipse cx="180" cy="180" rx="170" ry="22" fill="none" className="globe-orbit-vert" strokeWidth="0.3" strokeDasharray="3 5" transform="rotate(45 180 180)" />
+        <ellipse cx="180" cy="180" rx="150" ry="20" fill="none" className="globe-orbit-vert-faint" strokeWidth="0.3" strokeDasharray="3 5" transform="rotate(135 180 180)" />
       </svg>
 
       {PLANE_CONFIGS.map(config => (
@@ -301,10 +281,10 @@ export function GlobeHero() {
           key={config.id}
           data-plane={config.id}
           className="absolute"
-          style={{ width: `${config.size}px`, height: `${config.size}px`, zIndex: config.orbit === 'equatorial' ? 10 : 1 }}
+          style={{ width: `${config.size}px`, height: `${config.size}px`, zIndex: 10 }}
         >
           <Plane
-            className={`${config.sizeClass} text-blue-400`}
+            className={`${config.sizeClass} ${config.colorClass}`}
             style={{ filter: `drop-shadow(0 0 6px rgba(96,165,250,${config.glowAlpha}))` }}
           />
         </div>
