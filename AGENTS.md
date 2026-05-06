@@ -441,6 +441,12 @@ Open-data mərhələsi üçün əlavə edilən cədvəllər:
     - Cari vəziyyət: birinci real-data mərhələsindən kənardadır.
     - Sonra lazımdır: booking confirmation, payment flow, provider order API-ləri, cancellation/refund policy.
 
+11. **Mobil menyu tema problemi (KNOWN BUG)**
+    - Cari vəziyyət: Mobil menyu dark/light mode əks rənglərində işləyir, amma CSS dəyişənləri (`var(--menu-*)`) Tailwind v4 `@theme inline` ilə conflict yaradır. `MutationObserver` ilə `document.documentElement.classList` izlənilir və rənglər JS-də hesablanır.
+    - Problem: Bəzi hallarda tema dəyişikliyi düzgün reflect olunmur, hamburger ikonası light modda görünmür, menyu overlay-i kifayət qədər tünd deyil.
+    - Fayllar: `src/components/layout/mobile-menu.tsx`, `src/app/globals.css`
+    - Qeyd: Bu problemin düzəldilməsi üçün ThemeToggle-dan `useTheme` hook-u çıxarılıb `mobile-menu.tsx`-ə verilməlidir, və ya `next-themes` paketi inteqrasiya olunmalıdır.
+
 ## Növbəti Tövsiyə Olunan İcra Sırası
 
 1. ~~Supabase-də yeni migration-ları tətbiq et: `020_open_travel_data.sql`, `021_seed_istanbul_open_data.sql` və `022_place_review_helpful_votes.sql`.~~ **TAMAMLANDI.**
