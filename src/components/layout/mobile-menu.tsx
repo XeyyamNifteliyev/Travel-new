@@ -99,7 +99,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
           className={`absolute right-0 top-0 h-full w-72 border-l border-[#334155] transform transition-transform duration-300 ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
-          style={{ backgroundColor: '#0F172A' }}
+          style={{ backgroundColor: '#0F172A', WebkitBackdropFilter: 'blur(0)', backdropFilter: 'blur(0)' }}
         >
           <div className="flex items-center justify-between p-4 border-b border-border">
             <span className="text-primary font-bold text-lg font-heading">{t('appName')}</span>

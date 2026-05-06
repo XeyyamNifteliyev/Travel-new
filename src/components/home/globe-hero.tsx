@@ -291,7 +291,7 @@ export function GlobeHero() {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-      <div ref={containerRef} className="relative" style={{ width: '280px', height: '280px' }}>
+      <div ref={containerRef} className="relative overflow-hidden rounded-full" style={{ width: '280px', height: '280px', willChange: 'transform' }}>
         <div className="absolute inset-0 rounded-full globe-glow" />
 
         <div className="absolute inset-0 rounded-full overflow-hidden globe-sphere" style={{ zIndex: 5 }}>
