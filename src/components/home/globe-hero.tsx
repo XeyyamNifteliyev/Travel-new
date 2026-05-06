@@ -82,76 +82,34 @@ function gridParallel(lat: number): string {
   return `M${(CX - 3 * R).toFixed(1)} ${y.toFixed(1)} L${(CX + 3 * R).toFixed(1)} ${y.toFixed(1)}`;
 }
 
-function useAnimatedPlanes(containerRef: React.RefObject<HTMLDivElement | null>) {
-  const frameRef = useRef<number>(0);
-  const angle1Ref = useRef(0);
-  const angle2Ref = useRef(180);
+type OrbitType = 'equatorial' | 'polar';
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const currentEl = el;
-    let started = false;
-
-    function start() {
-      if (started) return;
-      started = true;
-
-      const p1 = currentEl.querySelector('[data-plane="1"]') as HTMLElement;
-      const p2 = currentEl.querySelector('[data-plane="2"]') as HTMLElement;
-
-      const cx = 140, cy = 140;
-      const r1 = 160, r2 = 180;
-
-      function animate() {
-        angle1Ref.current += 0.18;
-        angle2Ref.current += 0.12;
-
-        const a1 = (angle1Ref.current * Math.PI) / 180;
-        const a2 = (angle2Ref.current * Math.PI) / 180;
-
-        if (p1) {
-          const x = cx + r1 * Math.cos(a1);
-          const y = cy + r1 * Math.sin(a1);
-          p1.style.transform = `translate(${x - 8}px, ${y - 8}px) rotate(${angle1Ref.current + 135}deg)`;
-        }
-
-        if (p2) {
-          const x = cx + r2 * Math.cos(a2);
-          const y = cy + r2 * Math.sin(a2);
-          p2.style.transform = `translate(${x - 7}px, ${y - 7}px) rotate(${angle2Ref.current + 135}deg)`;
-        }
-
-        frameRef.current = requestAnimationFrame(animate);
-      }
-
-      frameRef.current = requestAnimationFrame(animate);
-    }
-
-    const observer = new MutationObserver(() => {
-      if (!started && currentEl.querySelector('[data-plane="1"]') && currentEl.querySelector('[data-plane="2"]')) {
-        start();
-        observer.disconnect();
-      }
-    });
-
-    if (currentEl.querySelector('[data-plane="1"]') && currentEl.querySelector('[data-plane="2"]')) {
-      start();
-    } else {
-      observer.observe(currentEl, { childList: true, subtree: true });
-    }
-
-    return () => {
-      cancelAnimationFrame(frameRef.current);
-      observer.disconnect();
-    };
-  }, []);
+interface PlaneConfig {
+  id: number;
+  rx: number;
+  ry: number;
+  speed: number;
+  startAngle: number;
+  dir: number;
+  size: number;
+  sizeClass: string;
+  glowAlpha: number;
+  orbit: OrbitType;
 }
 
-function useVerticalPlanes(containerRef: React.RefObject<HTMLDivElement | null>) {
+const PLANE_CONFIGS: PlaneConfig[] = [
+  { id: 1, rx: 160, ry: 160, speed: 0.18, startAngle: 30,  dir: 1,  size: 16, sizeClass: 'w-4 h-4',     glowAlpha: 0.7, orbit: 'equatorial' },
+  { id: 2, rx: 180, ry: 180, speed: 0.12, startAngle: 200,  dir: 1,  size: 14, sizeClass: 'w-3.5 h-3.5', glowAlpha: 0.6, orbit: 'equatorial' },
+  { id: 3, rx: 10,  ry: 165, speed: 0.20, startAngle: 0,    dir: 1,  size: 16, sizeClass: 'w-4 h-4',     glowAlpha: 0.6, orbit: 'polar' },
+  { id: 4, rx: 14,  ry: 185, speed: 0.14, startAngle: 120,  dir: -1, size: 14, sizeClass: 'w-3.5 h-3.5', glowAlpha: 0.5, orbit: 'polar' },
+  { id: 5, rx: 140, ry: 140, speed: 0.25, startAngle: 150,  dir: -1, size: 12, sizeClass: 'w-3 h-3',     glowAlpha: 0.5, orbit: 'equatorial' },
+  { id: 6, rx: 170, ry: 170, speed: 0.09, startAngle: 300,  dir: 1,  size: 13, sizeClass: 'w-3 h-3',     glowAlpha: 0.45, orbit: 'equatorial' },
+  { id: 7, rx: 20,  ry: 152, speed: 0.17, startAngle: 250,  dir: 1,  size: 11, sizeClass: 'w-2.5 h-2.5', glowAlpha: 0.45, orbit: 'polar' },
+];
+
+function useAllPlanes(containerRef: React.RefObject<HTMLDivElement | null>) {
   const frameRef = useRef<number>(0);
-  const angleRef = useRef(0);
+  const angleRefs = useRef(PLANE_CONFIGS.map(c => c.startAngle));
 
   useEffect(() => {
     const el = containerRef.current;
@@ -164,47 +122,74 @@ function useVerticalPlanes(containerRef: React.RefObject<HTMLDivElement | null>)
       if (started) return;
       started = true;
 
-      const p3 = currentEl.querySelector('[data-plane="3"]') as HTMLElement;
-      const p4 = currentEl.querySelector('[data-plane="4"]') as HTMLElement;
+      const planes = PLANE_CONFIGS.map(c =>
+        currentEl.querySelector(`[data-plane="${c.id}"]`) as HTMLElement | null
+      );
 
       const cx = 140, cy = 140;
-      const FADE = 8;
-
-      function updatePlane(el: HTMLElement, offset: number, rx: number, ry: number, size: number) {
-        const angle = angleRef.current + offset;
-        const rad = (angle * Math.PI) / 180;
-        const aNorm = angle % 360;
-
-        const x = cx + rx * Math.sin(rad);
-        const y = cy + ry * Math.cos(rad);
-
-        let opacity: number;
-        let zIdx: number;
-        if (aNorm > 180) {
-          opacity = 0.06;
-          zIdx = 1;
-        } else if (aNorm < FADE) {
-          opacity = 0.06 + (aNorm / FADE) * 0.94;
-          zIdx = aNorm > FADE / 2 ? 10 : 1;
-        } else if (aNorm > 180 - FADE) {
-          opacity = 0.06 + ((180 - aNorm) / FADE) * 0.94;
-          zIdx = aNorm < 180 - FADE / 2 ? 10 : 1;
-        } else {
-          opacity = 1;
-          zIdx = 10;
-        }
-
-        const half = size / 2;
-        el.style.transform = `translate(${x - half}px, ${y - half}px) rotate(-45deg)`;
-        el.style.opacity = opacity.toString();
-        el.style.zIndex = zIdx.toString();
-      }
 
       function animate() {
-        angleRef.current += 0.15;
+        for (let i = 0; i < PLANE_CONFIGS.length; i++) {
+          const cfg = PLANE_CONFIGS[i];
+          const plane = planes[i];
+          if (!plane) continue;
 
-        if (p3) updatePlane(p3, 0, 8, 165, 16);
-        if (p4) updatePlane(p4, 180, 12, 185, 14);
+          angleRefs.current[i] += cfg.speed * cfg.dir;
+          const angle = angleRefs.current[i];
+          const rad = (angle * Math.PI) / 180;
+
+          let x: number, y: number, vx: number, vy: number;
+
+          if (cfg.orbit === 'equatorial') {
+            x = cx + cfg.rx * Math.cos(rad);
+            y = cy + cfg.ry * Math.sin(rad);
+            vx = -cfg.rx * Math.sin(rad) * cfg.dir;
+            vy = cfg.ry * Math.cos(rad) * cfg.dir;
+          } else {
+            x = cx + cfg.rx * Math.sin(rad);
+            y = cy + cfg.ry * Math.cos(rad);
+            vx = cfg.rx * Math.cos(rad) * cfg.dir;
+            vy = -cfg.ry * Math.sin(rad) * cfg.dir;
+          }
+
+          const rotation = Math.atan2(vy, vx) * 180 / Math.PI;
+
+          const aNorm = ((angle % 360) + 360) % 360;
+          let opacity: number;
+          let zIdx: number;
+
+          if (cfg.orbit === 'polar') {
+            const inFront = aNorm < 180;
+            const FADE = 12;
+            if (!inFront) {
+              opacity = 0.08;
+              zIdx = 1;
+            } else if (aNorm < FADE) {
+              opacity = 0.08 + (aNorm / FADE) * 0.92;
+              zIdx = 10;
+            } else if (aNorm > 180 - FADE) {
+              opacity = 0.08 + ((180 - aNorm) / FADE) * 0.92;
+              zIdx = 10;
+            } else {
+              opacity = 1;
+              zIdx = 10;
+            }
+          } else {
+            const inFront = aNorm <= 90 || aNorm >= 270;
+            if (!inFront) {
+              opacity = 0.08;
+              zIdx = 1;
+            } else {
+              opacity = 1;
+              zIdx = 10;
+            }
+          }
+
+          const half = cfg.size / 2;
+          plane.style.transform = `translate(${x - half}px, ${y - half}px) rotate(${rotation}deg)`;
+          plane.style.opacity = opacity.toString();
+          plane.style.zIndex = zIdx.toString();
+        }
 
         frameRef.current = requestAnimationFrame(animate);
       }
@@ -212,22 +197,22 @@ function useVerticalPlanes(containerRef: React.RefObject<HTMLDivElement | null>)
       frameRef.current = requestAnimationFrame(animate);
     }
 
-    const observer = new MutationObserver(() => {
-      if (!started && currentEl.querySelector('[data-plane="3"]') && currentEl.querySelector('[data-plane="4"]')) {
-        start();
-        observer.disconnect();
-      }
-    });
-
-    if (currentEl.querySelector('[data-plane="3"]') && currentEl.querySelector('[data-plane="4"]')) {
+    const allPresent = PLANE_CONFIGS.every(c => el.querySelector(`[data-plane="${c.id}"]`));
+    if (allPresent) {
       start();
     } else {
-      observer.observe(currentEl, { childList: true, subtree: true });
+      const observer = new MutationObserver(() => {
+        const now = PLANE_CONFIGS.every(c => currentEl.querySelector(`[data-plane="${c.id}"]`));
+        if (!started && now) {
+          start();
+          observer.disconnect();
+        }
+      });
+      observer.observe(el, { childList: true, subtree: true });
     }
 
     return () => {
       cancelAnimationFrame(frameRef.current);
-      observer.disconnect();
     };
   }, []);
 }
@@ -235,8 +220,7 @@ function useVerticalPlanes(containerRef: React.RefObject<HTMLDivElement | null>)
 export function GlobeHero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  useAnimatedPlanes(containerRef);
-  useVerticalPlanes(containerRef);
+  useAllPlanes(containerRef);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -290,39 +274,41 @@ export function GlobeHero() {
   }, []);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-      <div ref={containerRef} className="relative overflow-hidden rounded-full" style={{ width: '280px', height: '280px', willChange: 'transform' }}>
-        <div className="absolute inset-0 rounded-full globe-glow" />
+    <div ref={containerRef} className="relative flex items-center justify-center" style={{ width: '280px', height: '280px' }}>
+      <div className="absolute inset-0 rounded-full globe-glow" />
 
-        <div className="absolute inset-0 rounded-full overflow-hidden globe-sphere" style={{ zIndex: 5 }}>
-          <svg ref={svgRef} viewBox="0 0 280 280" className="absolute inset-0 w-full h-full" />
-          <div className="absolute inset-0 rounded-full globe-shine" />
-        </div>
-
-        <svg
-          className="absolute overflow-hidden"
-          style={{ width: '128.57%', height: '128.57%', left: '-14.29%', top: '-14.29%' }}
-          viewBox="0 0 360 360"
-        >
-          <circle cx="180" cy="180" r="160" fill="none" className="globe-orbit" strokeWidth="0.5" strokeDasharray="4 4" />
-          <circle cx="180" cy="180" r="180" fill="none" className="globe-orbit-faint" strokeWidth="0.5" strokeDasharray="4 4" />
-          <ellipse cx="180" cy="180" rx="8" ry="165" fill="none" className="globe-orbit-vert" strokeWidth="0.4" />
-          <ellipse cx="180" cy="180" rx="12" ry="185" fill="none" className="globe-orbit-vert-faint" strokeWidth="0.4" />
-        </svg>
-
-        <div data-plane="1" className="absolute top-0 left-0" style={{ width: '16px', height: '16px', zIndex: 10 }}>
-          <Plane className="w-4 h-4 text-blue-400" style={{ filter: 'drop-shadow(0 0 6px rgba(96,165,250,0.6))' }} />
-        </div>
-        <div data-plane="2" className="absolute top-0 left-0" style={{ width: '14px', height: '14px', zIndex: 10 }}>
-          <Plane className="w-3.5 h-3.5 text-blue-400" style={{ filter: 'drop-shadow(0 0 6px rgba(96,165,250,0.6))' }} />
-        </div>
-        <div data-plane="3" className="absolute top-0 left-0" style={{ width: '16px', height: '16px', zIndex: 10 }}>
-          <Plane className="w-4 h-4 text-blue-400" style={{ filter: 'drop-shadow(0 0 8px rgba(96,165,250,0.5))' }} />
-        </div>
-        <div data-plane="4" className="absolute top-0 left-0" style={{ width: '14px', height: '14px', zIndex: 10 }}>
-          <Plane className="w-3.5 h-3.5 text-blue-400" style={{ filter: 'drop-shadow(0 0 8px rgba(96,165,250,0.5))' }} />
-        </div>
+      <div className="absolute inset-0 rounded-full overflow-hidden globe-sphere" style={{ zIndex: 5 }}>
+        <svg ref={svgRef} viewBox="0 0 280 280" className="absolute inset-0 w-full h-full" />
+        <div className="absolute inset-0 rounded-full globe-shine" />
       </div>
+
+      <svg
+        className="absolute overflow-visible"
+        style={{ left: '-14.29%', top: '-14.29%', width: '128.57%', height: '128.57%', zIndex: 3 }}
+        viewBox="0 0 360 360"
+      >
+        <circle cx="180" cy="180" r="160" fill="none" className="globe-orbit" strokeWidth="0.5" strokeDasharray="4 4" />
+        <circle cx="180" cy="180" r="180" fill="none" className="globe-orbit-faint" strokeWidth="0.5" strokeDasharray="3 5" />
+        <circle cx="180" cy="180" r="140" fill="none" className="globe-orbit-faint" strokeWidth="0.4" strokeDasharray="2 6" />
+        <circle cx="180" cy="180" r="170" fill="none" className="globe-orbit-faint" strokeWidth="0.4" strokeDasharray="2 6" />
+        <ellipse cx="180" cy="180" rx="10" ry="165" fill="none" className="globe-orbit-vert" strokeWidth="0.4" />
+        <ellipse cx="180" cy="180" rx="14" ry="185" fill="none" className="globe-orbit-vert-faint" strokeWidth="0.4" />
+        <ellipse cx="180" cy="180" rx="20" ry="152" fill="none" className="globe-orbit-vert" strokeWidth="0.3" strokeDasharray="3 5" />
+      </svg>
+
+      {PLANE_CONFIGS.map(config => (
+        <div
+          key={config.id}
+          data-plane={config.id}
+          className="absolute"
+          style={{ width: `${config.size}px`, height: `${config.size}px`, zIndex: config.orbit === 'equatorial' ? 10 : 1 }}
+        >
+          <Plane
+            className={`${config.sizeClass} text-blue-400`}
+            style={{ filter: `drop-shadow(0 0 6px rgba(96,165,250,${config.glowAlpha}))` }}
+          />
+        </div>
+      ))}
 
       <style jsx global>{`
         .globe-glow {
@@ -334,7 +320,7 @@ export function GlobeHero() {
           background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12) 0%, transparent 50%);
         }
         .globe-orbit { stroke: rgba(14,165,233,0.12); }
-        .globe-orbit-faint { stroke: rgba(14,165,233,0.08); }
+        .globe-orbit-faint { stroke: rgba(14,165,233,0.07); }
         .globe-orbit-vert { stroke: rgba(251,191,36,0.1); }
         .globe-orbit-vert-faint { stroke: rgba(251,191,36,0.06); }
         .globe-sphere {

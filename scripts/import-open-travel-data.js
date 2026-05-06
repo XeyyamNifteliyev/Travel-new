@@ -1042,14 +1042,50 @@ async function applyImport(city, wikiSummary, places, args) {
       city_id: upsertedCity.id,
     }));
 
-    const { data: upsertedPlaces, error: placesError } = await supabase
-      .from('places')
-      .upsert(placePayloads, { onConflict: 'source,source_place_id' })
-      .select('id, source, source_place_id, source_url, license, attribution_text, raw_data');
+    // Supabase JS client doesn't support partial unique indexes in onConflict.
+    // Use insert with ignoreDuplicates for places, then query existing + insert missing sources.
+    let insertedPlaces = [];
+    let insertedCount = 0;
+    let skippedCount = 0;
 
-    if (placesError) throw placesError;
+    // Batch insert in groups of 20 to avoid payload limits
+    const batchSize = 20;
+    for (let i = 0; i < placePayloads.length; i += batchSize) {
+      const batch = placePayloads.slice(i, i + batchSize);
+      const { data: batchData, error: batchError } = await supabase
+        .from('places')
+        .insert(batch)
+        .select('id, source, source_place_id, source_url, license, attribution_text, raw_data');
 
-    const sourcePayloads = (upsertedPlaces || []).map((place) => ({
+      if (batchError) {
+        // If duplicate, try one by one
+        if (batchError.code === '23505') {
+          for (const place of batch) {
+            const { data: singleData, error: singleError } = await supabase
+              .from('places')
+              .insert(place)
+              .select('id, source, source_place_id, source_url, license, attribution_text, raw_data');
+            if (singleError) {
+              if (singleError.code === '23505') {
+                skippedCount++;
+              } else {
+                throw singleError;
+              }
+            } else if (singleData) {
+              insertedPlaces.push(singleData[0]);
+              insertedCount++;
+            }
+          }
+        } else {
+          throw batchError;
+        }
+      } else if (batchData) {
+        insertedPlaces.push(...batchData);
+        insertedCount += batchData.length;
+      }
+    }
+
+    const sourcePayloads = (insertedPlaces || []).map((place) => ({
       place_id: place.id,
       source: place.source,
       source_id: place.source_place_id,
@@ -1062,16 +1098,18 @@ async function applyImport(city, wikiSummary, places, args) {
     if (sourcePayloads.length > 0) {
       const { error: sourcesError } = await supabase
         .from('place_sources')
-        .upsert(sourcePayloads, { onConflict: 'place_id,source,source_id' });
+        .insert(sourcePayloads);
 
-      if (sourcesError) throw sourcesError;
+      if (sourcesError && sourcesError.code !== '23505') {
+        throw sourcesError;
+      }
     }
 
-    await finishImportLog(supabase, logId, 'success', upsertedPlaces?.length || 0, 0, null);
+    await finishImportLog(supabase, logId, 'success', insertedCount, skippedCount, null);
 
     return {
       cityId: upsertedCity.id,
-      importedPlaces: upsertedPlaces?.length || 0,
+      importedPlaces: insertedCount,
     };
   } catch (error) {
     await finishImportLog(supabase, logId, 'failed', 0, places.length, error.message);
@@ -1344,7 +1382,7 @@ async function main() {
     overpassElements
       .map((element) => normalizePlace(element, city, 'COUNTRY_ID_PLACEHOLDER'))
       .filter(Boolean)
-  )).slice(0, args.limit);
+  )).filter(p => p.slug && p.slug.trim() !== '').slice(0, args.limit);
 
   const preview = {
     city: {

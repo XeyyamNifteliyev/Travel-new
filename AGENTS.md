@@ -86,6 +86,12 @@
   - `next.config.ts` — `dangerouslyAllowSVG: true` silindi
   - `.env.example` — UNSPLASH_ACCESS_KEY, DUFFEL_ACCESS_TOKEN, YOUTUBE_API_KEY, VISA_API_URL, CRON_SECRET əlavə edildi
 
+- **20 şəhər Open Data import-u tamamlandı.** Supabase-də hazırda 26 şəhər, 1593 yer, 1515 mənbə var. Import skriptində `--apply`path düzəldildi: `upsert` → `insert` + batch fallback (partial unique index `42P10` error resolve). Boş slug filtrləndi (Yaponca/Koreya adları üçün).
+  - Import edilən şəhərlər: Tokyo, Barcelona, Amsterdam, Vienna, Prague, Budapest, Singapore, Seoul, Kuala Lumpur, Cairo, New York, Berlin, Athens, Lisbon, Baku, Antalya, Dubrovnik, Bangkok, Tehran, Moscow
+  - `scripts/import-open-travel-data.js` — insert + batch/individual fallback, empty slug filter
+  - `scripts/apply-city-imports.mjs` — silindi (istifadəsiz)
+  - DB: cities=26, places=1593, place_sources=1515, place_reviews=0
+
 TravelAZ Next.js 15 üzərində qurulan çoxdilli travel platformadır. Layihədə lokalizasiya edilmiş route-lar, Supabase əsaslı data, AI planlaşdırıcı, viza alətləri, blog, chat, turlar və ölkə səhifələri var.
 
 Son tamamlanan işlər:
