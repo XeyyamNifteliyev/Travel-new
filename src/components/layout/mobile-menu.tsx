@@ -245,7 +245,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
                 <chatLink.icon className="w-4 h-4" />
                 {chatLink.label}
                 {unreadCount > 0 && (
-                  <span className="ml-auto min-w-[20px] h-5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 leading-none">
+                  <span className="ml-auto min-w-5 h-5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 leading-none">
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </span>
                 )}

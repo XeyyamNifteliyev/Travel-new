@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "import:open-travel-data": "node scripts/import-open-travel-data.js",
-    "enrich:images": "node scripts/enrich-images.js"
+    "enrich:images": "node scripts/enrich-images.js",
+    "seed:country-highlights": "node scripts/seed-country-highlights.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",

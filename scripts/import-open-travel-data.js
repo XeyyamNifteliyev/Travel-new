@@ -929,13 +929,13 @@ function createSupabaseClient() {
 
 function createPublicSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const readKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!url || !anonKey) {
+  if (!url || !readKey) {
     throw new Error('NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required for --check-db.');
   }
 
-  return createClient(url, anonKey, {
+  return createClient(url, readKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
@@ -945,7 +945,15 @@ function createPublicSupabaseClient() {
 
 async function checkDatabase() {
   const supabase = createPublicSupabaseClient();
-  const tables = ['cities', 'places', 'place_reviews', 'place_sources', 'external_import_logs'];
+  const tables = [
+    'countries',
+    'cities',
+    'places',
+    'country_highlights',
+    'place_reviews',
+    'place_sources',
+    'external_import_logs',
+  ];
 
   for (const table of tables) {
     const { error, count } = await supabase

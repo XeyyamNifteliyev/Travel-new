@@ -1,373 +1,113 @@
-# TravelAZ - Layihə Konteksti və Cari Roadmap
+# TravelAZ - Agent Konteksti və Cari Roadmap
 
-## 2026-05-04 Open Data Status Update
+Bu fayl gələcək agentlər üçün TravelAZ layihəsinin cari vəziyyətini, konvensiyalarını və növbəti addımlarını saxlayır. Fayl Azərbaycan dilində saxlanmalıdır.
 
-- Supabase real DB check: `cities=1`, `places=8`, `place_sources=8`.
-- Real URL checks: `/az/cities/istanbul` 200 qaytarir, `/az/places/fac8f616-cd3f-425c-8ae7-b96b2cd12c01` 200 qaytarir ve Ayasofya render olunur.
-- `supabase/migrations/023_log_istanbul_open_data_import.sql` elave edildi. Bu migration Istanbul seed importunu `external_import_logs` cedvelinde idempotent qeyd edir.
-- `023_log_istanbul_open_data_import.sql` Supabase-de tetbiq edildi. Istanbul seed import `external_import_logs` cedvelinde qeyd olundu.
-- **Migration-lar (020-023) Supabase-de tam tetbiq edildi.** Cities/Places/Reviews data modeli, Istanbul seed, helpful votes ve import log tamamlanib.
-- Novbeti sira: GeoNames city seed ve review moderation.
+## Layihə Xülasəsi
 
-## 2026-05-05 Status Update
+TravelAZ Next.js 15 üzərində qurulan çoxdilli travel platformadır. Layihədə lokalizasiya edilmiş route-lar, Supabase əsaslı data, AI planlaşdırıcı, viza alətləri, blog, chat, turlar, ölkə/şəhər/place səhifələri və community review sistemi var.
 
-- **Şəhərlər bölməsi və naviqasiya əlavə edildi.** `/cities` siyahı səhifəsi yaradıldı. Header "Kəşf Et" dropdown-a və mobil menyuya "Şəhərlər" linki əlavə olundu. Ana səhifədəki cityHighlights artıq `/cities/istanbul` kimi şəhər linklərinə yönləndirir.
-  - `src/app/[locale]/cities/page.tsx` — server-side cities listing
-  - `src/app/[locale]/cities/city-grid-client.tsx` — client-side axtarış və grid
-  - `src/messages/{az,en,ru}.json` — `common.cities` və `cities` namespace əlavə olundu
+Tripadvisor-dan icazəsiz scraping, review kopyalama və content kopyalama edilməməlidir. Oxşar product value açıq data və TravelAZ-in öz review sistemi ilə qurulmalıdır.
 
-- **Unsplash API inteqrasiyası tamamlandı.** Əvvəllər sadəcə hardcoded CDN URL generator idi, indi real Unsplash Search API ilə şəkil axtarışı və enrichment dəstəklənir.
-  - `UNSPLASH_ACCESS_KEY` `.env.local`-da (server-only, `NEXT_PUBLIC_` prefiksi silindi)
-  - `src/lib/unsplash.ts` — `searchUnsplashPhoto()`, `getUnsplashPhotoById()`, `getCountryCoverPhotoId()` (generic fallback ilə), `getCityCoverPhotoId()`, `getFlagUrl()` (`cca2` parametri ilə), `COUNTRY_COVER_PHOTOS` (~30 ölkə), `CITY_COVER_PHOTOS` (~10 şəhər), `SLUG_TO_ISO` (~180 ölkə İSO kodu)
-  - `src/app/api/images/search/route.ts` — `GET /api/images/search?q=...`
-  - `src/app/api/images/enrich/route.ts` — `POST /api/images/enrich` — DB-də `cover_photo_id` NULL olan ölkə/şəhərləri Unsplash API ilə doldurur
-  - `scripts/enrich-images.js` — CLI enrichment script-i (`--dry-run`, `--apply`, `--type`, `--limit`)
-  - `package.json` — `enrich:images` script əlavə edildi
+## 2026-05-07 Status Update
 
-- **Ölkə şəkilləri hamısı üçün təmin edildi.** Bütün ölkə kartları artıq həmişə ölkə şəkli göstərir (bayraq/emoji fallback yoxdur). Fallback chain: DB `cover_photo_id` → hardcoded `COUNTRY_COVER_PHOTOS` map → generic travel photo.
-  - `src/components/country/country-card.tsx` — sadələşdirildi, həmişə `<Image>` göstərir
-  - `src/app/[locale]/page.tsx` — ana səhifədə də həmişə şəkil göstərilir
-  - `src/app/[locale]/countries/[slug]/country-detail-client.tsx` — `getCountryCoverPhotoId()` ilə həmişə hero şəkli
+- `country_highlights` 10 əsas istiqamət üçün seed edildi: `turkey`, `dubai`, `france`, `italy`, `georgia`, `bali`, `japan`, `thailand`, `greece`, `maldives`.
+- Supabase-ə 43 highlight yazıldı.
+- `scripts/seed-country-highlights.js` əlavə edildi. Əmr: `npm run seed:country-highlights -- --apply`.
+- `scripts/enrich-images.js` parser-i düzəldildi; artıq `--type=cities`, `--type countries`, `--limit=20`, `--limit 20` formatları işləyir.
+- 20 şəhər Unsplash ilə zənginləşdirildi. Hazırda 26 şəhərin hamısında `cover_photo_id` var.
+- Ölkələr üçün 25-lik Unsplash batch işlədi: 21 ölkə real şəkil aldı, 4 ölkə üçün nəticə tapılmadı.
+- Şəkil fallback məntiqi düzəldildi: qısa Unsplash API ID-ləri və məlum 404 ID-lər artıq sınıq image URL yaratmır.
+- `--repair-invalid` rejimi əlavə edildi; bu rejim problemli `cover_photo_id` dəyərlərini tam `images.unsplash.com` URL-ləri ilə əvəz edir.
+- Ana səhifədə hardcoded şəhər kartları real `cities` query ilə əvəz edildi.
+- Ana səhifəyə real `places` preview bloku əlavə edildi.
+- `README.md`, `plan.md` və `AGENTS.md` cari vəziyyətə uyğun yeniləndi.
 
-- **Flagcdn 404 xətaları düzəldildi.** `SLUG_TO_ISO` xəritəsi 30-dan ~180 ölkəyə genişləndirildi. `getFlagUrl()` artıq `cca2` parametri qəbul edir (DB-dən gəlir), fallback kimi xəritəyə baxır.
-  - Sınmış Unsplash photo ID-lər yeniləndi (`south-korea`, `iran`)
+Cari DB snapshot:
 
-- **Şəkil enrichment vəziyyəti:** 51 ölkə + 6 şəhər Unsplash API ilə real şəkil aldı. Qalan ~135 ölkə generic travel photo ilə göstərilir. Tam doldurmaq üçün Unsplash rate limit (demo tier: 50 req/saat) səbəbindən `npm run enrich:images -- --type=countries --limit=50 --apply` bir neçə dəfə işə salınmalıdır.
-  - `src/lib/duffel/auth.ts` — Duffel Bearer token helper
-  - `src/lib/duffel/flights.ts` — Duffel flight offer mapper + request body builder
-  - `src/lib/duffel/stays.ts` — Duffel stay result mapper + search body builder
-  - `src/types/flight.ts` — FlightOffer, FlightSegment, FlightSearchParams tipləri
-  - `src/types/hotel.ts` — HotelOffer, HotelSearchParams tipləri
-  - `src/app/api/flights/search/route.ts` — POST Duffel offer_requests
-  - `src/app/api/hotels/search/route.ts` — POST Duffel stays/search
-  - `src/app/[locale]/flights/page.tsx` — real API + fallback mock data
-  - `src/app/[locale]/hotels/page.tsx` — real API + fallback mock data
-- Duffel env: `DUFFEL_ACCESS_TOKEN`, `DUFFEL_BASE_URL` (api.duffel.com)
-- `src/lib/amadeus/` silindi (Amadeus inteqrasiyası köçürüldü)
-
-- **GeoNames city seed import pipeline tamamlandı.** `scripts/import-open-travel-data.js` skriptinə `--mode=geonames`, `--enrich-presets`, `--cities-per-country`, `--geonames-username` flag-ları əlavə edildi. GeoNames API ilə ölkə başına şəhər seed, preset enrichment və SQL output dəstəklənir.
-- **countries.cca2 sütunu əlavə edildi.** Migration 024: `ALTER TABLE countries ADD COLUMN cca2 TEXT` + 70 ölkə backfill.
-- **Review moderation workflow tamamlandı.** Yeni review-lar `pending` status ilə göndərilir. Admin istifadəçilər `/az/admin` səhifəsindən review-ları approve/reject/delete edə bilər. `025_profiles_role.sql` migration: profiles.role sütunu + admin RLS policy-ləri.
-- Əlavə edilən fayllar:
-  - `src/app/[locale]/admin/page.tsx` — admin moderation səhifəsi
-  - `src/app/api/reviews/moderate/route.ts` — GET/PATCH/DELETE admin API
-  - `src/components/place/review-moderation-panel.tsx` — admin moderation UI
-  - `src/lib/content-filter.ts` — bad words checker
-- Dəyişdirilən fayllar:
-  - `src/components/place/place-review-form.tsx` — status: `pending`, yeni toast
-  - `src/app/[locale]/profile/page.tsx` — moderation tab-ı silindi (admin səhifəsinə köçürüldü)
-  - `src/components/layout/header.tsx` — admin istifadəçilər üçün `/admin` linki
-  - `src/components/layout/mobile-menu.tsx` — admin linki mobil menyuda
-  - `src/messages/{az,en,ru}.json` — 10 yeni i18n açarı
-
-## 2026-05-06 Status Update
-
-- **GlobeHero-a 2 vertikal təyyarə əlavə edildi.** Cənubdan şimala doğru hərəkət, globe arxasından keçib yenidən cənubdan çıxır. Mövcud 2 mavi təyyarəyə əlavə olaraq yeni 2 təyyarə eyni blueprintdə.
-  - `src/components/home/globe-hero.tsx` — `useVerticalPlanes` hook-u, `data-plane="3"` və `data-plane="4"`
-
-- **Təhlükəsizlik xətaları düzəldildi:**
-  - `src/app/api/ai/plan/route.ts` — `createClient()` + `getUser()` auth yoxlaması (login tələb olunur, 401)
-  - `src/app/api/ai/cheap-dates/route.ts` — eyni auth yoxlaması
-  - `src/app/api/images/enrich/route.ts` — auth + `profiles.role === 'admin'` yoxlaması (403)
-  - Məlum kritik təhlükəsizlik boşluqları bağlandı.
-
-- **Viza pipeline düzəldildi:**
-  - `src/types/place.ts` — `CityCountryRef`-ə `cca2?` sahəsi əlavə edildi
-  - `src/app/[locale]/cities/[slug]/page.tsx` — SQL sorğusuna `cca2`, `VisaCheckWidget`-ə `defaultDestination` əlavə edildi
-  - `src/lib/open-travel-data.ts` — `mapCityToSummary`-də `cca2` ötürülür
-  - `src/app/api/visa/check/route.ts` — JOIN sorğusu ilə `visa_info`-dan birbaşa oxuyur (eyni pattern `/api/visa/[country]`). Priority: Supabase `visa_info` (~185 ölkə) → hardcoded map (7 ölkə) → external API
-  - `src/lib/unsplash.ts` — `getSlugByISO()` funksiyası, `SLUG_TO_ISO`-dan reverse map
-
-- **Visa seçim siyahısı genişləndirildi.** `COUNTRY_OPTIONS` 21-dən 45-ə qaldırıldı (visa-check-widget.tsx)
-
-- **Middleware PUBLIC_PATHS yeniləndi.** `/cities` və `/places` artıq public path-lərə əlavə edildi.
-
-- **Konfiqurasiya təmizliyi:**
-  - `next.config.ts` — `dangerouslyAllowSVG: true` silindi
-  - `.env.example` — UNSPLASH_ACCESS_KEY, DUFFEL_ACCESS_TOKEN, YOUTUBE_API_KEY, VISA_API_URL, CRON_SECRET əlavə edildi
-
-- **20 şəhər Open Data import-u tamamlandı.** Supabase-də hazırda 26 şəhər, 1593 yer, 1515 mənbə var. Import skriptində `--apply`path düzəldildi: `upsert` → `insert` + batch fallback (partial unique index `42P10` error resolve). Boş slug filtrləndi (Yaponca/Koreya adları üçün).
-  - Import edilən şəhərlər: Tokyo, Barcelona, Amsterdam, Vienna, Prague, Budapest, Singapore, Seoul, Kuala Lumpur, Cairo, New York, Berlin, Athens, Lisbon, Baku, Antalya, Dubrovnik, Bangkok, Tehran, Moscow
-  - `scripts/import-open-travel-data.js` — insert + batch/individual fallback, empty slug filter
-  - `scripts/apply-city-imports.mjs` — silindi (istifadəsiz)
-  - DB: cities=26, places=1593, place_sources=1515, place_reviews=0
-
-TravelAZ Next.js 15 üzərində qurulan çoxdilli travel platformadır. Layihədə lokalizasiya edilmiş route-lar, Supabase əsaslı data, AI planlaşdırıcı, viza alətləri, blog, chat, turlar və ölkə səhifələri var.
-
-Son tamamlanan işlər:
-
-- Repo kökündə `plan.md` yaradıldı və TravelAZ üçün əsas tamamlama roadmap-i ora yazıldı.
-- Ana səhifə sadə hero + 4 hardcoded ölkə kartından professional travel marketplace görünüşünə keçirildi.
-- Ana səhifəyə GlobeHero, search tab-ları, featured countries, AI planner spotlight, tours preview, community preview, visa CTA əlavə edildi.
-- Ölkələr səhifəsində kartlar üçün Unsplash travel şəkil xəritəsi əlavə edildi.
-- Open data migration-ları (020-022), city/place/review TypeScript tipləri, mapper-lər, import pipeline əlavə edildi.
-- İstanbul open-data seed migration-ı, city/place detail route-ları, review form və helpful vote UI əlavə edildi.
-- **i18n tam cleanup həyata keçirildi:** Bütün komponentlərdəki ~200+ hardcoded Azərbaycan mətni `messages/*.json` fayllarına çıxarıldı. Yeni namespace-lər: `profile` (genişləndirildi), `chat` (yeni), `blog` comments (genişləndi). AI planner sub-komponentlər, footer, confirm-dialog, theme-toggle i18n-ə keçirildi.
-- **Type tam cleanup həyata keçirildi:** 55 `any` istifadəsinin hamısı typed interfeyslərlə əvəz olundu. `src/types/supabase-helpers.ts` yaradıldı (User, ProfileRow, BlogListItem, CompanionItem, VideoItem, UserCountryItem). Supabase User import conflict-ləri `User as SupabaseUser` patterni ilə həll edildi. Locale `as any` → `typeof routing.locales[number]`, `catch (error: any)` → `catch (error: unknown)`, `Record<string, any>` → `Record<string, React.ComponentType<...>>` fixləri tətbiq edildi.
-- `docs/superpowers/specs/2026-05-04-i18n-type-cleanup-design.md` dizayn spek yazıldı.
-- **Key-siz API inteqrasiyası tamamlandı:** Open-Meteo (hava proqnozu), RestCountries (ölkə info), VisaList (viza yoxlama) API-ləri inteqrasiya edildi. Hər biri üçün server-side route, lib helper, client widget və i18n namespace yaradıldı.
-  - Open-Meteo: `src/lib/weather.ts`, `/api/weather`, `src/components/weather/weather-widget.tsx` — ölkə və şəhər səhifələrində
-  - RestCountries: `src/lib/countries-api.ts`, `/api/countries/[code]`, `src/components/country/country-info-card.tsx` — ölkə səhifəsində
-  - VisaList: `src/lib/visa/visalist-api.ts`, `/api/visa/check`, `src/components/visa/visa-check-widget.tsx` — viza, ölkə və şəhər səhifələrində
-  - `ExpandedCountry` interfeysinə `cca2?`, `lat?`, `lng?` field-ları əlavə edildi
-  - `api.md` inteqrasiya status cədvəli yeniləndi
-- **Image optimization tamamlandı:** 19 `<img>` istifadəsinin hamısı `next/image` ilə əvəz olundu. 12 fayl, 19 dəyişiklik (blog, chat, hotels, news, companion, profile, tour, video komponentləri). `next.config.ts`-ə `img.youtube.com` və `*.supabase.co` remote pattern-ləri əlavə edildi. `npm run lint` artıq 0 error, 0 warning qaytarır.
-
-Son yoxlamalar:
-
-- `npx tsc --noEmit` 0 error qaytarır.
-- `npm run lint` 0 error, 0 warning.
-- Profil, chat, blog, tour, company, video, leaderboard, AI planner, layout komponentlərinin hamısı typed və i18n-ə keçirilib.
+- `countries`: 189
+- `cities`: 26
+- `places`: 1593
+- `country_highlights`: 43
+- `place_reviews`: 0
+- `place_sources`: 1515
+- `external_import_logs`: 29
+- `countries_with_cover`: 77
+- `cities_with_cover`: 26
 
 ## Texnologiyalar
 
 - Next.js 15 App Router
 - React 19
 - TypeScript 5.9
-- Tailwind CSS v4, CSS-only config `src/app/globals.css` içindədir
-- next-intl, dillər: `az`, `en`, `ru`
+- Tailwind CSS v4
+- next-intl: `az`, `en`, `ru`
 - Supabase: auth, database, realtime chat
-- TipTap: blog editor
-- sonner: toast bildirişləri
-- lucide-react: iconlar
-- DOMPurify: HTML sanitizasiya
-- Unsplash API + CDN helper: ölkə və travel şəkilləri, enrichment pipeline
-- Leaflet / react-leaflet: xəritə funksiyaları
+- Duffel: flights və hotels/stays
+- Unsplash API: ölkə və şəhər cover photo enrichment
+- OpenStreetMap/Overpass, GeoNames, Wikipedia/Wikivoyage metadata
+- TipTap, sonner, lucide-react, DOMPurify
+- Leaflet / react-leaflet
 
-## Əmrlər
+## Əsas Əmrlər
 
-- `npm run dev` - development server, adətən port 3000
-- `npx tsc --noEmit` - TypeScript yoxlaması
-- `npm run lint` - ESLint yoxlaması
-- `npm run build` - production build
-- `npm run import:open-travel-data -- --check-db` - açıq data cədvəllərini və row count-ları yoxlayır
-- `npm run import:open-travel-data -- --city=istanbul --dry-run` - açıq data import preview
-- `npm run import:open-travel-data -- --city=istanbul --sql-out=supabase/imports/istanbul_open_data.sql` - Supabase SQL Editor üçün import SQL yaradır
-- `npm run import:open-travel-data -- --city=istanbul --apply` - açıq data importunu Supabase-ə yazır, `SUPABASE_SERVICE_ROLE_KEY` tələb edir
-- `npm run import:open-travel-data -- --mode=geonames --cities-per-country=5 --dry-run` - GeoNames şəhər seed preview
-- `npm run import:open-travel-data -- --mode=geonames --sql-out=supabase/imports/geonames_seed.sql` - GeoNames SQL generate
-- `npm run import:open-travel-data -- --mode=geonames --apply` - GeoNames şəhərləri Supabase-ə yazır, `GEONAMES_USERNAME` tələb edir
-- `npm run import:open-travel-data -- --enrich-presets --sql-out=supabase/imports/presets_enriched.sql` - CITY_PRESETS GeoNames ilə zənginləşdir
-- `npm run enrich:images` - Unsplash enrichment preview (dry-run)
-- `npm run enrich:images -- --type=countries --limit=50 --apply` - ölkə şəkillərini Unsplash API ilə doldur
-- `npm run enrich:images -- --type=cities --limit=20 --apply` - şəhər şəkillərini Unsplash API ilə doldur
-- `npm run enrich:images -- --type=all --limit=30 --dry-run` - bütün növün preview-u
+```bash
+npm run dev
+npx tsc --noEmit
+npm run lint
+npm run build
+npm run import:open-travel-data -- --check-db
+npm run import:open-travel-data -- --city=istanbul --dry-run
+npm run import:open-travel-data -- --city=istanbul --apply
+npm run import:open-travel-data -- --mode=geonames --dry-run
+npm run enrich:images -- --type=cities --limit=20 --apply
+npm run enrich:images -- --type=countries --limit=50 --apply
+npm run enrich:images -- --type=countries --limit=20 --repair-invalid --apply
+npm run seed:country-highlights -- --apply
+```
+
+Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq üçün `--apply` və `.env.local` içində `SUPABASE_SERVICE_ROLE_KEY` lazımdır.
 
 ## Vacib Fayllar
 
-- `plan.md` - cari mərhələnin əsas roadmap və backlog faylı
-- `AGENTS.md` - bu fayl, agentlər üçün layihə konteksti və iş qaydaları
-- `src/app/[locale]/page.tsx` - yenilənmiş ana səhifə
-- `src/components/home/home-search-panel.tsx` - ana səhifənin search tab paneli
-- `src/components/home/globe-hero.tsx` - animasiyalı qlobus vizualı
-- `src/components/country/country-card.tsx` - ölkə kartı UI və şəkil fallback məntiqi
-- `src/messages/*.json` - tərcümə faylları
-- `src/lib/supabase/server.ts` - server-side Supabase client
-- `src/lib/supabase/client.ts` - browser-side Supabase client
-- `src/lib/unsplash.ts` - Unsplash və flag helper-ləri, `SLUG_TO_ISO` (~180 ölkə), `getSlugByISO()`, `ISO_TO_SLUG` reverse map
-- `src/lib/open-travel-data.ts` - city/place/review mapper-ləri
-- `src/types/place.ts` - open travel data TypeScript type-ları
-- `scripts/import-open-travel-data.js` - Overpass/Wikipedia import script-i
-- `scripts/enrich-images.js` - Unsplash şəkil enrichment script-i
-- `src/app/[locale]/cities/[slug]/page.tsx` - city detail səhifəsi
-- `src/app/[locale]/places/[id]/page.tsx` - place detail və review oxuma səhifəsi
-- `src/components/place/place-review-form.tsx` - TravelAZ place review forması
-- `src/components/place/place-helpful-button.tsx` - place review helpful vote düyməsi
-- `supabase/imports/istanbul_open_data.sql` - İstanbul üçün generator çıxışı olan open-data SQL faylı
-- `supabase/migrations/021_seed_istanbul_open_data.sql` - İstanbul open-data seed migration-ı
-- `supabase/migrations/022_place_review_helpful_votes.sql` - review helpful vote migration-ı
-- `supabase/migrations/*` - database schema və seed migration-ları
-- `src/lib/weather.ts` - Open-Meteo hava proqnozu tipləri və mapper
-- `src/lib/countries-api.ts` - RestCountries ölkə info tipləri və mapper
-- `src/lib/visa/visalist-api.ts` - VisaList viza yoxlama tipləri və mapper
-- `src/lib/duffel/auth.ts` - Duffel Bearer token helper
-- `src/lib/duffel/flights.ts` - Duffel flight offer mapper + request body builder
-- `src/lib/duffel/stays.ts` - Duffel stay result mapper + search body builder
-- `src/types/flight.ts` - FlightOffer, FlightSegment, FlightSearchParams
-- `src/types/hotel.ts` - HotelOffer, HotelSearchParams
-- `src/components/weather/weather-widget.tsx` - hava proqnozu widget (full + compact)
-- `src/components/country/country-info-card.tsx` - ölkə info kartı
-- `src/app/api/visa/check/route.ts` - viza yoxlama API (Supabase JOIN + hardcoded map + external API fallback)
-- `src/components/visa/visa-check-widget.tsx` - real-time viza yoxlama widget
-- `src/app/[locale]/admin/page.tsx` - admin moderation səhifəsi
-- `src/app/api/reviews/moderate/route.ts` - GET/PATCH/DELETE admin API
+- `plan.md` - cari roadmap və qalan işlər
+- `README.md` - setup, env və developer workflow
+- `src/app/[locale]/page.tsx` - professional ana səhifə
+- `src/components/home/globe-hero.tsx` - animasiyalı qlobus və təyyarələr
+- `src/components/home/home-search-panel.tsx` - ana səhifə search tab-ları
+- `src/components/country/country-card.tsx` - ölkə kartları və image fallback
+- `src/app/[locale]/countries/[slug]/page.tsx` - ölkə detal data fetch
+- `src/app/[locale]/countries/[slug]/country-detail-client.tsx` - ölkə detal UI
+- `src/app/[locale]/cities/page.tsx` - şəhər siyahısı
+- `src/app/[locale]/cities/[slug]/page.tsx` - şəhər detalı
+- `src/app/[locale]/places/[id]/page.tsx` - place detalı
+- `src/components/place/place-review-form.tsx` - review yazma forması
 - `src/components/place/review-moderation-panel.tsx` - admin moderation UI
-- `src/lib/content-filter.ts` - bad words checker
-
-## Cari Qovluq Strukturu
-
-```text
-src/
-  app/
-    layout.tsx
-    page.tsx
-    globals.css
-    [locale]/
-      layout.tsx
-      page.tsx
-      auth/login/page.tsx
-      auth/register/page.tsx
-      flights/page.tsx
-      hotels/page.tsx
-      tours/page.tsx
-      countries/page.tsx
-      countries/country-grid-client.tsx
-      countries/[slug]/page.tsx
-      countries/[slug]/country-detail-client.tsx
-      cities/[slug]/page.tsx
-      cities/page.tsx
-      cities/city-grid-client.tsx
-      places/[id]/page.tsx
-      companions/page.tsx
-      visa/page.tsx
-      visa/visa-page-client.tsx
-      visa/[country]/page.tsx
-      news/page.tsx
-      news/news-list-client.tsx
-      news/[id]/page.tsx
-      news/[id]/news-detail-client.tsx
-      blog/page.tsx
-      blog/[id]/page.tsx
-      blog/new/page.tsx
-      ai-planner/page.tsx
-      ai-planner/ai-planner-client.tsx
-      chat/page.tsx
-      profile/page.tsx
-      videos/page.tsx
-      leaderboard/page.tsx
-      company/page.tsx
-    auth/v1/callback/page.tsx
-    api/
-      ai/plan/route.ts
-      ai/cheap-dates/route.ts
-      blogs/route.ts
-      comments/route.ts
-      companions/route.ts
-      companies/route.ts
-      countries/[code]/route.ts
-      tours/route.ts
-      tours/[id]/route.ts
-      weather/route.ts
-      youtube/route.ts
-      visa/[country]/route.ts
-      visa/ai-answer/route.ts
-      visa/check/route.ts
-      visa/generate/route.ts
-      visa/scraper/route.ts
-      news/route.ts
-      images/search/route.ts
-      images/enrich/route.ts
-  components/
-    home/
-      globe-hero.tsx
-      home-search-panel.tsx
-    layout/
-    ai-planner/
-    blog/
-    chat/
-    companion/
-    company/
-    country/
-    map/
-    news/
-    place/
-    profile/
-    search/
-    tour/
-    ui/
-    video/
-    visa/
-    weather/
-  hooks/
-    useChat.ts
-    useUnreadMessages.ts
-  i18n/
-    request.ts
-    routing.ts
-  lib/
-    ai/
-    supabase/
-    open-travel-data.ts
-    unsplash.ts
-    weather.ts
-    countries-api.ts
-    visa/visalist-api.ts
-  messages/
-    az.json
-    en.json
-    ru.json
-  types/
-```
+- `src/lib/open-travel-data.ts` - city/place/review mapper-ləri
+- `src/lib/unsplash.ts` - Unsplash və flag helper-ləri
+- `scripts/import-open-travel-data.js` - Overpass/Wikipedia/GeoNames import pipeline
+- `scripts/enrich-images.js` - Unsplash image enrichment
+- `scripts/seed-country-highlights.js` - ölkə highlight seed script-i
+- `src/messages/*.json` - i18n mesajları
 
 ## Database və Migration-lar
 
-Migration siyahısı hazırda `026_seed_5_cities_open_data.sql` faylına qədər gedir:
+Migration siyahısı hazırda `028_seed_20_cities_open_data.sql` faylına qədər gedir.
 
-- `001_initial_schema.sql`
-- `002_faza2_schema.sql`
-- `003_faza2.5_profile_social.sql`
-- `004_chat_system.sql`
-- `005_visa_system.sql`
-- `006_seed_countries.sql`
-- `007_seed_all.sql`
-- `008_visa_qa_cache.sql`
-- `009_news.sql`
-- `010_visa_scraper.sql`
-- `011_summary.json`
-- `011_wikipedia_visa_seed.sql`
-- `012_countries_expand.sql`
-- `013_countries_seed_50.sql`
-- `014_fix_data.sql`
-- `015_blocked_users.sql`
-- `016_chat_delete_policies.sql`
-- `017_message_update_policy.sql`
-- `018_companions_gender.sql`
-- `019_blog_views.sql`
-- `020_open_travel_data.sql`
-- `021_seed_istanbul_open_data.sql`
-- `022_place_review_helpful_votes.sql`
-- `023_log_istanbul_open_data_import.sql`
-- `024_countries_cca2.sql`
-- `025_profiles_role.sql`
-- `026_seed_5_cities_open_data.sql`
-
-Məlum cari cədvəllər:
+Mühüm cədvəllər:
 
 - `profiles`
-- `blogs`
-- `blog_comments`
-- `blog_likes`
-- `countries`
-- `country_highlights`
-- `visa_info`
-- `visa_documents`
-- `visa_qa_cache`
-- `visa_updates`
-- `scraper_logs`
+- `blogs`, `blog_comments`, `blog_likes`
+- `countries`, `country_highlights`
+- `visa_info`, `visa_documents`, `visa_qa_cache`, `visa_updates`
 - `news`
 - `companions`
-- `youtube_links`
-- `tour_companies`
-- `tours`
-- `tour_bookings`
-- `tour_reviews`
-- `user_countries`
-- `leaderboard_stats`
-- `notifications`
-- `conversations`
-- `messages`
-- `cities`
-- `places`
-- `place_reviews`
-- `place_review_helpful_votes`
-- `place_sources`
-- `external_import_logs`
+- `tour_companies`, `tours`, `tour_bookings`, `tour_reviews`
+- `conversations`, `messages`, `notifications`
+- `cities`, `places`, `place_reviews`, `place_review_helpful_votes`, `place_sources`, `external_import_logs`
 
 ## AI Provider Sistemi
 
-AI provider-lar SDK-sızdır və `fetch` istifadə edir.
-
-`.env.local` içində `AI_PROVIDER` dəyişəni ilə provider seçilir.
+AI provider-lar SDK-sızdır və server-side `fetch` istifadə edir. `.env.local` içində `AI_PROVIDER` ilə provider seçilir.
 
 Dəstəklənən provider-lar:
 
@@ -385,127 +125,103 @@ Dəstəklənən provider-lar:
 - `src/lib/ai/parser.ts`
 - `src/lib/ai/providers/*`
 
-## Əsas Konvensiyalar
+## Konvensiyalar
 
-- Bütün user-facing səhifələr `src/app/[locale]/` altında yerləşir.
-- Dəstəklənən dillər `az`, `en`, `ru`; default dil `az`.
+- Bütün user-facing səhifələr `src/app/[locale]/` altında olmalıdır.
+- Default locale `az`-dir.
 - Server component-lərdə `getTranslations`, client component-lərdə `useTranslations` istifadə et.
 - Server Supabase client `@/lib/supabase/server` içindən gəlir.
 - Browser Supabase client `@/lib/supabase/client` içindən gəlir.
-- AI çağırışları server-side API route-lar üzərindən edilir.
+- AI çağırışları server-side API route-lar üzərindən edilməlidir.
 - Tailwind v4 tema dəyişənləri `src/app/globals.css` içindədir.
-- UI control-lar üçün `lucide-react` iconlarından istifadə et.
+- UI control-lar üçün `lucide-react` ikonlarından istifadə et.
 - Yeni abstraction əlavə etməzdən əvvəl mövcud route və component pattern-lərinə bax.
 - İstifadəçinin və ya başqa agentin dəyişikliklərini geri çevirmə.
-- Tripadvisor-dan icazəsiz scraping, review kopyalama və content kopyalama etmə.
 
 ## Açıq Data Strategiyası
 
-Tripadvisor content-i icazəsiz scrape və ya copy edilməməlidir. Planlaşdırılan alternativ yanaşma:
-
-- Wikivoyage / Wikipedia / Wikimedia: ölkə və şəhər travel guide istinadları
-- OpenStreetMap / Overpass: POI, attraction, restoran, kafe, hotel və landmark datası
+- Wikipedia/Wikivoyage: ölkə və şəhər travel guide istinadları
+- OpenStreetMap/Overpass: POI, attraction, restoran, kafe, hotel, landmark, viewpoint
 - GeoNames: şəhər, population, koordinat və region seed datası
+- Unsplash: cover photo enrichment
 - TravelAZ Reviews: platformanın öz istifadəçi rəyləri
 
-Gələcək open-data modulu mütləq source və license metadata saxlamalıdır.
+Hər import source/license metadata saxlamalıdır.
 
-Open-data mərhələsi üçün əlavə edilən cədvəllər:
+## Tamamlanan Böyük İşlər
 
-- `cities`
-- `places`
-- `place_reviews`
-- `place_review_helpful_votes`
-- `place_sources`
-- `external_import_logs`
+- Flights real API: Duffel Flight API.
+- Hotels real API: Duffel Stays API.
+- Cities/Places/Reviews data modeli.
+- Open data import pipeline.
+- City və place səhifələri.
+- Review moderation workflow.
+- AI route auth və image enrich admin gate.
+- Viza widget `cca2` və Supabase fallback düzəlişi.
+- i18n və type cleanup.
+- Image optimization.
+- Mobile menu və footer polish.
+- GlobeHero təyyarə animasiyaları.
+- Ana səhifə DB əsaslı countries/cities/places preview.
+- Country highlights seed.
 
 ## Natamam Qalanlar
 
-`plan.md` əsasında davam etdirilməli əsas işlər:
+1. Qalan ölkə şəkillərini batch-batch doldurmaq.
+   - Əmr: `npm run enrich:images -- --type=countries --limit=50 --apply`
+   - Unsplash demo tier saatlıq limit verdiyi üçün bir neçə saatlıq mərhələdə edilməlidir.
 
-1. ~~**Flights real API**~~ — **TAMAMLANDI.** Duffel Flight API inteqrasiya edildi. `src/app/api/flights/search/route.ts`, `src/lib/duffel/flights.ts`, `src/types/flight.ts`. API token yoxdursa fallback mock data göstərilir.
+2. `country_highlights` əhatəsini genişləndirmək.
+   - Hazırda 10 istiqamət var.
+   - Növbəti hədəf: ən azı 30 ölkə.
 
-2. ~~**Hotels real API**~~ — **TAMAMLANDI.** Duffel Stays API inteqrasiya edildi. `src/app/api/hotels/search/route.ts`, `src/lib/duffel/stays.ts`, `src/types/hotel.ts`. API token yoxdursa fallback mock data göstərilir.
+3. `places` kurasiyası.
+   - `is_featured` və `popular_rank` real travel dəyərinə görə düzülməlidir.
+   - Ana səhifədə ən yaxşı məkanlar görünməlidir.
 
-3. ~~**Cities / Places / Reviews data modeli**~~ — **TAMAMLANDI.** Migration-lar (020-023) Supabase-də tətbiq edildi, Istanbul seed import edildi.
+4. Review sistemini canlandırmaq.
+   - `place_reviews=0`.
+   - Review CTA-ları, empty state-lər və admin moderation real hesablarla yoxlanmalıdır.
 
-4. ~~**Open data import pipeline**~~ — **TAMAMLANDI.** GeoNames city seed, preset enrichment və periodik sync dəstəklənir. `countries.cca2` sütunu əlavə edildi.
+5. Booking/payment.
+   - Hələ bu mərhələyə daxil deyil.
+   - Sonra booking confirmation, payment flow, provider order API-ləri, cancellation/refund policy planlanmalıdır.
 
-5. ~~**City və place səhifələri**~~ — **TAMAMLANDI.** Review moderation workflow-u əlavə edildi. Yeni review-lar `pending` status ilə göndərilir, admin `/az/admin` səhifəsindən approve/reject edir.
-
-6. ~~**Təhlükəsizlik açıqları**~~ — **TAMAMLANDI.** AI route-larına auth, enrich-ə admin gate, middleware PUBLIC_PATHS yeniləndi.
-
-7. ~~**Viza widget düzəlişi**~~ — **TAMAMLANDI.** `cca2` pipeline, Supabase fallback, COUNTRY_OPTIONS genişləndirildi.
-
-8. ~~**Konfiqurasiya təmizliyi**~~ — **TAMAMLANDI.** `dangerouslyAllowSVG` silindi, `.env.example` genişləndi.
-
-9. **README yenilənməsi**
-   - Cari vəziyyət: README hələ də əsasən default Next.js mətnidir.
-   - Lazımdır: setup, env dəyişənləri, Supabase migration-lar, AI provider, dev workflow və deployment qeydləri.
-
-10. **Booking/payment**
-    - Cari vəziyyət: birinci real-data mərhələsindən kənardadır.
-    - Sonra lazımdır: booking confirmation, payment flow, provider order API-ləri, cancellation/refund policy.
-
-11. **Mobil menyu tema problemi (KNOWN BUG)**
-    - Cari vəziyyət: Mobil menyu dark/light mode əks rənglərində işləyir, amma CSS dəyişənləri (`var(--menu-*)`) Tailwind v4 `@theme inline` ilə conflict yaradır. `MutationObserver` ilə `document.documentElement.classList` izlənilir və rənglər JS-də hesablanır.
-    - Problem: Bəzi hallarda tema dəyişikliyi düzgün reflect olunmur, hamburger ikonası light modda görünmür, menyu overlay-i kifayət qədər tünd deyil.
-    - Fayllar: `src/components/layout/mobile-menu.tsx`, `src/app/globals.css`
-    - Qeyd: Bu problemin düzəldilməsi üçün ThemeToggle-dan `useTheme` hook-u çıxarılıb `mobile-menu.tsx`-ə verilməlidir, və ya `next-themes` paketi inteqrasiya olunmalıdır.
-
-## Növbəti Tövsiyə Olunan İcra Sırası
-
-1. ~~Supabase-də yeni migration-ları tətbiq et: `020_open_travel_data.sql`, `021_seed_istanbul_open_data.sql` və `022_place_review_helpful_votes.sql`.~~ **TAMAMLANDI.**
-2. ~~Importdan sonra `/az/countries/turkey`, `/az/cities/istanbul` və yaradılan `/az/places/{id}` səhifələrini vizual yoxla.~~ **TAMAMLANDI.**
-3. ~~GeoNames city seed variantını import script-ə əlavə et.~~ **TAMAMLANDI.**
-4. ~~Review moderation status workflow-u əlavə et.~~ **TAMAMLANDI.**
-5. ~~Flights mock datasını provider adapter və API route ilə əvəz et.~~ **TAMAMLANDI.**
-6. ~~Hotels mock datasını provider adapter və API route ilə əvəz et.~~ **TAMAMLANDI.**
-7. ~~Təhlükəsizlik açıqlarını bağla (AI route auth, enrich admin gate, middleware).~~ **TAMAMLANDI.**
-8. ~~Viza widget düzəlişi (cca2 pipeline, Supabase fallback, COUNTRY_OPTIONS).~~ **TAMAMLANDI.**
-9. ~~Konfiqurasiya təmizliyi (dangerouslyAllowSVG, .env.example).~~ **TAMAMLANDI.**
-10. README-ni yenilə.
+6. Production visual QA və Core Web Vitals.
 
 ## Yoxlama Bazası
 
-Hər böyük dəyişiklikdən əvvəl və sonra bunları run et:
+Hər böyük dəyişiklikdən sonra:
 
 ```bash
 npx tsc --noEmit
 npm run lint
+npm run import:open-travel-data -- --check-db
 ```
 
-Ana səhifə və locale dəyişiklikləri üçün əlavə yoxla:
+Manual URL yoxlaması:
 
 ```text
 http://localhost:3000/az
 http://localhost:3000/en
 http://localhost:3000/ru
-```
-
-Ölkə kartları və şəkil fallback dəyişiklikləri üçün yoxla:
-
-```text
 http://localhost:3000/az/countries
 http://localhost:3000/az/countries/turkey
-```
-
-Open data import preview üçün yoxla:
-
-```bash
-npm run import:open-travel-data -- --city=istanbul --limit=8 --radius=2500 --dry-run
-npm run import:open-travel-data -- --check-db
+http://localhost:3000/az/cities
+http://localhost:3000/az/cities/istanbul
 ```
 
 ## Gələcək Agentlər Üçün Qeydlər
 
-- User dəyişikliklərini və əlaqəsiz işləri revert etmə.
-- `plan.md` cari mərhələnin roadmap source of truth faylıdır.
-- Ana səhifə artıq yenilənib; növbəti mərhələdə real data və API işlərinə fokuslan.
-- Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq üçün `--apply` və `.env.local` içində `SUPABASE_SERVICE_ROLE_KEY` lazımdır.
-- Hazır `.env.local` yoxlamasında `SUPABASE_SERVICE_ROLE_KEY` görünmədi; ona görə cloud DB-yə yazı avtomatik edilməyib.
-- Ölkə kartları artıq həmişə ölkə şəkli göstərir (bayraq/emoji fallback yoxdur). `getCountryCoverPhotoId()` həmişə photo ID qaytarır — DB, hardcoded map və ya generic fallback.
-- Şəkil enrichment Unsplash rate limit (demo tier: 50 req/saat) ilə məhdudlaşır. Qalan ölkələri doldurmaq üçün `npm run enrich:images -- --type=countries --limit=50 --apply` bir neçə dəfə (1 saat interval ilə) işə salınmalıdır.
-- `UNSPLASH_ACCESS_KEY` server-only environment variable-dur (`NEXT_PUBLIC_` prefiksi yoxdur). Client-side expose olunmur.
-- `SLUG_TO_ISO` xəritəsi ~180 ölkəni əhatə edir. `getFlagUrl()` DB-dən `cca2` qəbul edir, fallback kimi xəritəyə baxır. Yeni ölkə əlavə edildikdə xəritəni yeniləmək lazımdır.
-- Layihə Tripadvisor-dan icazəsiz scraping etməməlidir. Oxşar product value açıq data və TravelAZ-a məxsus review sistemi ilə qurulmalıdır.
+- User dəyişikliklərini revert etmə.
+- Untracked `data/` və `supabase/imports/*.sql` faylları əvvəlki import/debug çıxışları ola bilər; task üçün lazım deyilsə toxunma.
+- `UNSPLASH_ACCESS_KEY` server-only environment variable-dur, client-side expose etmə.
+- `SUPABASE_SERVICE_ROLE_KEY` yalnız server/script tərəfində istifadə olunmalıdır.
+- `SLUG_TO_ISO` xəritəsi `src/lib/unsplash.ts` içindədir; yeni ölkə əlavə ediləndə lazım olsa yenilə.
+- Tripadvisor-dan icazəsiz scraping etmə.
+
+## Şəkil Problemi Üçün Daimi Qeyd
+
+- Hər yeni sessiyada şəkilləri ayrıca aktiv problem kimi yoxla: ana səhifə, `/az/countries`, `/az/countries/turkey` və `/az/cities` səhifələrində kart şəkilləri default/sınıq görünürsə, əvvəl `npm run enrich:images -- --type=countries --limit=20 --repair-invalid --apply`, sonra rate limit imkan verirsə `npm run enrich:images -- --type=countries --limit=50 --apply` işlət.
+- Şəkil problemi tam bitmiş sayılmır: qalan ölkələr batch-batch real şəkillərlə doldurulana qədər bunu aktiv natamam iş kimi gör.
+- `src/lib/unsplash.ts` içindəki fallback pool və `KNOWN_BAD_UNSPLASH_REFS` siyahısı qorunmalıdır; yeni 404 ID tapıldıqda həmin siyahıya əlavə et.

@@ -7,7 +7,7 @@ const { createClient } = require('@supabase/supabase-js');
 try {
   const envPath = path.join(__dirname, '..', '.env.local');
   const envContent = fs.readFileSync(envPath, 'utf8');
-  envContent.split('\n').forEach(line => {
+  envContent.split('\n').forEach((line) => {
     const idx = line.indexOf('=');
     if (idx > 0) {
       const key = line.slice(0, idx).trim();
@@ -15,12 +15,34 @@ try {
       if (!process.env[key]) process.env[key] = val;
     }
   });
-} catch (e) {
+} catch {
   // .env.local not found, rely on existing env
 }
 
 const UNSPLASH_API = 'https://api.unsplash.com/search/photos';
 const RATE_LIMIT_DELAY = 1100;
+const KNOWN_BAD_UNSPLASH_REFS = new Set([
+  '1524231757913-4be64b2825c7',
+  '1502602915149-bb4f5dc63d43',
+  '1499856562261-6a300a60f98b',
+  '1516483107680-cf12f4bb3a06',
+]);
+
+function readArgValue(args, index) {
+  const current = args[index];
+  const eqIndex = current.indexOf('=');
+  if (eqIndex >= 0) {
+    return {
+      value: current.slice(eqIndex + 1),
+      nextIndex: index,
+    };
+  }
+
+  return {
+    value: args[index + 1],
+    nextIndex: index + 1,
+  };
+}
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -29,15 +51,29 @@ function parseArgs() {
     limit: 20,
     dryRun: true,
     apply: false,
+    repairInvalid: false,
     help: false,
   };
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--type' && args[i + 1]) { opts.type = args[++i]; }
-    else if (args[i] === '--limit' && args[i + 1]) { opts.limit = parseInt(args[++i], 10); }
-    else if (args[i] === '--apply') { opts.apply = true; opts.dryRun = false; }
-    else if (args[i] === '--dry-run') { opts.dryRun = true; }
-    else if (args[i] === '--help' || args[i] === '-h') { opts.help = true; }
+    if (args[i] === '--type' || args[i].startsWith('--type=')) {
+      const parsed = readArgValue(args, i);
+      if (parsed.value) opts.type = parsed.value;
+      i = parsed.nextIndex;
+    } else if (args[i] === '--limit' || args[i].startsWith('--limit=')) {
+      const parsed = readArgValue(args, i);
+      if (parsed.value) opts.limit = parseInt(parsed.value, 10);
+      i = parsed.nextIndex;
+    } else if (args[i] === '--apply') {
+      opts.apply = true;
+      opts.dryRun = false;
+    } else if (args[i] === '--dry-run') {
+      opts.dryRun = true;
+    } else if (args[i] === '--repair-invalid') {
+      opts.repairInvalid = true;
+    } else if (args[i] === '--help' || args[i] === '-h') {
+      opts.help = true;
+    }
   }
 
   return opts;
@@ -80,64 +116,77 @@ async function searchUnsplash(query, accessKey) {
   }
 }
 
+function isUsablePhotoRef(photoId) {
+  if (!photoId) return false;
+  if (KNOWN_BAD_UNSPLASH_REFS.has(photoId)) return false;
+  if (photoId.startsWith('https://images.unsplash.com/photo-')) return true;
+  return /^\d{8,}-[a-zA-Z0-9_-]+$/.test(photoId);
+}
+
 async function enrichTable(supabase, table, accessKey, opts) {
   console.log(`\n=== Enriching ${table} (limit: ${opts.limit}) ===\n`);
 
-  const nameCol = table === 'countries' ? 'name_en' : 'name_en';
-  const selectCols = table === 'countries'
-    ? 'id, slug, name_en, cover_photo_id'
-    : 'id, slug, name_en, cover_photo_id';
-
-  const { data: rows, error } = await supabase
+  const selectCols = 'id, slug, name_en, cover_photo_id';
+  let query = supabase
     .from(table)
     .select(selectCols)
-    .is('cover_photo_id', null)
     .limit(opts.limit);
+
+  if (!opts.repairInvalid) {
+    query = query.is('cover_photo_id', null);
+  }
+
+  const { data: fetchedRows, error } = await query;
 
   if (error) {
     console.error(`  Error fetching ${table}:`, error.message);
     return { enriched: 0, errors: 1 };
   }
 
+  const rows = opts.repairInvalid
+    ? (fetchedRows || []).filter((row) => !isUsablePhotoRef(row.cover_photo_id))
+    : fetchedRows;
+
   if (!rows || rows.length === 0) {
-    console.log(`  No ${table} without cover_photo_id found.`);
+    console.log(`  No ${table} rows to enrich found.`);
     return { enriched: 0, errors: 0 };
   }
 
-  console.log(`  Found ${rows.length} ${table} without cover_photo_id\n`);
+  console.log(`  Found ${rows.length} ${table} rows to enrich\n`);
 
   let enriched = 0;
   let errors = 0;
 
   for (const row of rows) {
-    const query = `${row[nameCol]} travel landscape`;
-    process.stdout.write(`  [${row.slug}] "${query}" → `);
+    const queryText = `${row.name_en} travel landscape`;
+    process.stdout.write(`  [${row.slug}] "${queryText}" -> `);
 
-    const result = await searchUnsplash(query, accessKey);
+    const result = await searchUnsplash(queryText, accessKey);
 
     if (!result) {
-      console.log('❌ no result');
+      console.log('no result');
       errors++;
       await sleep(RATE_LIMIT_DELAY);
       continue;
     }
 
-    console.log(`✅ ${result.id} (${result.alt_description || 'no description'})`);
+    const photoRef = result.urls?.raw || result.id;
+    console.log(`OK ${photoRef} (${result.alt_description || 'no description'})`);
 
     if (!opts.dryRun) {
       const { error: updateError } = await supabase
         .from(table)
-        .update({ cover_photo_id: result.id })
+        .update({ cover_photo_id: photoRef })
         .eq('id', row.id);
 
       if (updateError) {
-        console.error(`    ⚠️  DB update failed: ${updateError.message}`);
+        console.error(`    DB update failed: ${updateError.message}`);
         errors++;
       } else {
         enriched++;
       }
     } else {
-      console.log(`    (dry-run: would set cover_photo_id = "${result.id}")`);
+      console.log(`    (dry-run: would set cover_photo_id = "${photoRef}")`);
       enriched++;
     }
 
@@ -159,10 +208,11 @@ Options:
   --limit <n>       Max rows to process per table (default: 20)
   --apply           Actually write to database (default: dry-run)
   --dry-run         Preview only, no DB writes (default)
+  --repair-invalid  Re-search rows whose cover_photo_id is not a usable images.unsplash.com ref
   --help            Show this help
 
 Environment variables required:
-  UNSPLASH_ACCESS_KEY   Unsplash API access key
+  UNSPLASH_ACCESS_KEY        Unsplash API access key
   NEXT_PUBLIC_SUPABASE_URL   Supabase project URL
   SUPABASE_SERVICE_ROLE_KEY  Supabase service role key (--apply mode)
 `);
@@ -188,9 +238,10 @@ Environment variables required:
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   const mode = opts.dryRun ? 'DRY-RUN' : 'APPLY';
-  console.log(`\n🖼️  Unsplash Image Enrichment — ${mode} mode\n`);
+  console.log(`\nUnsplash Image Enrichment - ${mode} mode\n`);
   console.log(`  Type: ${opts.type}`);
   console.log(`  Limit: ${opts.limit} per table`);
+  console.log(`  Repair invalid: ${opts.repairInvalid ? 'yes' : 'no'}`);
   console.log(`  Unsplash API key: ${accessKey.substring(0, 8)}...\n`);
 
   let totalEnriched = 0;
@@ -208,13 +259,13 @@ Environment variables required:
     totalErrors += result.errors;
   }
 
-  console.log(`\n=== Summary ===`);
+  console.log('\n=== Summary ===');
   console.log(`  Mode: ${mode}`);
   console.log(`  Enriched: ${totalEnriched}`);
   console.log(`  Errors: ${totalErrors}\n`);
 
   if (opts.dryRun && totalEnriched > 0) {
-    console.log('💡 Run with --apply to actually update the database.\n');
+    console.log('Run with --apply to actually update the database.\n');
   }
 }
 

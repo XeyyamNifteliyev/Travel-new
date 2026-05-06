@@ -9,23 +9,24 @@ import YouTubeLite from '@/components/ui/youtube-lite';
 import { WeatherWidget } from '@/components/weather/weather-widget';
 import { CountryInfoCard } from '@/components/country/country-info-card';
 import { VisaCheckWidget } from '@/components/visa/visa-check-widget';
-import { getUnsplashUrl, getFlagUrl, getCountryCoverPhotoId } from '@/lib/unsplash';
+import { getUnsplashUrl, getCountryCoverPhotoId } from '@/lib/unsplash';
 import type { ExpandedCountry, CountryHighlight } from '@/types/country';
 import type { CitySummary, PlaceSummary } from '@/types/place';
 
-function HighlightImage({ photoId, name, countrySlug, countryCca2 }: { photoId: string; name: string; countrySlug: string; countryCca2?: string }) {
+function HighlightImage({ photoId, name, countrySlug }: { photoId: string; name: string; countrySlug: string; countryCca2?: string }) {
   const [error, setError] = useState(false);
   if (error) {
     return (
       <div className="relative h-44 bg-bg-surface overflow-hidden">
         <Image
-          src={getFlagUrl(countrySlug, 320, countryCca2)}
+          src={getUnsplashUrl(getCountryCoverPhotoId(countrySlug), { w: 500, h: 300 })}
           alt={name}
           fill
-          className="object-cover opacity-20"
+          className="object-cover opacity-50"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-3xl font-bold text-txt-sec/60">{name.charAt(0)}</span>
+          <span className="text-3xl font-bold text-white/80 drop-shadow">{name.charAt(0)}</span>
         </div>
       </div>
     );
@@ -178,23 +179,17 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
       ) : (
         <div className="relative h-48 md:h-64 rounded-3xl overflow-hidden mb-8 bg-bg-surface border border-border">
           <Image
-            src={getFlagUrl(country.slug, 640, country.cca2)}
+            src={getUnsplashUrl(getCountryCoverPhotoId(country.slug), { w: 1200, h: 520 })}
             alt={name}
             fill
-            className="object-cover opacity-15 blur-md scale-110"
+            className="object-cover opacity-50 blur-sm scale-105"
             priority
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
           <div className="absolute inset-0 flex items-center gap-6 px-8">
-            <Image
-              src={getFlagUrl(country.slug, 320, country.cca2)}
-              alt={name}
-              width={100}
-              height={67}
-              className="rounded-xl shadow-2xl"
-            />
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold">{name}</h1>
-              {country.capital && <p className="text-txt-sec text-lg mt-1">{country.capital}</p>}
+              <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow">{name}</h1>
+              {country.capital && <p className="mt-1 text-lg text-white/80">{country.capital}</p>}
             </div>
           </div>
         </div>

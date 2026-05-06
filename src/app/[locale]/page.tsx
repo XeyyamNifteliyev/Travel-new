@@ -3,13 +3,15 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import {
   ArrowRight,
-  Award,
   BedDouble,
   Bot,
+  Building2,
   CalendarDays,
   Compass,
   HeartHandshake,
+  Landmark,
   Map,
+  MapPin,
   MessageCircle,
   Newspaper,
   Plane,
@@ -17,13 +19,15 @@ import {
   Sparkles,
   Stamp,
   Star,
+  Utensils,
   Users,
 } from 'lucide-react';
 import { GlobeHero } from '@/components/home/globe-hero';
 import { HomeSearchPanel } from '@/components/home/home-search-panel';
 import { createClient } from '@/lib/supabase/server';
-import { getUnsplashUrl, getCountryCoverPhotoId } from '@/lib/unsplash';
+import { getUnsplashUrl, getCountryCoverPhotoId, getCityCoverPhotoId } from '@/lib/unsplash';
 import type { ExpandedCountry } from '@/types/country';
+import type { PlaceCategory } from '@/types/place';
 
 export const revalidate = 3600;
 
@@ -47,6 +51,44 @@ type HomeBlog = {
   views?: number;
   likes?: number;
   created_at: string;
+};
+
+type HomeCountryRef = {
+  id: string;
+  slug: string;
+  name_az: string;
+  name_en: string | null;
+  name_ru: string | null;
+  flag_emoji?: string | null;
+  cover_photo_id?: string | null;
+};
+
+type HomeCity = {
+  id: string;
+  slug: string;
+  name_az: string;
+  name_en: string | null;
+  name_ru: string | null;
+  population: number | null;
+  cover_photo_id: string | null;
+  countries?: HomeCountryRef | null;
+};
+
+type HomePlace = {
+  id: string;
+  slug: string;
+  name: string;
+  name_az: string | null;
+  name_en: string | null;
+  name_ru: string | null;
+  category: PlaceCategory;
+  cover_photo_id: string | null;
+  cover_photo_url: string | null;
+  rating_summary: number;
+  review_count: number;
+  popular_rank: number;
+  cities?: (HomeCity & { cover_photo_id: string | null }) | null;
+  countries?: HomeCountryRef | null;
 };
 
 const fallbackCountries: ExpandedCountry[] = [
@@ -124,13 +166,6 @@ const fallbackCountries: ExpandedCountry[] = [
   },
 ];
 
-const cityHighlights = [
-  { name: 'Istanbul', country: 'Turkiye', image: '1524231757912-21f4fe3a7200', href: '/cities/istanbul' },
-  { name: 'Dubai', country: 'BAE', image: '1512453979798-5ea266f8880c', href: '/cities/dubai' },
-  { name: 'Tbilisi', country: 'Gurcustan', image: '1565008576549-57569a49371d', href: '/cities/tbilisi' },
-  { name: 'Tokyo', country: 'Yaponiya', image: '1493976040374-85c8e12f0c0e', href: '/cities/tokyo' },
-];
-
 const placeIdeas = [
   { icon: Compass, title: 'Attractions', label: 'OpenStreetMap POI', color: 'text-primary' },
   { icon: BedDouble, title: 'Hotels', label: 'Real API ready', color: 'text-secondary' },
@@ -150,11 +185,45 @@ function localizedCountryDescription(country: ExpandedCountry, locale: Locale) {
   return country.short_desc || country.short_desc_en || '';
 }
 
+function localizedRefName(item: {
+  name_az?: string | null;
+  name_en?: string | null;
+  name_ru?: string | null;
+  name?: string | null;
+}, locale: Locale) {
+  if (locale === 'en') return item.name_en || item.name_az || item.name || '';
+  if (locale === 'ru') return item.name_ru || item.name_az || item.name_en || item.name || '';
+  return item.name_az || item.name_en || item.name || '';
+}
+
+function formatPopulation(value: number | null, locale: Locale) {
+  if (!value) return null;
+  return new Intl.NumberFormat(locale).format(value);
+}
+
+function getPlaceCategoryIcon(category: PlaceCategory) {
+  if (category === 'restaurant' || category === 'cafe') return Utensils;
+  if (category === 'museum') return Landmark;
+  if (category === 'hotel') return BedDouble;
+  if (category === 'landmark' || category === 'historic') return Landmark;
+  return Building2;
+}
+
+function getPlacePhotoId(place: HomePlace) {
+  return (
+    place.cover_photo_id ||
+    (place.cities ? getCityCoverPhotoId(place.cities.slug, null) : null) ||
+    (place.countries ? getCountryCoverPhotoId(place.countries.slug, place.countries.cover_photo_id) : null) ||
+    place.cities?.cover_photo_id ||
+    place.countries?.cover_photo_id
+  );
+}
+
 async function getHomeData() {
   try {
     const supabase = await createClient();
 
-    const [countriesResult, toursResult, blogsResult] = await Promise.all([
+    const [countriesResult, toursResult, blogsResult, citiesResult, placesResult] = await Promise.all([
       supabase
         .from('countries')
         .select('id, slug, name_az, name_en, name_ru, flag_emoji, capital, continent, cover_photo_id, cover_photo_alt, short_desc, short_desc_en, short_desc_ru, avg_flight_azn, avg_hotel_azn, best_months, visa_required, popular_rank, is_featured, safety_level, cca2')
@@ -173,6 +242,21 @@ async function getHomeData() {
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(3),
+      supabase
+        .from('cities')
+        .select('id, slug, name_az, name_en, name_ru, population, cover_photo_id, countries(id, slug, name_az, name_en, name_ru, flag_emoji, cover_photo_id)')
+        .order('is_featured', { ascending: false })
+        .order('popular_rank', { ascending: true })
+        .order('population', { ascending: false })
+        .limit(4),
+      supabase
+        .from('places')
+        .select('id, slug, name, name_az, name_en, name_ru, category, cover_photo_id, cover_photo_url, rating_summary, review_count, popular_rank, cities(id, slug, name_az, name_en, name_ru, population, cover_photo_id), countries(id, slug, name_az, name_en, name_ru, flag_emoji, cover_photo_id)')
+        .eq('status', 'active')
+        .in('category', ['attraction', 'museum', 'landmark', 'restaurant', 'cafe', 'historic', 'viewpoint'])
+        .order('is_featured', { ascending: false })
+        .order('popular_rank', { ascending: true })
+        .limit(8),
     ]);
 
     return {
@@ -181,9 +265,17 @@ async function getHomeData() {
         : fallbackCountries,
       tours: (toursResult.data as HomeTour[] | null) || [],
       blogs: (blogsResult.data as HomeBlog[] | null) || [],
+      cities: (citiesResult.data as HomeCity[] | null) || [],
+      places: (placesResult.data as HomePlace[] | null) || [],
     };
   } catch {
-    return { countries: fallbackCountries, tours: [] as HomeTour[], blogs: [] as HomeBlog[] };
+    return {
+      countries: fallbackCountries,
+      tours: [] as HomeTour[],
+      blogs: [] as HomeBlog[],
+      cities: [] as HomeCity[],
+      places: [] as HomePlace[],
+    };
   }
 }
 
@@ -195,7 +287,7 @@ export default async function HomePage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'home' });
   const common = await getTranslations({ locale, namespace: 'common' });
-  const { countries, tours, blogs } = await getHomeData();
+  const { countries, tours, blogs, cities, places } = await getHomeData();
 
   return (
     <div className="overflow-hidden">
@@ -373,36 +465,60 @@ export default async function HomePage({
             </Link>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {cityHighlights.map((city) => (
+          <div className="space-y-4">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-widest text-primary">{t('popularCities')}</p>
+                <p className="mt-1 text-sm text-txt-sec">{t('popularCitiesSub')}</p>
+              </div>
+              <Link href={`/${locale}/cities`} className="hidden items-center gap-2 text-sm font-bold text-primary sm:inline-flex">
+                {t('viewAllCities')}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {cities.map((city) => {
+                const cityName = localizedRefName(city, locale);
+                const countryName = city.countries ? localizedRefName(city.countries, locale) : '';
+                const population = formatPopulation(city.population, locale);
+
+                return (
+                  <Link
+                    key={city.id}
+                    href={`/${locale}/cities/${city.slug}`}
+                    className="group relative min-h-[220px] overflow-hidden rounded-2xl border border-border bg-bg-surface shadow-lg"
+                  >
+                    <Image
+                      src={getUnsplashUrl(getCityCoverPhotoId(city.slug, city.cover_photo_id), { w: 760, h: 560, q: 78 })}
+                      alt={cityName}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, 50vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
+                    <div className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-slate-900">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {countryName}
+                    </div>
+                    <div className="absolute bottom-0 p-5 text-white">
+                      <h3 className="text-2xl font-black">{cityName}</h3>
+                      {population && (
+                        <p className="mt-2 text-sm text-white/75">{population} {t('population')}</p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
               <Link
-                key={city.name}
-                href={`/${locale}${city.href}`}
-                className="group relative min-h-[220px] overflow-hidden rounded-2xl border border-border"
+                href={`/${locale}/cities`}
+                className="group flex min-h-[220px] items-center justify-center rounded-2xl border border-dashed border-primary/30 bg-primary/5 text-primary transition-all hover:border-primary/60 hover:bg-primary/10"
               >
-                <Image
-                  src={getUnsplashUrl(city.image, { w: 700, h: 520, q: 78 })}
-                  alt={city.name}
-                  fill
-                  sizes="(min-width: 1024px) 25vw, 50vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/10" />
-                <div className="absolute bottom-0 p-5 text-white">
-                  <p className="text-xs uppercase tracking-widest text-white/70">{city.country}</p>
-                  <h3 className="text-2xl font-black">{city.name}</h3>
+                <div className="text-center">
+                  <Map className="mx-auto mb-2 h-8 w-8 text-primary/60 transition-colors group-hover:text-primary" />
+                  <span className="text-sm font-bold">{t('viewAllCities')}</span>
                 </div>
               </Link>
-            ))}
-            <Link
-              href={`/${locale}/cities`}
-              className="group flex items-center justify-center min-h-[220px] rounded-2xl border border-dashed border-primary/30 bg-primary/5 text-primary transition-all hover:border-primary/60 hover:bg-primary/10"
-            >
-              <div className="text-center">
-                <Map className="h-8 w-8 mx-auto mb-2 text-primary/60 group-hover:text-primary transition-colors" />
-                <span className="font-bold text-sm">{t('viewAllCities')}</span>
-              </div>
-            </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -421,7 +537,57 @@ export default async function HomePage({
             </Link>
           </div>
           <div className="grid gap-4 md:grid-cols-4">
-            {placeIdeas.map((item) => {
+            {places.length > 0 ? places.map((place) => {
+              const Icon = getPlaceCategoryIcon(place.category);
+              const placeName = localizedRefName(place, locale);
+              const cityName = place.cities ? localizedRefName(place.cities, locale) : '';
+              const countryName = place.countries ? localizedRefName(place.countries, locale) : '';
+              const photoId = getPlacePhotoId(place);
+
+              return (
+                <Link
+                  key={place.id}
+                  href={`/${locale}/places/${place.id}`}
+                  className="group overflow-hidden rounded-2xl border border-border bg-bg-base/50 transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    {place.cover_photo_url ? (
+                      <Image
+                        src={place.cover_photo_url}
+                        alt={placeName}
+                        fill
+                        sizes="(min-width: 1024px) 25vw, 50vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <Image
+                        src={getUnsplashUrl(photoId || getCountryCoverPhotoId('turkey', null), { w: 680, h: 520, q: 78 })}
+                        alt={placeName}
+                        fill
+                        sizes="(min-width: 1024px) 25vw, 50vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+                    <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-xs font-black text-slate-900">
+                      <Icon className="h-3.5 w-3.5" />
+                      {place.category}
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <p className="text-xs uppercase tracking-widest text-txt-muted">{cityName || countryName}</p>
+                    <h3 className="mt-2 line-clamp-2 min-h-[3.5rem] text-lg font-black leading-7 text-txt">{placeName}</h3>
+                    <div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-sm text-txt-sec">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Star className="h-4 w-4 fill-secondary text-secondary" />
+                        {place.rating_summary?.toFixed(1) || '0.0'}
+                      </span>
+                      <span>{place.review_count || 0} {common('reviews')}</span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            }) : placeIdeas.map((item) => {
               const Icon = item.icon;
               return (
                 <div key={item.title} className="rounded-2xl border border-border bg-bg-base/50 p-5">

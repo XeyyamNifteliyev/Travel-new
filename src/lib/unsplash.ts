@@ -8,6 +8,7 @@ export function getUnsplashUrl(
   } = {}
 ): string {
   const { w = 800, h, q = 75, fit = 'crop' } = options;
+  const safePhotoId = isUsableUnsplashPhotoRef(photoId) ? photoId : getDeterministicTravelPhotoId(photoId || 'travel');
   const params = new URLSearchParams({
     w: String(w),
     q: String(q),
@@ -15,11 +16,20 @@ export function getUnsplashUrl(
     auto: 'format',
     ...(h ? { h: String(h) } : {}),
   });
-  return `https://images.unsplash.com/photo-${photoId}?${params}`;
+
+  if (safePhotoId.startsWith('https://images.unsplash.com/')) {
+    const url = new URL(safePhotoId);
+    for (const [key, value] of params.entries()) {
+      url.searchParams.set(key, value);
+    }
+    return url.toString();
+  }
+
+  return `https://images.unsplash.com/photo-${safePhotoId}?${params}`;
 }
 
 const COUNTRY_COVER_PHOTOS: Record<string, string> = {
-  turkey: '1558005137-d9619a5c539f',
+  turkey: '1524231757912-21f4fe3a7200',
   dubai: '1512453979798-5ea266f8880c',
   uae: '1512453979798-5ea266f8880c',
   france: '1502602898657-3e91760cbb34',
@@ -53,12 +63,63 @@ const COUNTRY_COVER_PHOTOS: Record<string, string> = {
   austria: '1516550893923-42d28e5677af',
   'new-zealand': '1469854523086-cc02d5ab4582',
   indonesia: '1537996194471-e657df975ab4',
+  azerbaijan: '1534430476280-2e5af087efd2',
+  croatia: '1500530855697-b586d89ba3ee',
+  egypt: '1503177119275-0aa32b3a9368',
+  malaysia: '1508964942454-1a56651d54ac',
+  'united-states': '1485738422979-f5c462d49f74',
+  hungary: '1565426873118-a17ed65d74b9',
+  belgium: '1491557345352-5929e343eb89',
+  denmark: '1513622470522-26c3c8a854bc',
+  finland: '1536246779975-97c4f8f8f1f5',
+  poland: '1519197924294-4ba991a11128',
+  qatar: '1558959356-2f0855c4f2a4',
+  'saudi-arabia': '1584551246679-0daf3d275d0f',
 };
 
-const GENERIC_TRAVEL_PHOTO = '1558005137-d9619a5c539f';
+const TRAVEL_FALLBACK_PHOTOS = [
+  '1500530855697-b586d89ba3ee',
+  '1506905925346-21bda4d32df4',
+  '1469854523086-cc02d5ab4582',
+  '1507525428034-b723cf961d3e',
+  '1501785888041-af3ef285b470',
+  '1516483638261-f4dbaf036963',
+  '1526772662000-3f88f10405ff',
+  '1476514525535-07fb3b4ae5f1',
+  '1500534314209-a25ddb2bd429',
+  '1488646953014-85cb44e25828',
+  '1470770841072-f978cf4d019e',
+  '1493246507139-91e8fad9978e',
+];
+
+const GENERIC_TRAVEL_PHOTO = TRAVEL_FALLBACK_PHOTOS[0];
+
+const KNOWN_BAD_UNSPLASH_REFS = new Set([
+  '1524231757913-4be64b2825c7',
+  '1502602915149-bb4f5dc63d43',
+  '1499856562261-6a300a60f98b',
+  '1516483107680-cf12f4bb3a06',
+]);
+
+function isUsableUnsplashPhotoRef(photoId?: string | null): photoId is string {
+  if (!photoId) return false;
+  if (KNOWN_BAD_UNSPLASH_REFS.has(photoId)) return false;
+  if (photoId.startsWith('https://images.unsplash.com/photo-')) return true;
+  return /^\d{8,}-[a-zA-Z0-9_-]+$/.test(photoId);
+}
+
+function getDeterministicTravelPhotoId(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return TRAVEL_FALLBACK_PHOTOS[hash % TRAVEL_FALLBACK_PHOTOS.length];
+}
 
 export function getCountryCoverPhotoId(slug: string, fallback?: string | null): string {
-  return COUNTRY_COVER_PHOTOS[slug] || fallback || GENERIC_TRAVEL_PHOTO;
+  if (isUsableUnsplashPhotoRef(fallback)) return fallback;
+  if (isUsableUnsplashPhotoRef(COUNTRY_COVER_PHOTOS[slug])) return COUNTRY_COVER_PHOTOS[slug];
+  return getDeterministicTravelPhotoId(slug);
 }
 
 const CITY_COVER_PHOTOS: Record<string, string> = {
@@ -72,10 +133,28 @@ const CITY_COVER_PHOTOS: Record<string, string> = {
   london: '1513635269975-59663e0ac1ad',
   barcelona: '1583422409516-2895a77efded',
   berlin: '1467269204594-9661b134dd2b',
+  amsterdam: '1512470876302-972faa2aa9a4',
+  vienna: '1516550893923-42d28e5677af',
+  prague: '1541849546-216549ae216d',
+  budapest: '1565426873118-a17ed65d74b9',
+  singapore: '1525625293386-3f8f99389edd',
+  seoul: '1517154421193-b0a7ca31be6f',
+  'kuala-lumpur': '1508964942454-1a56651d54ac',
+  cairo: '1503177119275-0aa32b3a9368',
+  'new-york': '1485738422979-f5c462d49f74',
+  athens: '1570077188670-e3a8d69ac5ff',
+  lisbon: '1555881772637-7aedc0a7a35b',
+  antalya: '1524231757913-4be64b2825c7',
+  dubrovnik: '1500530855697-b586d89ba3ee',
+  bangkok: '1528181304800-259b08848526',
+  tehran: '1498655324562-7815a786a20b',
+  moscow: '1513326738677-b964603b136d',
 };
 
 export function getCityCoverPhotoId(slug: string, fallback?: string | null): string {
-  return CITY_COVER_PHOTOS[slug] || fallback || GENERIC_TRAVEL_PHOTO;
+  if (isUsableUnsplashPhotoRef(fallback)) return fallback;
+  if (isUsableUnsplashPhotoRef(CITY_COVER_PHOTOS[slug])) return CITY_COVER_PHOTOS[slug];
+  return getDeterministicTravelPhotoId(slug);
 }
 
 const SLUG_TO_ISO: Record<string, string> = {

@@ -20,8 +20,6 @@ const MONTH_SHORT: Record<string, string> = {
   jul: 'İyl', aug: 'Avq', sep: 'Sen', oct: 'Okt', nov: 'Noy', dec: 'Dek',
 };
 
-const FALLBACK_PHOTO = '1558005137-d9619a5c539f';
-
 interface CountryCardProps {
   country: ExpandedCountry;
 }
@@ -41,7 +39,7 @@ export function CountryCard({ country }: CountryCardProps) {
     : country.short_desc;
 
   const coverPhotoId = getCountryCoverPhotoId(country.slug, country.cover_photo_id);
-  const photoId = imgError ? FALLBACK_PHOTO : coverPhotoId;
+  const photoId = imgError ? getCountryCoverPhotoId(`${country.slug}-fallback`) : coverPhotoId;
 
   return (
     <Link href={`/${locale}/countries/${country.slug}`} className="group block">
