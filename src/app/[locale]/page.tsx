@@ -253,7 +253,7 @@ export default async function HomePage({
               </div>
             </div>
 
-            <div className="relative min-h-[360px]">
+            <div className="relative min-h-[360px] overflow-hidden">
               <div className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 md:h-[460px] md:w-[460px]">
                 <GlobeHero />
               </div>

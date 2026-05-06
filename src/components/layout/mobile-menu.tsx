@@ -90,12 +90,12 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
         }`}
       >
         <div
-          className="absolute inset-0 bg-black/60"
+          className="absolute inset-0 bg-black/80"
           onClick={() => setIsOpen(false)}
         />
 
         <div
-          className={`absolute right-0 top-0 h-full w-72 bg-bg-base border-l border-surface transform transition-transform duration-300 ${
+          className={`absolute right-0 top-0 h-full w-72 bg-[#0F172A] border-l border-[#334155] transform transition-transform duration-300 ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >

@@ -290,7 +290,7 @@ export function GlobeHero() {
   }, []);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
       <div ref={containerRef} className="relative" style={{ width: '280px', height: '280px' }}>
         <div className="absolute inset-0 rounded-full globe-glow" />
 
