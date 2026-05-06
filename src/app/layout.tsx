@@ -18,6 +18,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "TravelAZ — Səyahətiniz bir yerdə başlayır",
   description: "Bilet, otel, tur, blog və viza məlumatları — hər şey bir yerdə",
+  icons: [
+    { rel: 'icon', url: '/favicon.svg', type: 'image/svg+xml' },
+  ],
 };
 
 export default function RootLayout({
