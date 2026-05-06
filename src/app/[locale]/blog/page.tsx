@@ -115,11 +115,12 @@ export default function BlogListPage() {
                   </h2>
                   <div className="flex items-center gap-3 text-white/80 text-sm mt-3">
                     {featuredBlog.author?.avatar_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={featuredBlog.author.avatar_url}
                         alt={featuredBlog.author.name}
-                        className="w-7 h-7 rounded-full border border-white/30 object-cover"
+                        width={28}
+                        height={28}
+                        className="w-7 h-7 rounded-full border border-white/30"
                       />
                     ) : (
                       <div className="w-7 h-7 rounded-full bg-primary/30 flex items-center justify-center text-xs font-bold text-white">
@@ -259,11 +260,12 @@ export default function BlogListPage() {
                   {topAuthors.map((author: { name: string; avatar_url?: string }) => (
                     <div key={author.name} className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer">
                       {author.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={author.avatar_url}
                           alt={author.name}
-                          className="w-10 h-10 rounded-full border-2 border-transparent hover:border-primary transition-all object-cover"
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-full border-2 border-transparent hover:border-primary transition-all"
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-sm font-bold text-primary">

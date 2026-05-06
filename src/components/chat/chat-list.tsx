@@ -3,7 +3,7 @@
 import type { Conversation } from '@/types/chat';
 import { useTranslations } from 'next-intl';
 import { MessageCircle, Trash2, ShieldBan } from 'lucide-react';
-
+import Image from 'next/image';
 import { useState } from 'react';
 
 interface ChatListProps {
@@ -139,10 +139,11 @@ export function ChatList({ conversations, activeId, onSelect, onDelete, onBlock,
             >
               <div className="relative flex-shrink-0">
                 {conv.other_user?.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={conv.other_user.avatar_url}
                     alt={conv.other_user?.name || ''}
+                    width={56}
+                    height={56}
                     className="w-14 h-14 rounded-full object-cover"
                   />
                 ) : (

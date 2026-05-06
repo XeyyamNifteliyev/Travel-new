@@ -241,8 +241,7 @@ export default function BlogDetailPage() {
         {author && (
           <div className="flex items-center gap-4 mb-8 p-4 bg-bg-surface/50 rounded-2xl border border-border">
             {author.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={author.avatar_url} alt={author.name} className="w-12 h-12 rounded-full object-cover" />
+              <Image src={author.avatar_url} alt={author.name} width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
             ) : (
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-lg font-bold text-primary">
                 {author.name?.[0] || 'A'}

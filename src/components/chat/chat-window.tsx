@@ -3,7 +3,7 @@
 import type { Message } from '@/types/chat';
 import { useTranslations } from 'next-intl';
 import { Send, Loader2, Info, CheckCheck, Trash2, ShieldBan, Pencil } from 'lucide-react';
-
+import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 
 interface ChatWindowProps {
@@ -125,8 +125,7 @@ export function ChatWindow({
       <div className="glass-panel h-20 px-8 flex justify-between items-center border-b border-border/10 shrink-0 relative">
         <div className="flex items-center gap-4">
           {otherUser?.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={otherUser.avatar_url} alt={otherUserName} className="w-12 h-12 rounded-full object-cover" />
+            <Image src={otherUser.avatar_url} alt={otherUserName} width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
           ) : (
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-lg font-bold text-primary">
               {otherUserName[0]?.toUpperCase()}
@@ -271,8 +270,7 @@ export function ChatWindow({
                     onContextMenu={(e) => handleContextMenu(e, msg.id, false)}
                   >
                     {otherUser?.avatar_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={otherUser.avatar_url} alt={otherUserName} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                      <Image src={otherUser.avatar_url} alt={otherUserName} width={32} height={32} className="w-8 h-8 rounded-full object-cover shrink-0" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                         {otherUserName[0]?.toUpperCase()}
