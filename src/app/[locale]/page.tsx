@@ -245,16 +245,15 @@ async function getHomeData() {
       supabase
         .from('cities')
         .select('id, slug, name_az, name_en, name_ru, population, cover_photo_id, countries(id, slug, name_az, name_en, name_ru, flag_emoji, cover_photo_id)')
-        .order('is_featured', { ascending: false })
+        .eq('is_featured', true)
         .order('popular_rank', { ascending: true })
-        .order('population', { ascending: false })
-        .limit(4),
+        .limit(8),
       supabase
         .from('places')
         .select('id, slug, name, name_az, name_en, name_ru, category, cover_photo_id, cover_photo_url, rating_summary, review_count, popular_rank, cities(id, slug, name_az, name_en, name_ru, population, cover_photo_id), countries(id, slug, name_az, name_en, name_ru, flag_emoji, cover_photo_id)')
         .eq('status', 'active')
+        .eq('is_featured', true)
         .in('category', ['attraction', 'museum', 'landmark', 'restaurant', 'cafe', 'historic', 'viewpoint'])
-        .order('is_featured', { ascending: false })
         .order('popular_rank', { ascending: true })
         .limit(8),
     ]);
@@ -476,7 +475,7 @@ export default async function HomePage({
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
               {cities.map((city) => {
                 const cityName = localizedRefName(city, locale);
                 const countryName = city.countries ? localizedRefName(city.countries, locale) : '';

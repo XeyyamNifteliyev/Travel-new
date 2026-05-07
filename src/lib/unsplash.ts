@@ -17,6 +17,10 @@ export function getUnsplashUrl(
     ...(h ? { h: String(h) } : {}),
   });
 
+  if (safePhotoId.startsWith('https://upload.wikimedia.org/')) {
+    return safePhotoId;
+  }
+
   if (safePhotoId.startsWith('https://images.unsplash.com/')) {
     const url = new URL(safePhotoId);
     for (const [key, value] of params.entries()) {
@@ -99,12 +103,15 @@ const KNOWN_BAD_UNSPLASH_REFS = new Set([
   '1502602915149-bb4f5dc63d43',
   '1499856562261-6a300a60f98b',
   '1516483107680-cf12f4bb3a06',
+  'https://images.unsplash.com/photo-1753133661886-7e8a93e2d64e',
 ]);
 
 function isUsableUnsplashPhotoRef(photoId?: string | null): photoId is string {
   if (!photoId) return false;
   if (KNOWN_BAD_UNSPLASH_REFS.has(photoId)) return false;
+  if (photoId.startsWith('https://upload.wikimedia.org/')) return true;
   if (photoId.startsWith('https://images.unsplash.com/photo-')) return true;
+  // Standard Unsplash IDs: photo-TIMESTAMP-PHOTOID (e.g. photo-1502602898657-3e91760cbb34)
   return /^\d{8,}-[a-zA-Z0-9_-]+$/.test(photoId);
 }
 

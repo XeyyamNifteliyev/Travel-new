@@ -1,38 +1,111 @@
 # TravelAZ - Agent Konteksti və Cari Roadmap
 
-Bu fayl gələcək agentlər üçün TravelAZ layihəsinin cari vəziyyətini, konvensiyalarını və növbəti addımlarını saxlayır. Fayl Azərbaycan dilində saxlanmalıdır.
+Bu fayl gələcək agentlər üçün TravelAZ layihəsinin cari vəziyyətini, konvensiyalarını və növbəti addımlarını saxlayır. Fayl UTF-8 Azərbaycan dilində saxlanmalıdır.
 
 ## Layihə Xülasəsi
 
 TravelAZ Next.js 15 üzərində qurulan çoxdilli travel platformadır. Layihədə lokalizasiya edilmiş route-lar, Supabase əsaslı data, AI planlaşdırıcı, viza alətləri, blog, chat, turlar, ölkə/şəhər/place səhifələri və community review sistemi var.
 
-Tripadvisor-dan icazəsiz scraping, review kopyalama və content kopyalama edilməməlidir. Oxşar product value açıq data və TravelAZ-in öz review sistemi ilə qurulmalıdır.
+Tripadvisor-dan icazəsiz scraping, review kopyalama və content kopyalama edilməməlidir. Oxşar product value açıq data, real API-lər və TravelAZ-in öz review sistemi ilə qurulmalıdır.
 
 ## 2026-05-07 Status Update
 
 - `country_highlights` 10 əsas istiqamət üçün seed edildi: `turkey`, `dubai`, `france`, `italy`, `georgia`, `bali`, `japan`, `thailand`, `greece`, `maldives`.
 - Supabase-ə 43 highlight yazıldı.
-- `scripts/seed-country-highlights.js` əlavə edildi. Əmr: `npm run seed:country-highlights -- --apply`.
-- `scripts/enrich-images.js` parser-i düzəldildi; artıq `--type=cities`, `--type countries`, `--limit=20`, `--limit 20` formatları işləyir.
-- 20 şəhər Unsplash ilə zənginləşdirildi. Hazırda 26 şəhərin hamısında `cover_photo_id` var.
-- Ölkələr üçün 25-lik Unsplash batch işlədi: 21 ölkə real şəkil aldı, 4 ölkə üçün nəticə tapılmadı.
-- Şəkil fallback məntiqi düzəldildi: qısa Unsplash API ID-ləri və məlum 404 ID-lər artıq sınıq image URL yaratmır.
-- `--repair-invalid` rejimi əlavə edildi; bu rejim problemli `cover_photo_id` dəyərlərini tam `images.unsplash.com` URL-ləri ilə əvəz edir.
+- `scripts/seed-country-highlights.js` əlavə edildi.
 - Ana səhifədə hardcoded şəhər kartları real `cities` query ilə əvəz edildi.
 - Ana səhifəyə real `places` preview bloku əlavə edildi.
-- `README.md`, `plan.md` və `AGENTS.md` cari vəziyyətə uyğun yeniləndi.
+- Ana səhifə şəhər və yer kurasiyası edildi: `cities` və `places` cədvəllərində `is_featured`/`popular_rank` dəyərləri tənzimləndi.
+- `/countries` səhifəsində pagination əlavə edildi.
+- Qitə filtrləri server-side işləyir.
+- `scripts/fix-continents.js` əlavə edildi və 178 ölkənin `continent` dəyəri `cca2` kodlarına əsasən yeniləndi.
+- `scripts/audit-country-content.js` və `scripts/enrich-country-content.js` əlavə edildi.
+- Bütün 189 ölkə üçün kart datası tamamlandı: `capital`, `short_desc`, `short_desc_en`, `short_desc_ru`, `avg_flight_azn`, `avg_hotel_azn`, `avg_daily_azn`, `best_months`.
+- Ölkə kartlarının content hissəsinə sabit minimum hündürlük verildi ki, məlumatı az/çox olan kartlar vizual olaraq bir-birindən çox fərqlənməsin.
 
-Cari DB snapshot:
+## Şəkil Problemi - Aktiv Prioritet
+
+Hazırda layihənin ən böyük vizual problemi ölkə kartlarındakı şəkillərdir.
+
+Son audit nəticəsinə görə:
 
 - `countries`: 189
-- `cities`: 26
-- `places`: 1593
-- `country_highlights`: 43
-- `place_reviews`: 0
-- `place_sources`: 1515
-- `external_import_logs`: 29
-- `countries_with_cover`: 77
-- `cities_with_cover`: 26
+- `countries.cover_photo_id IS NOT NULL`: təxminən 77-80
+- 100+ ölkədə `cover_photo_id` boşdur.
+- Boş ölkələr runtime fallback pool-a düşür və çox kartda eyni şəkillər görünür.
+- Bəzi ölkələrdə qısa Unsplash API ID-ləri var, məsələn `OxtZP_h8tbQ`; bunlar tam `images.unsplash.com` URL deyil.
+- Məqsəd fallback-ları azaltmaq deyil, hər ölkəyə öz ölkəsinə aid gözəl, işlək və mümkün qədər unikal şəkil yazmaqdır.
+
+Şəkil işi üçün əsas əmrlər:
+
+```bash
+npm run audit:country-images
+npm run enrich:images -- --type=countries --priority-countries --limit=20 --apply
+npm run enrich:images -- --type=countries --repair-invalid --limit=20 --apply
+npm run enrich:images -- --type=countries --limit=50 --apply
+npm run enrich:images -- --type=countries --slug=turkey,france,georgia --apply
+```
+
+Paytaxt şəkli qaydası:
+
+- Ölkə cover şəkillərində əsas seçim paytaxtın şəhər görüntüsü, memarlıq, skyline, downtown, küçə və landmark görüntüsü olmalıdır.
+- Dəniz, dağ, meşə, səhra, göl, heyvan və random landscape şəkilləri ölkə kartı üçün uyğun sayılmır.
+- `scripts/enrich-images.js` ölkələr üçün əvvəlcə `{capital} {country} city skyline`, `{capital} {country} architecture`, `{capital} {country} downtown`, `{capital} {country} landmark` query-lərini yoxlayır.
+- Unsplash nəticəsinin alt/description/tag mətnində animal, donkey, horse, mountain, beach, sea, forest, desert, rice, field, farm, landscape, rural kimi sözlər varsa həmin şəkil avtomatik skip edilməlidir.
+- Paytaxt şəkli tapılmayan ölkələr manual review tələb edir; yanlış təbiət/heyvan şəkli göstərməkdənsə həmin ölkə üçün Wikimedia/Commons-dan real paytaxt memarlığı tapmaq daha yaxşıdır.
+
+### Ölkə Şəkilləri Üçün İcra Ardıcıllığı
+
+Bu ardıcıllıq hər yeni sessiyada qorunmalıdır ki, şəkil işi təsadüfi yox, idarəli davam etsin:
+
+1. Əvvəl audit işlət:
+
+```bash
+npm run audit:country-images
+```
+
+2. Əvvəl invalid və qısa Unsplash ID-ləri düzəlt:
+
+```bash
+npm run enrich:images -- --type=countries --repair-invalid --limit=10 --apply
+```
+
+3. Sonra tanınmış və saytda daha çox görünəcək ölkələri batch ilə düzəlt:
+
+```bash
+npm run enrich:images -- --type=countries --slug=ireland,indonesia,israel,jordan,hungary,latvia,lithuania,luxembourg,malta,pakistan,peru,philippines --limit=20 --apply
+```
+
+4. Sonra qalan boş ölkələri 20-lik batch-lərlə doldur:
+
+```bash
+npm run enrich:images -- --type=countries --limit=20 --apply
+```
+
+5. Hər batch-dən sonra yenidən audit və yoxlama işlət:
+
+```bash
+npm run audit:country-images
+npx tsc --noEmit
+npm run lint
+```
+
+Qalan ölkələr `data/country-image-audit.json` içindəki `needs_attention`, `missing_sample` və `invalid_sample` siyahılarına əsasən seçilməlidir. Unsplash limitə düşərsə, qalan batch növbəti sessiyada eyni ardıcıllıqla davam etdirilməlidir.
+
+Şəkil pipeline qaydaları:
+
+- `scripts/audit-country-images.js` hər sessiyada işlədilə bilər; nəticəni `data/country-image-audit.json` faylına yazır.
+- `scripts/enrich-images.js` artıq ölkələr üçün generic `Country travel landscape` ilə kifayətlənmir.
+- Ölkələr üçün query ardıcıllığı:
+  - `{capital} {country} city skyline`
+  - `{capital} {country} architecture`
+  - `{capital} {country} downtown`
+  - `{capital} {country} landmark`
+  - `{country} capital city`
+- DB-yə qısa ID yox, tam `https://images.unsplash.com/photo-...` URL yazılmalıdır.
+- Eyni şəkil URL-i başqa ölkədə varsa, yeni ölkəyə yazılmamalıdır.
+- `src/lib/unsplash.ts` fallback pool-u son çarədir; əsas mənbə DB-dəki real ölkə şəkli olmalıdır.
+- Yeni 404 ID tapıldıqda `KNOWN_BAD_UNSPLASH_REFS` siyahısına əlavə edilməlidir.
 
 ## Texnologiyalar
 
@@ -61,7 +134,10 @@ npm run import:open-travel-data -- --city=istanbul --apply
 npm run import:open-travel-data -- --mode=geonames --dry-run
 npm run enrich:images -- --type=cities --limit=20 --apply
 npm run enrich:images -- --type=countries --limit=50 --apply
-npm run enrich:images -- --type=countries --limit=20 --repair-invalid --apply
+npm run audit:country-images
+npm run audit:country-content
+npm run enrich:country-content -- --limit=30 --dry-run
+npm run enrich:country-content -- --limit=30 --apply
 npm run seed:country-highlights -- --apply
 ```
 
@@ -72,20 +148,15 @@ Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq ü�
 - `plan.md` - cari roadmap və qalan işlər
 - `README.md` - setup, env və developer workflow
 - `src/app/[locale]/page.tsx` - professional ana səhifə
-- `src/components/home/globe-hero.tsx` - animasiyalı qlobus və təyyarələr
-- `src/components/home/home-search-panel.tsx` - ana səhifə search tab-ları
+- `src/app/[locale]/countries/page.tsx` - ölkələr səhifəsi, server-side pagination/filter
+- `src/app/[locale]/countries/country-grid-client.tsx` - ölkə grid, search, filter, pagination UI
 - `src/components/country/country-card.tsx` - ölkə kartları və image fallback
-- `src/app/[locale]/countries/[slug]/page.tsx` - ölkə detal data fetch
-- `src/app/[locale]/countries/[slug]/country-detail-client.tsx` - ölkə detal UI
-- `src/app/[locale]/cities/page.tsx` - şəhər siyahısı
-- `src/app/[locale]/cities/[slug]/page.tsx` - şəhər detalı
-- `src/app/[locale]/places/[id]/page.tsx` - place detalı
-- `src/components/place/place-review-form.tsx` - review yazma forması
-- `src/components/place/review-moderation-panel.tsx` - admin moderation UI
-- `src/lib/open-travel-data.ts` - city/place/review mapper-ləri
-- `src/lib/unsplash.ts` - Unsplash və flag helper-ləri
+- `src/lib/unsplash.ts` - Unsplash URL helper-ləri, fallback pool və known bad image refs
+- `scripts/enrich-images.js` - duplicate-safe Unsplash image enrichment
+- `scripts/audit-country-images.js` - ölkə şəkil audit report-u
+- `scripts/audit-country-content.js` - ölkə kart content audit report-u
+- `scripts/enrich-country-content.js` - RestCountries və Wikipedia əsasında boş ölkə content field-lərini doldurur
 - `scripts/import-open-travel-data.js` - Overpass/Wikipedia/GeoNames import pipeline
-- `scripts/enrich-images.js` - Unsplash image enrichment
 - `scripts/seed-country-highlights.js` - ölkə highlight seed script-i
 - `src/messages/*.json` - i18n mesajları
 
@@ -137,6 +208,7 @@ Dəstəklənən provider-lar:
 - UI control-lar üçün `lucide-react` ikonlarından istifadə et.
 - Yeni abstraction əlavə etməzdən əvvəl mövcud route və component pattern-lərinə bax.
 - İstifadəçinin və ya başqa agentin dəyişikliklərini geri çevirmə.
+- Tripadvisor-dan icazəsiz scraping etmə.
 
 ## Açıq Data Strategiyası
 
@@ -164,12 +236,17 @@ Hər import source/license metadata saxlamalıdır.
 - GlobeHero təyyarə animasiyaları.
 - Ana səhifə DB əsaslı countries/cities/places preview.
 - Country highlights seed.
+- Ölkə pagination və server-side qitə filterləri.
+- Bütün 189 ölkə üçün kart content enrichment: capital, 3 dildə short description, təxmini flight/hotel/daily qiymətlər və best months.
 
 ## Natamam Qalanlar
 
 1. Qalan ölkə şəkillərini batch-batch doldurmaq.
-   - Əmr: `npm run enrich:images -- --type=countries --limit=50 --apply`
-   - Unsplash demo tier saatlıq limit verdiyi üçün bir neçə saatlıq mərhələdə edilməlidir.
+   - Əsas problem budur.
+   - `npm run audit:country-images` ilə vəziyyəti yoxla.
+   - Əvvəl priority ölkələri düzəlt.
+   - Sonra boş və invalid şəkilləri batch-batch doldur.
+   - Unsplash demo tier saatlıq limit verdiyi üçün mərhələli edilməlidir.
 
 2. `country_highlights` əhatəsini genişləndirmək.
    - Hazırda 10 istiqamət var.
@@ -197,6 +274,8 @@ Hər böyük dəyişiklikdən sonra:
 npx tsc --noEmit
 npm run lint
 npm run import:open-travel-data -- --check-db
+npm run audit:country-images
+npm run audit:country-content
 ```
 
 Manual URL yoxlaması:
@@ -207,6 +286,8 @@ http://localhost:3000/en
 http://localhost:3000/ru
 http://localhost:3000/az/countries
 http://localhost:3000/az/countries/turkey
+http://localhost:3000/az/countries/france
+http://localhost:3000/az/countries/georgia
 http://localhost:3000/az/cities
 http://localhost:3000/az/cities/istanbul
 ```
@@ -218,10 +299,4 @@ http://localhost:3000/az/cities/istanbul
 - `UNSPLASH_ACCESS_KEY` server-only environment variable-dur, client-side expose etmə.
 - `SUPABASE_SERVICE_ROLE_KEY` yalnız server/script tərəfində istifadə olunmalıdır.
 - `SLUG_TO_ISO` xəritəsi `src/lib/unsplash.ts` içindədir; yeni ölkə əlavə ediləndə lazım olsa yenilə.
-- Tripadvisor-dan icazəsiz scraping etmə.
-
-## Şəkil Problemi Üçün Daimi Qeyd
-
-- Hər yeni sessiyada şəkilləri ayrıca aktiv problem kimi yoxla: ana səhifə, `/az/countries`, `/az/countries/turkey` və `/az/cities` səhifələrində kart şəkilləri default/sınıq görünürsə, əvvəl `npm run enrich:images -- --type=countries --limit=20 --repair-invalid --apply`, sonra rate limit imkan verirsə `npm run enrich:images -- --type=countries --limit=50 --apply` işlət.
-- Şəkil problemi tam bitmiş sayılmır: qalan ölkələr batch-batch real şəkillərlə doldurulana qədər bunu aktiv natamam iş kimi gör.
-- `src/lib/unsplash.ts` içindəki fallback pool və `KNOWN_BAD_UNSPLASH_REFS` siyahısı qorunmalıdır; yeni 404 ID tapıldıqda həmin siyahıya əlavə et.
+- Şəkil problemi tam bitmiş sayılmır: bütün ölkələrdə real, unikal və ölkəyə uyğun şəkil olana qədər bunu aktiv natamam iş kimi gör.

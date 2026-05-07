@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-05-07T20:40:35.722Z",
+  "totals": {
+    "countries": 189,
+    "complete_card_content": 189,
+    "needs_attention": 0,
+    "field_coverage": {
+      "capital": 189,
+      "short_desc": 189,
+      "short_desc_en": 189,
+      "short_desc_ru": 189,
+      "avg_flight_azn": 189,
+      "avg_hotel_azn": 189,
+      "avg_daily_azn": 189,
+      "best_months": 189
+    }
+  },
+  "priority_batch": [],
+  "missing_by_field": {
+    "capital": [],
+    "short_desc": [],
+    "short_desc_en": [],
+    "short_desc_ru": [],
+    "avg_flight_azn": [],
+    "avg_hotel_azn": [],
+    "avg_daily_azn": [],
+    "best_months": []
+  },
+  "needs_attention": []
+}

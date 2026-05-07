@@ -1,0 +1,1189 @@
+{
+  "generated_at": "2026-05-07T20:42:38.441Z",
+  "totals": {
+    "countries": 189,
+    "with_cover_photo": 83,
+    "missing_cover_photo": 106,
+    "invalid_or_short": 5,
+    "duplicate_groups": 0,
+    "needs_attention": 111
+  },
+  "duplicate_groups": [],
+  "featured_risk": [],
+  "missing_sample": [
+    "zambia",
+    "comoros",
+    "equatorial-guinea",
+    "jordan",
+    "latvia",
+    "mauritania",
+    "montenegro",
+    "north-macedonia",
+    "paraguay",
+    "samoa",
+    "senegal",
+    "somalia",
+    "vietnam",
+    "japan",
+    "trinidad-and-tobago",
+    "vanuatu",
+    "uganda",
+    "china",
+    "iceland",
+    "sri-lanka",
+    "tonga",
+    "liechtenstein",
+    "austria",
+    "new-zealand",
+    "haiti",
+    "hungary",
+    "honduras",
+    "israel",
+    "kiribati",
+    "kyrgyzstan",
+    "lesotho",
+    "libya",
+    "pakistan",
+    "indonesia",
+    "ireland",
+    "jamaica",
+    "laos",
+    "liberia",
+    "madagascar",
+    "mali"
+  ],
+  "invalid_sample": [
+    {
+      "slug": "burkina-faso",
+      "cover_photo_id": "YGqErBP_d9I"
+    },
+    {
+      "slug": "bosnia-and-herzegovina",
+      "cover_photo_id": "72RGB66py74"
+    },
+    {
+      "slug": "malaysia",
+      "cover_photo_id": "NLp53mC4ULk"
+    },
+    {
+      "slug": "bahamas",
+      "cover_photo_id": "Fxt1_cr1plw"
+    },
+    {
+      "slug": "guyana",
+      "cover_photo_id": "d0panFt2zNU"
+    }
+  ],
+  "needs_attention": [
+    {
+      "slug": "zambia",
+      "name_en": "Zambia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "comoros",
+      "name_en": "Comoros",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "equatorial-guinea",
+      "name_en": "Equatorial Guinea",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "jordan",
+      "name_en": "Jordan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "latvia",
+      "name_en": "Latvia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "mauritania",
+      "name_en": "Mauritania",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "montenegro",
+      "name_en": "Montenegro",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "north-macedonia",
+      "name_en": "North Macedonia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "paraguay",
+      "name_en": "Paraguay",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "samoa",
+      "name_en": "Samoa",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "senegal",
+      "name_en": "Senegal",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "somalia",
+      "name_en": "Somalia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "vietnam",
+      "name_en": "Vietnam",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "japan",
+      "name_en": "Japan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "trinidad-and-tobago",
+      "name_en": "Trinidad and Tobago",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "vanuatu",
+      "name_en": "Vanuatu",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "uganda",
+      "name_en": "Uganda",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "china",
+      "name_en": "China",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "iceland",
+      "name_en": "Iceland",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "sri-lanka",
+      "name_en": "Sri Lanka",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "tonga",
+      "name_en": "Tonga",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "liechtenstein",
+      "name_en": "Liechtenstein",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "burkina-faso",
+      "name_en": "Burkina Faso",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": "YGqErBP_d9I",
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "invalid_or_short_unsplash_id"
+    },
+    {
+      "slug": "austria",
+      "name_en": "Austria",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "bosnia-and-herzegovina",
+      "name_en": "Bosnia and Herzegovina",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": "72RGB66py74",
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "invalid_or_short_unsplash_id"
+    },
+    {
+      "slug": "new-zealand",
+      "name_en": "New Zealand",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "haiti",
+      "name_en": "Haiti",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "hungary",
+      "name_en": "Hungary",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "honduras",
+      "name_en": "Honduras",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "israel",
+      "name_en": "Israel",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "kiribati",
+      "name_en": "Kiribati",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "kyrgyzstan",
+      "name_en": "Kyrgyzstan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "lesotho",
+      "name_en": "Lesotho",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "libya",
+      "name_en": "Libya",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "pakistan",
+      "name_en": "Pakistan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "indonesia",
+      "name_en": "Indonesia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "ireland",
+      "name_en": "Ireland",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "jamaica",
+      "name_en": "Jamaica",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "laos",
+      "name_en": "Laos",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "liberia",
+      "name_en": "Liberia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "madagascar",
+      "name_en": "Madagascar",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "malaysia",
+      "name_en": "Malaysia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": "NLp53mC4ULk",
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "invalid_or_short_unsplash_id"
+    },
+    {
+      "slug": "mali",
+      "name_en": "Mali",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "mauritius",
+      "name_en": "Mauritius",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "micronesia",
+      "name_en": "Micronesia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "malta",
+      "name_en": "Malta",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "mexico",
+      "name_en": "Mexico",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "moldova",
+      "name_en": "Moldova",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "togo",
+      "name_en": "Togo",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "mozambique",
+      "name_en": "Mozambique",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "namibia",
+      "name_en": "Namibia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "niger",
+      "name_en": "Niger",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "north-korea",
+      "name_en": "North Korea",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "nauru",
+      "name_en": "Nauru",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "nicaragua",
+      "name_en": "Nicaragua",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "nigeria",
+      "name_en": "Nigeria",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "oman",
+      "name_en": "Oman",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "palau",
+      "name_en": "Palau",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "peru",
+      "name_en": "Peru",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "poland",
+      "name_en": "Poland",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "saint-kitts-and-nevis",
+      "name_en": "Saint Kitts and Nevis",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "saint-vincent-and-the-grenadines",
+      "name_en": "Saint Vincent and the Grenadines",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "portugal",
+      "name_en": "Portugal",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "rwanda",
+      "name_en": "Rwanda",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "saint-lucia",
+      "name_en": "Saint Lucia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "sao-tome-and-principe",
+      "name_en": "Sao Tome and Principe",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "seychelles",
+      "name_en": "Seychelles",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "sierra-leone",
+      "name_en": "Sierra Leone",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "suriname",
+      "name_en": "Suriname",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "switzerland",
+      "name_en": "Switzerland",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "tajikistan",
+      "name_en": "Tajikistan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "thailand",
+      "name_en": "Thailand",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "spain",
+      "name_en": "Spain",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "syria",
+      "name_en": "Syria",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "tunisia",
+      "name_en": "Tunisia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "united-states",
+      "name_en": "United States",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "uruguay",
+      "name_en": "Uruguay",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "venezuela",
+      "name_en": "Venezuela",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "yemen",
+      "name_en": "Yemen",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "zimbabwe",
+      "name_en": "Zimbabwe",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "ukraine",
+      "name_en": "Ukraine",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "usa",
+      "name_en": "United States",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "uzbekistan",
+      "name_en": "Uzbekistan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "vatican-city",
+      "name_en": "Vatican City",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "australia",
+      "name_en": "Australia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "bahamas",
+      "name_en": "Bahamas",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": "Fxt1_cr1plw",
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "invalid_or_short_unsplash_id"
+    },
+    {
+      "slug": "central-african-republic",
+      "name_en": "Central African Republic",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "chad",
+      "name_en": "Chad",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "c-te-d-ivoire",
+      "name_en": "Côte d'Ivoire",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "guyana",
+      "name_en": "Guyana",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": "d0panFt2zNU",
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "invalid_or_short_unsplash_id"
+    },
+    {
+      "slug": "lithuania",
+      "name_en": "Lithuania",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "marshall-islands",
+      "name_en": "Marshall Islands",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "monaco",
+      "name_en": "Monaco",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "india",
+      "name_en": "India",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "iraq",
+      "name_en": "Iraq",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "kazakhstan",
+      "name_en": "Kazakhstan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "luxembourg",
+      "name_en": "Luxembourg",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "malawi",
+      "name_en": "Malawi",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "maldives",
+      "name_en": "Maldives",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "morocco",
+      "name_en": "Morocco",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "netherlands",
+      "name_en": "Netherlands",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "norway",
+      "name_en": "Norway",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "panama",
+      "name_en": "Panama",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "philippines",
+      "name_en": "Philippines",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "singapore",
+      "name_en": "Singapore",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "sudan",
+      "name_en": "Sudan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "turkmenistan",
+      "name_en": "Turkmenistan",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "san-marino",
+      "name_en": "San Marino",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "saudi-arabia",
+      "name_en": "Saudi Arabia",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "timor-leste",
+      "name_en": "Timor-Leste",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    },
+    {
+      "slug": "tuvalu",
+      "name_en": "Tuvalu",
+      "popular_rank": 99,
+      "is_featured": false,
+      "cover_photo_id": null,
+      "cover_photo_alt": null,
+      "normalized_photo": null,
+      "reason": "missing"
+    }
+  ]
+}

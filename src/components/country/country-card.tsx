@@ -37,6 +37,12 @@ export function CountryCard({ country }: CountryCardProps) {
   const desc = locale === 'en' ? country.short_desc_en
     : locale === 'ru' ? country.short_desc_ru
     : country.short_desc;
+  const fallbackDesc = locale === 'en'
+    ? 'Travel details are being updated for this destination.'
+    : locale === 'ru'
+      ? 'Информация для путешествия по этому направлению обновляется.'
+      : 'Bu istiqamət üçün səyahət məlumatları yenilənir.';
+  const descToShow = desc || fallbackDesc;
 
   const coverPhotoId = getCountryCoverPhotoId(country.slug, country.cover_photo_id);
   const photoId = imgError ? getCountryCoverPhotoId(`${country.slug}-fallback`) : coverPhotoId;
@@ -86,31 +92,33 @@ export function CountryCard({ country }: CountryCardProps) {
           )}
         </div>
 
-        <div className="p-4">
-          {desc && (
-            <p className="text-txt-sec text-sm line-clamp-2 mb-3">{desc}</p>
-          )}
+        <div className="p-4 min-h-[172px] flex flex-col">
+          <p className="text-txt-sec text-sm line-clamp-2 mb-3 min-h-[40px]">{descToShow}</p>
 
-          {(country.avg_flight_azn || country.avg_hotel_azn) && (
-            <div className="flex gap-3 text-xs text-txt-sec mb-3">
+          <div className="min-h-[20px] mb-3">
+            {(country.avg_flight_azn || country.avg_hotel_azn) ? (
+              <div className="flex gap-3 text-xs text-txt-sec">
               {country.avg_flight_azn ? (
                 <span className="flex items-center gap-1"><Plane className="w-3 h-3" /> ~{country.avg_flight_azn} AZN</span>
               ) : null}
               {country.avg_hotel_azn ? (
                 <span className="flex items-center gap-1"><Hotel className="w-3 h-3" /> ~{country.avg_hotel_azn}</span>
               ) : null}
-            </div>
-          )}
+              </div>
+            ) : null}
+          </div>
 
-          {country.best_months && country.best_months.length > 0 && (
-            <div className="flex gap-1 flex-wrap">
+          <div className="mt-auto min-h-[22px]">
+            {country.best_months && country.best_months.length > 0 ? (
+              <div className="flex gap-1 flex-wrap">
               {country.best_months.slice(0, 4).map(m => (
                 <span key={m} className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary rounded font-medium">
                   {MONTH_SHORT[m] || m}
                 </span>
               ))}
-            </div>
-          )}
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </Link>

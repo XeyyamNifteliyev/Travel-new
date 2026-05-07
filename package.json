@@ -9,6 +9,9 @@
     "lint": "eslint",
     "import:open-travel-data": "node scripts/import-open-travel-data.js",
     "enrich:images": "node scripts/enrich-images.js",
+    "audit:country-images": "node scripts/audit-country-images.js",
+    "audit:country-content": "node scripts/audit-country-content.js",
+    "enrich:country-content": "node scripts/enrich-country-content.js",
     "seed:country-highlights": "node scripts/seed-country-highlights.js"
   },
   "dependencies": {
