@@ -6,6 +6,7 @@ import { Companion, CompanionFormData } from '@/types/companion';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
+import { getUnsplashUrl, getCountryCoverPhotoId } from '@/lib/unsplash';
 import type { User } from '@/types/supabase-helpers';
 import {
   Search, MapPin, Calendar, Users,
@@ -36,6 +37,7 @@ export default function CompanionSearch() {
   const MONTHS_FULL: string[] = useMemo(() => t.raw('monthsFull'), [t]);
 
   const [companions, setCompanions] = useState<Companion[]>([]);
+  const [countryImages, setCountryImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -146,6 +148,26 @@ export default function CompanionSearch() {
       author: c.author ? { name: c.author.name, avatarUrl: c.author.avatar_url } : undefined,
     }));
     setCompanions(mapped);
+
+    const countryNames = [...new Set(mapped.map((c: Companion) => c.destinationCountry))];
+    if (countryNames.length > 0) {
+      const { data: countriesData } = await supabase
+        .from('countries')
+        .select('slug, name_az, name_en, name_ru, cover_photo_id');
+
+      if (countriesData) {
+        const imgMap: Record<string, string> = {};
+        for (const c of countriesData) {
+          const photoId = getCountryCoverPhotoId(c.slug, c.cover_photo_id);
+          const url = getUnsplashUrl(photoId, { w: 800, q: 80 });
+          if (c.name_az) imgMap[c.name_az] = url;
+          if (c.name_en) imgMap[c.name_en] = url;
+          if (c.name_ru) imgMap[c.name_ru] = url;
+        }
+        setCountryImages(imgMap);
+      }
+    }
+
     setLoading(false);
   }
 
@@ -516,6 +538,7 @@ export default function CompanionSearch() {
             {companions.map((companion, index) => {
               const gradient = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
               const initial = companion.author?.name?.[0]?.toUpperCase() || '?';
+              const coverImage = countryImages[companion.destinationCountry];
 
               return (
                 <div
@@ -523,8 +546,20 @@ export default function CompanionSearch() {
                   onClick={() => setSelectedCompanion(companion)}
                   className="group relative bg-bg-surface/50 rounded-2xl overflow-hidden hover:shadow-[0_12px_30px_rgba(14,165,233,0.1)] transition-all duration-300 cursor-pointer border border-border/50 hover:border-primary/20"
                 >
-                  <div className={`h-32 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
-                    <div className="absolute inset-0 bg-black/10" />
+                  <div className={`h-32 relative overflow-hidden ${coverImage ? '' : `bg-gradient-to-br ${gradient}`}`}>
+                    {coverImage && (
+                      <>
+                        <Image
+                          src={coverImage}
+                          alt={companion.destinationCountry}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-black/10" />
+                      </>
+                    )}
+                    {!coverImage && <div className="absolute inset-0 bg-black/10" />}
                     <div className="absolute bottom-3 left-4 right-3 flex items-end justify-between">
                       <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-[11px] tracking-wide rounded-full font-semibold uppercase">
                         {companion.destinationCountry}
@@ -536,24 +571,8 @@ export default function CompanionSearch() {
                     </div>
                   </div>
 
-                  <div className="p-4 pb-5 relative">
-                    <div className="absolute -top-7 left-4">
-                      {companion.author?.avatarUrl ? (
-                        <Image
-                          src={companion.author.avatarUrl}
-                          alt={companion.author.name}
-                          className="w-14 h-14 rounded-full border-[3px] border-bg-base object-cover"
-                          width={56}
-                          height={56}
-                        />
-                      ) : (
-                        <div className="w-14 h-14 rounded-full border-[3px] border-bg-base bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-xl font-bold text-primary tracking-tight">
-                          {initial}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="pt-8">
+                  <div className="p-4 pb-5">
+                    <div className="pt-0">
                       <h3 className="text-[15px] font-bold text-txt tracking-tight truncate">
                         {companion.author?.name || t('anonymous')}
                       </h3>
@@ -606,8 +625,21 @@ export default function CompanionSearch() {
             onClick={e => e.stopPropagation()}
           >
             {/* Modal Cover */}
-            <div className={`h-40 bg-gradient-to-br ${COVER_GRADIENTS[companions.indexOf(selectedCompanion) % COVER_GRADIENTS.length]} relative flex-shrink-0`}>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+            <div className={`h-40 relative flex-shrink-0 ${countryImages[selectedCompanion.destinationCountry] ? '' : `bg-gradient-to-br ${COVER_GRADIENTS[companions.indexOf(selectedCompanion) % COVER_GRADIENTS.length]}`}`}>
+              {countryImages[selectedCompanion.destinationCountry] ? (
+                <>
+                  <Image
+                    src={countryImages[selectedCompanion.destinationCountry]}
+                    alt={selectedCompanion.destinationCountry}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 512px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+                </>
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              )}
               <button
                 onClick={() => setSelectedCompanion(null)}
                 className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full text-white hover:bg-black/50 transition-colors"
@@ -624,25 +656,8 @@ export default function CompanionSearch() {
 
             {/* Modal Content - scrollable area */}
             <div className="flex-1 overflow-y-auto min-h-0">
-              <div className="p-5 relative">
-                {/* Avatar */}
-                <div className="absolute -top-8 left-5">
-                  {selectedCompanion.author?.avatarUrl ? (
-                    <Image
-                      src={selectedCompanion.author.avatarUrl}
-                      alt={selectedCompanion.author.name}
-                      className="w-16 h-16 rounded-full border-[3px] border-bg-base object-cover shadow-lg"
-                      width={64}
-                      height={64}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full border-[3px] border-bg-base bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-2xl font-bold text-primary tracking-tight shadow-lg">
-                      {selectedCompanion.author?.name?.[0]?.toUpperCase() || '?'}
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-10">
+              <div className="p-5">
+                <div className="pt-0">
                   <h2 className="text-xl font-bold text-txt tracking-tight">
                     {selectedCompanion.author?.name || t('anonymous')}
                   </h2>
