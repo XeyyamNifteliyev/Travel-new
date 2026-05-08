@@ -117,6 +117,7 @@ Qalan ölkələr `data/country-image-audit.json` içindəki `needs_attention`, `
 - Supabase: auth, database, realtime chat
 - Duffel: flights və hotels/stays
 - Unsplash API: ölkə və şəhər cover photo enrichment
+- Pexels API: məkan şəkilləri üçün ikinci image enrichment mənbəyi
 - OpenStreetMap/Overpass, GeoNames, Wikipedia/Wikivoyage metadata
 - TipTap, sonner, lucide-react, DOMPurify
 - Leaflet / react-leaflet
@@ -148,6 +149,7 @@ npm run enrich:place-descriptions -- --limit=300 --strategy=factual --apply --qu
 npm run enrich:place-images -- --city=istanbul --limit=20 --category=attraction,museum,landmark,historic,viewpoint --overwrite --source=unsplash --apply
 npm run enrich:place-images -- --limit=80 --category=attraction,museum,landmark,historic,viewpoint --source=unsplash --apply
 npm run enrich:place-images -- --limit=80 --offset=60 --category=attraction,museum,landmark,historic,viewpoint --source=unsplash --apply
+npm run enrich:place-images -- --city=new-york --limit=25 --category=attraction,museum,landmark,historic,viewpoint --source=pexels --apply
 npm run seed:country-highlights -- --apply
 ```
 
@@ -285,6 +287,7 @@ Hər import source/license metadata saxlamalıdır.
    - Place description-lar generic “TravelAZ bazasında saxlanan” mətnləri deyil; Wikipedia tapılarsa mənbəli summary, tapılmazsa OSM/DB-dəki real faktlardan SEO uyğun praktik mətn yazılır.
    - 2026-05-08 image update: place image coverage `401/2076`-dır. İstanbul və Parisdən əlavə global image batch başladıldı. `enrich-place-images` artıq `--offset` dəstəkləyir və Unsplash nəticəsini yalnız məkan/şəhər/kateqoriya uyğunluğu varsa qəbul edir; təsadüfi ilk nəticə yazılmamalıdır.
    - Qalan image işi bütün şəhərlər üzrə davam etməlidir: əvvəl `npm run audit:place-content`, sonra 80-lik `--offset` batch-lər. Uyğun şəkil tapılmayan məkanlar manual/Wikimedia review tələb edir.
+   - 2026-05-08 Pexels update: `PEXELS_API_KEY` ilə `enrich-place-images` içinə `--source=pexels` əlavə edildi. Coverage `593/2076` oldu. Növbəti image mərhələsi Pexels city batch-lərini qalan yüksək boşluqlu şəhərlərə tətbiq etməkdir.
 
 4. Restoran və kafe datasını məşhur şəhərlərə yaymaq.
    - Mənbə yalnız OpenStreetMap/Overpass olmalıdır; Tripadvisor scraping edilməməlidir.

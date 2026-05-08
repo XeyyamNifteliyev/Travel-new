@@ -9,6 +9,7 @@ const WIKIDATA_API = 'https://www.wikidata.org/w/api.php';
 const COMMONS_THUMB = 'https://en.wikipedia.org/wiki/Special:FilePath';
 const WIKIPEDIA_API = (lang) => `https://${lang}.wikipedia.org/w/api.php`;
 const UNSPLASH_API = 'https://api.unsplash.com/search/photos';
+const PEXELS_API = 'https://api.pexels.com/v1/search';
 const RATE_DELAY = 1300;
 const REQUEST_TIMEOUT = 12000;
 
@@ -311,6 +312,13 @@ function unsplashQuery(place) {
   return `${base} landmark architecture`;
 }
 
+function pexelsQuery(place) {
+  const cityName = place.cities?.name_en || place.cities?.name_az || '';
+  const base = `${place.name} ${cityName}`.trim();
+  if (['restaurant', 'cafe', 'hotel'].includes(place.category)) return `${base} ${place.category}`;
+  return `${base} travel landmark`;
+}
+
 async function fetchUnsplashImage(place) {
   const accessKey = process.env.UNSPLASH_ACCESS_KEY;
   if (!accessKey) return null;
@@ -342,6 +350,39 @@ async function fetchUnsplashImage(place) {
     return enoughPlaceMatch || (hasCityContext && hasCategoryContext);
   });
   return best?.urls?.raw ? `${best.urls.raw.split('?')[0]}?auto=format&fit=crop&w=1000&q=82` : null;
+}
+
+async function fetchPexelsImage(place) {
+  const accessKey = process.env.PEXELS_API_KEY;
+  if (!accessKey) return null;
+  const params = new URLSearchParams({
+    query: pexelsQuery(place),
+    per_page: '8',
+    orientation: 'landscape',
+  });
+  const data = await fetchJson(`${PEXELS_API}?${params}`, {
+    Authorization: accessKey,
+  });
+  const photos = data?.photos || [];
+  const placeName = normalize(place.name);
+  const placeTokens = placeName.split(' ').filter((token) => token.length >= 4);
+  const cityName = normalize(place.cities?.name_en || place.cities?.name_az || '');
+  const category = normalize(place.category);
+  const best = photos.find((photo) => {
+    const haystack = normalize([
+      photo.alt,
+      photo.photographer,
+      photo.url,
+    ].filter(Boolean).join(' '));
+    const tokenMatches = placeTokens.filter((token) => haystack.includes(token)).length;
+    const enoughPlaceMatch = placeTokens.length > 0 && tokenMatches / placeTokens.length >= 0.5;
+    const hasCityContext = cityName && haystack.includes(cityName);
+    const hasCategoryContext = category && haystack.includes(category);
+    return enoughPlaceMatch || hasCityContext || hasCategoryContext;
+  }) || photos[0];
+
+  if (!best?.src) return null;
+  return best.src.large2x || best.src.large || best.src.landscape || best.src.original || null;
 }
 
 async function findImageForPlace(place) {
@@ -377,6 +418,11 @@ async function findImageForPlace(place) {
   if (['all', 'unsplash'].includes(place.sourceMode)) {
     const url = await fetchUnsplashImage(place);
     if (url) return { url, provider: 'unsplash', detail: unsplashQuery(place) };
+  }
+
+  if (['all', 'pexels'].includes(place.sourceMode)) {
+    const url = await fetchPexelsImage(place);
+    if (url) return { url, provider: 'pexels', detail: pexelsQuery(place) };
   }
 
   return null;

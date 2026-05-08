@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-05-08T02:40:14.160Z",
+  "generatedAt": "2026-05-08T10:43:21.158Z",
   "totals": {
     "cities": 99,
     "places": 2076,
     "descriptionAz": 2076,
     "descriptionAny": 2076,
-    "image": 401,
+    "image": 593,
     "missingAz": 0
   },
   "priority": [],
@@ -16,7 +16,7 @@
       "total": 84,
       "descriptionAz": 84,
       "descriptionAny": 84,
-      "image": 7,
+      "image": 25,
       "sourceUrl": 84,
       "website": 59,
       "address": 54,
@@ -27,7 +27,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 8
+      "imagePercent": 30
     },
     {
       "slug": "vienna",
@@ -35,7 +35,7 @@
       "total": 84,
       "descriptionAz": 84,
       "descriptionAny": 84,
-      "image": 5,
+      "image": 27,
       "sourceUrl": 84,
       "website": 39,
       "address": 29,
@@ -46,7 +46,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 6
+      "imagePercent": 32
     },
     {
       "slug": "new-york",
@@ -54,7 +54,7 @@
       "total": 84,
       "descriptionAz": 84,
       "descriptionAny": 84,
-      "image": 5,
+      "image": 35,
       "sourceUrl": 84,
       "website": 34,
       "address": 33,
@@ -65,7 +65,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 6
+      "imagePercent": 42
     },
     {
       "slug": "lisbon",
@@ -92,7 +92,7 @@
       "total": 84,
       "descriptionAz": 84,
       "descriptionAny": 84,
-      "image": 5,
+      "image": 22,
       "sourceUrl": 84,
       "website": 8,
       "address": 17,
@@ -103,7 +103,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 6
+      "imagePercent": 26
     },
     {
       "slug": "tokyo",
@@ -130,7 +130,7 @@
       "total": 83,
       "descriptionAz": 83,
       "descriptionAny": 83,
-      "image": 5,
+      "image": 29,
       "sourceUrl": 83,
       "website": 13,
       "address": 10,
@@ -141,7 +141,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 6
+      "imagePercent": 35
     },
     {
       "slug": "berlin",
@@ -149,7 +149,7 @@
       "total": 83,
       "descriptionAz": 83,
       "descriptionAny": 83,
-      "image": 5,
+      "image": 30,
       "sourceUrl": 83,
       "website": 49,
       "address": 46,
@@ -160,7 +160,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 6
+      "imagePercent": 36
     },
     {
       "slug": "dubrovnik",
@@ -187,7 +187,7 @@
       "total": 82,
       "descriptionAz": 82,
       "descriptionAny": 82,
-      "image": 5,
+      "image": 19,
       "sourceUrl": 82,
       "website": 28,
       "address": 27,
@@ -198,7 +198,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 6
+      "imagePercent": 23
     },
     {
       "slug": "antalya",
@@ -206,7 +206,7 @@
       "total": 81,
       "descriptionAz": 81,
       "descriptionAny": 81,
-      "image": 5,
+      "image": 20,
       "sourceUrl": 81,
       "website": 7,
       "address": 15,
@@ -217,7 +217,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 6
+      "imagePercent": 25
     },
     {
       "slug": "singapore",
@@ -282,7 +282,7 @@
       "total": 76,
       "descriptionAz": 76,
       "descriptionAny": 76,
-      "image": 13,
+      "image": 16,
       "sourceUrl": 76,
       "website": 35,
       "address": 18,
@@ -293,7 +293,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 17
+      "imagePercent": 21
     },
     {
       "slug": "athens",
@@ -320,7 +320,7 @@
       "total": 74,
       "descriptionAz": 74,
       "descriptionAny": 74,
-      "image": 5,
+      "image": 14,
       "sourceUrl": 74,
       "website": 26,
       "address": 26,
@@ -331,7 +331,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 7
+      "imagePercent": 19
     },
     {
       "slug": "cairo",
@@ -339,7 +339,7 @@
       "total": 74,
       "descriptionAz": 74,
       "descriptionAny": 74,
-      "image": 0,
+      "image": 14,
       "sourceUrl": 74,
       "website": 9,
       "address": 16,
@@ -350,7 +350,7 @@
       "foodDescriptionAz": 34,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 0
+      "imagePercent": 19
     },
     {
       "slug": "prague",
@@ -358,7 +358,7 @@
       "total": 71,
       "descriptionAz": 71,
       "descriptionAny": 71,
-      "image": 8,
+      "image": 9,
       "sourceUrl": 71,
       "website": 19,
       "address": 9,
@@ -369,7 +369,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 11
+      "imagePercent": 13
     },
     {
       "slug": "moscow",

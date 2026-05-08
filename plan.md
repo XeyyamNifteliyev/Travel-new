@@ -31,6 +31,8 @@ Tripadvisor content-i icazəsiz scrape və ya copy edilməyəcək. Product value
 - Paris üçün 20 görməli yer image batch-i işlədildi: 13 yeni place-specific şəkil yazıldı, 2 duplicate bloklandı, 5 məkan manual review üçün qaldı.
 - Image işi şəhər nümunələri ilə məhdud deyil: global `enrich-place-images` batch başladıldı və image coverage `401/2076` oldu. Script `--offset` dəstəkləyir və zəif Unsplash nəticələrini yazmır.
 - Növbəti image mərhələsi: bütün şəhərlər üçün 80-lik `--offset` batch-lər + tapılmayan məkanların manual/Wikimedia review-u.
+- Pexels ikinci image mənbəyi kimi `enrich-place-images`-ə əlavə edildi (`--source=pexels`). 2026-05-08 son status: image coverage `593/2076`.
+- Pexels batch-lər New York, Berlin, Seul, Budapeşt, Vyana, Bakı, Kuala Lumpur, Antalya, Cairo, Amsterdam, Barcelona və Prague üçün işlədildi. Növbəti addım qalan şəhərləri eyni batch strategiyası ilə davam etdirməkdir.
 
 Cari DB snapshot:
 
