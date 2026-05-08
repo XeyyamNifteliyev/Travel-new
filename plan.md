@@ -20,6 +20,7 @@ Tripadvisor content-i icazəsiz scrape və ya copy edilməyəcək. Product value
 - Ana səhifədə real `places` preview əlavə edildi.
 - Restoran/kafe üçün ayrıca Overpass import pipeline əlavə edildi və ilk batch-də 10 məşhur şəhər zənginləşdirildi.
 - `/restaurants` səhifəsində şəhər filter-i yalnız restoran/kafe datası olan şəhərləri göstərir və bütün yeni mətnlər `az/en/ru` JSON-larına bağlandı.
+- Ölkə detal səhifəsindəki “Populyar şəhərlər” kartları şəkilli edildi və hər kart öz şəhər detal səhifəsinə yönləndirir.
 
 Cari DB snapshot:
 

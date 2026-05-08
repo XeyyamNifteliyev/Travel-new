@@ -154,6 +154,7 @@ Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq ü�
 - `src/app/[locale]/page.tsx` - professional ana səhifə
 - `src/app/[locale]/countries/page.tsx` - ölkələr səhifəsi, server-side pagination/filter
 - `src/app/[locale]/countries/country-grid-client.tsx` - ölkə grid, search, filter, pagination UI
+- `src/app/[locale]/countries/[slug]/country-detail-client.tsx` - ölkə detal UI; populyar şəhər kartları şəkilli olmalı və `/${locale}/cities/${city.slug}` səhifəsinə yönləndirməlidir
 - `src/components/country/country-card.tsx` - ölkə kartları və image fallback
 - `src/lib/unsplash.ts` - Unsplash URL helper-ləri, fallback pool və known bad image refs
 - `scripts/enrich-images.js` - duplicate-safe Unsplash image enrichment

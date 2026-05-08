@@ -203,6 +203,9 @@
     "openDataPlacesSub": "Places to visit from OpenStreetMap and TravelAZ reviews.",
     "foodPlaces": "Restaurants & cafes",
     "foodPlacesSub": "Dining spots from popular cities, based on OpenStreetMap data.",
+    "viewAll": "View all",
+    "openCity": "Open city",
+    "cityDestination": "City destination",
     "openDataAttribution": "Data comes from open sources and is stored with source/license attribution."
   },
   "cities": {

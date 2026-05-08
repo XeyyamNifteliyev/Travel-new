@@ -18,6 +18,7 @@ interface RestaurantGridClientProps {
   restaurants: PlaceSummary[];
   cities: CityOption[];
   locale: string;
+  countrySlug?: string | null;
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -30,11 +31,11 @@ const CATEGORY_ICONS: Record<string, typeof UtensilsCrossed> = {
   cafe: Coffee,
 };
 
-export function RestaurantGridClient({ restaurants, cities, locale }: RestaurantGridClientProps) {
+export function RestaurantGridClient({ restaurants, cities, locale, countrySlug }: RestaurantGridClientProps) {
   const t = useTranslations('restaurants');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'restaurant' | 'cafe'>('all');
-  const [selectedCity, setSelectedCity] = useState<string>('all');
+  const [selectedCity, setSelectedCity] = useState<string>(countrySlug ? 'all' : 'all');
 
   const filteredRestaurants = restaurants.filter((r) => {
     const matchesCategory = activeFilter === 'all' || r.category === activeFilter;

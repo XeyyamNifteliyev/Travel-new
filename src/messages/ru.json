@@ -203,6 +203,9 @@
     "openDataPlacesSub": "Места для посещения из OpenStreetMap и отзывов TravelAZ.",
     "foodPlaces": "Рестораны и кафе",
     "foodPlacesSub": "Места для еды в популярных городах на основе OpenStreetMap.",
+    "viewAll": "Смотреть все",
+    "openCity": "Открыть город",
+    "cityDestination": "Городское направление",
     "openDataAttribution": "Данные поступают из открытых источников и сохраняются с указанием source/license."
   },
   "cities": {

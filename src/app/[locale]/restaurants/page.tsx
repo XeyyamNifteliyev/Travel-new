@@ -7,17 +7,31 @@ import type { PlaceWithRelationsRow, PlaceCategory } from '@/types/place';
 
 export const revalidate = 86400;
 
-export default async function RestaurantsPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function RestaurantsPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ country?: string }> }) {
   const { locale } = await params;
+  const { country: countrySlug } = await searchParams;
   const currentLocale = locale as Locale;
   const t = await getTranslations({ locale, namespace: 'restaurants' });
   const supabase = await createClient();
 
-  const { data: placeRows } = await supabase
+  let query = supabase
     .from('places')
     .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji, continent)')
     .in('category', ['restaurant', 'cafe'] as PlaceCategory[])
-    .eq('status', 'active')
+    .eq('status', 'active');
+
+  if (countrySlug) {
+    const { data: countryData } = await supabase
+      .from('countries')
+      .select('id')
+      .eq('slug', countrySlug)
+      .single();
+    if (countryData) {
+      query = query.eq('country_id', countryData.id);
+    }
+  }
+
+  const { data: placeRows } = await query
     .order('is_featured', { ascending: false })
     .order('popular_rank', { ascending: true })
     .order('rating_summary', { ascending: false })
@@ -60,7 +74,7 @@ export default async function RestaurantsPage({ params }: { params: Promise<{ lo
         <h1 className="text-3xl md:text-4xl font-bold">{t('title')}</h1>
         <p className="text-txt-sec mt-2">{t('subtitle')}</p>
       </section>
-      <RestaurantGridClient restaurants={restaurants} cities={cities} locale={locale} />
+      <RestaurantGridClient restaurants={restaurants} cities={cities} locale={locale} countrySlug={countrySlug || null} />
     </main>
   );
 }

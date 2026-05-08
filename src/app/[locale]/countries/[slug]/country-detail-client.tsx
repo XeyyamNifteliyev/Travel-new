@@ -57,6 +57,12 @@ const SAFETY_COLORS: Record<string, string> = {
   warning: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
 };
 
+function getCityCoverUrl(city: CitySummary, countrySlug: string) {
+  if (city.coverPhotoUrl) return city.coverPhotoUrl;
+  if (city.coverPhotoId) return getUnsplashUrl(city.coverPhotoId, { w: 720, h: 420 });
+  return getUnsplashUrl(getCountryCoverPhotoId(countrySlug), { w: 720, h: 420 });
+}
+
 interface BlogItem {
   id: string;
   title: string;
@@ -130,7 +136,6 @@ const CATEGORY_LABELS: Record<string, Record<string, string>> = {
 
 export default function CountryDetailClient({ country, highlights, blogs, cities, places, foodPlaces, locale, hasVisaInfo }: Props) {
   const t = useTranslations('countries');
-  const tc = useTranslations('common');
   const [heroError, setHeroError] = useState(false);
 
   const name = locale === 'en' ? country.name_en
@@ -313,26 +318,37 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {cities.map(city => (
-              <Link key={city.id} href={`/${locale}/cities/${city.slug}`} className="block rounded-2xl border border-border bg-bg-surface p-4 hover:border-primary/30 hover:shadow-lg transition-all">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-semibold text-base">{city.name}</h3>
-                    {city.region && <p className="text-xs text-txt-sec mt-1">{city.region}</p>}
+              <Link key={city.id} href={`/${locale}/cities/${city.slug}`} className="group block overflow-hidden rounded-2xl border border-border bg-bg-surface hover:border-primary/30 hover:shadow-lg transition-all">
+                <div className="relative h-40 overflow-hidden">
+                  <Image
+                    src={getCityCoverUrl(city, country.slug)}
+                    alt={city.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3 text-white">
+                    <div className="flex items-center gap-2 text-xs text-white/80 mb-1">
+                      <Building2 className="w-3.5 h-3.5" />
+                      {city.region || t('cityDestination')}
+                    </div>
+                    <h3 className="font-bold text-lg drop-shadow line-clamp-1">{city.name}</h3>
                   </div>
-                  <Building2 className="w-5 h-5 text-primary shrink-0" />
                 </div>
-                {city.description && (
-                  <p className="text-sm text-txt-sec mt-3 line-clamp-3">{city.description}</p>
-                )}
+                <div className="p-4">
+                  {city.description && (
+                    <p className="text-sm text-txt-sec line-clamp-3 min-h-16">{city.description}</p>
+                  )}
                 <div className="flex items-center justify-between gap-3 mt-4 text-xs text-txt-sec">
                   {city.population ? (
                     <span>{city.population.toLocaleString(locale === 'ru' ? 'ru' : locale === 'en' ? 'en' : 'az')} {t('population')}</span>
                   ) : <span />}
-                  {city.sourceUrl && (
-                    <span className="inline-flex items-center gap-1">
-                      {t('source')} <ExternalLink className="w-3 h-3" />
-                    </span>
-                  )}
+                  <span className="inline-flex items-center gap-1 text-primary font-semibold">
+                    {t('openCity')} <ExternalLink className="w-3 h-3" />
+                  </span>
+                </div>
                 </div>
               </Link>
             ))}
@@ -340,46 +356,51 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
         </div>
       )}
 
-      {places.length > 0 && (
+{places.length > 0 && (
         <div className="mb-8">
           <div className="flex items-end justify-between gap-4 mb-4">
             <div>
               <h2 className="font-bold text-lg flex items-center gap-2">
-                <span className="text-2xl">⭐</span> {t('openDataPlaces')}
+                <span className="text-2xl">🏛️</span> {t('openDataPlaces')}
               </h2>
               <p className="text-sm text-txt-sec mt-1">{t('openDataPlacesSub')}</p>
             </div>
+            <Link href={`/${locale}/places?country=${country.slug}`} className="text-sm text-primary hover:underline whitespace-nowrap font-medium">
+              {t('viewAll')} →
+            </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {places.map(place => (
-              <Link key={place.id} href={`/${locale}/places/${place.id}`} className="block rounded-2xl border border-border bg-bg-surface p-4 hover:border-primary/30 hover:shadow-lg transition-all">
-                <div className="flex items-start justify-between gap-3">
-                  <span className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-primary font-semibold">
-                    {(CATEGORY_LABELS[locale] || CATEGORY_LABELS.az)[place.category] || place.category}
-                  </span>
+              <Link key={place.id} href={`/${locale}/places/${place.id}`} className="group block rounded-2xl border border-border bg-bg-surface overflow-hidden hover:border-primary/30 hover:shadow-lg transition-all">
+                <div className="relative h-32 md:h-40 overflow-hidden">
+                  <Image
+                    src={place.coverPhotoUrl!}
+                    alt={place.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute top-2 left-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/90 text-white font-semibold capitalize backdrop-blur-sm">
+                      {(CATEGORY_LABELS[locale] || CATEGORY_LABELS.az)[place.category] || place.category}
+                    </span>
+                  </div>
                   {place.ratingSummary > 0 && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
-                      <Star className="w-3 h-3 fill-current" />
+                    <span className="absolute top-2 right-2 inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                      <Star className="w-3 h-3 fill-current text-amber-400" />
                       {place.ratingSummary.toFixed(1)}
                     </span>
                   )}
+                  <h3 className="absolute bottom-2 left-2 right-2 text-white font-semibold text-sm line-clamp-1 drop-shadow">{place.name}</h3>
                 </div>
-                <h3 className="font-semibold text-sm mt-3 line-clamp-2">{place.name}</h3>
-                {place.city?.name && (
-                  <p className="inline-flex items-center gap-1 text-xs text-txt-sec mt-2">
-                    <MapPin className="w-3 h-3" />
-                    {place.city.name}
-                  </p>
-                )}
-                {place.description && (
-                  <p className="text-xs text-txt-sec mt-2 line-clamp-3">{place.description}</p>
-                )}
-                <div className="flex items-center justify-between gap-3 mt-4 text-xs text-txt-sec">
-                  <span>{place.reviewCount} {tc('reviews')}</span>
-                  {place.sourceUrl && (
-                    <span className="inline-flex items-center gap-1">
-                      {t('source')} <ExternalLink className="w-3 h-3" />
-                    </span>
+                <div className="p-3 pt-2">
+                  {place.city?.name && (
+                    <p className="inline-flex items-center gap-1 text-xs text-txt-sec">
+                      <MapPin className="w-3 h-3" />
+                      {place.city.name}
+                    </p>
                   )}
                 </div>
               </Link>
@@ -389,7 +410,7 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
         </div>
       )}
 
-      {foodPlaces.length > 0 && (
+{foodPlaces.length > 0 && (
         <div className="mb-8">
           <div className="flex items-end justify-between gap-4 mb-4">
             <div>
@@ -398,41 +419,42 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
               </h2>
               <p className="text-sm text-txt-sec mt-1">{t('foodPlacesSub')}</p>
             </div>
+            <Link href={`/${locale}/restaurants?country=${country.slug}`} className="text-sm text-primary hover:underline whitespace-nowrap font-medium">
+              {t('viewAll')} →
+            </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {foodPlaces.map(place => (
-              <Link key={place.id} href={`/${locale}/places/${place.id}`} className="block rounded-2xl border border-border bg-bg-surface p-4 hover:border-primary/30 hover:shadow-lg transition-all">
-                <div className="flex items-start justify-between gap-3">
-                  <span className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-primary font-semibold">
-                    {(CATEGORY_LABELS[locale] || CATEGORY_LABELS.az)[place.category] || place.category}
-                  </span>
-                  {place.ratingSummary > 0 && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
-                      <Star className="w-3 h-3 fill-current" />
-                      {place.ratingSummary.toFixed(1)}
+              <Link key={place.id} href={`/${locale}/places/${place.id}`} className="group block rounded-2xl border border-border bg-bg-surface overflow-hidden hover:border-primary/30 hover:shadow-lg transition-all">
+                <div className="relative h-32 md:h-40 overflow-hidden">
+                  <Image
+                    src={place.coverPhotoUrl!}
+                    alt={place.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute top-2 left-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/90 text-white font-semibold capitalize backdrop-blur-sm flex items-center gap-1">
+                      <Utensils className="w-3 h-3" />
+                      {(CATEGORY_LABELS[locale] || CATEGORY_LABELS.az)[place.category] || place.category}
                     </span>
-                  )}
+                  </div>
+                  <h3 className="absolute bottom-2 left-2 right-2 text-white font-semibold text-sm line-clamp-1 drop-shadow">{place.name}</h3>
                 </div>
-                <h3 className="font-semibold text-sm mt-3 line-clamp-2">{place.name}</h3>
-                {place.city?.name && (
-                  <p className="inline-flex items-center gap-1 text-xs text-txt-sec mt-2">
-                    <MapPin className="w-3 h-3" />
-                    {place.city.name}
-                  </p>
-                )}
-                {place.address && <p className="text-xs text-txt-sec mt-2 line-clamp-2">{place.address}</p>}
-                <div className="flex items-center justify-between gap-3 mt-4 text-xs text-txt-sec">
-                  <span>{place.reviewCount} {tc('reviews')}</span>
-                  {place.sourceUrl && (
-                    <span className="inline-flex items-center gap-1">
-                      {t('source')} <ExternalLink className="w-3 h-3" />
-                    </span>
+                <div className="p-3 pt-2">
+                  {place.city?.name && (
+                    <p className="inline-flex items-center gap-1 text-xs text-txt-sec">
+                      <MapPin className="w-3 h-3" />
+                      {place.city.name}
+                    </p>
                   )}
                 </div>
               </Link>
             ))}
           </div>
-          <p className="text-xs text-txt-sec mt-3">{t('openDataAttribution')}</p>
         </div>
       )}
 

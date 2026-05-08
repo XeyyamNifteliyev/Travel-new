@@ -203,6 +203,9 @@
     "openDataPlacesSub": "OpenStreetMap və TravelAZ rəyləri əsasında görməli yerlər.",
     "foodPlaces": "Restoranlar və kafelər",
     "foodPlacesSub": "Məşhur şəhərlərdən OpenStreetMap əsaslı yemək yerləri.",
+    "viewAll": "Hamısına bax",
+    "openCity": "Şəhəri aç",
+    "cityDestination": "Şəhər istiqaməti",
     "openDataAttribution": "Məlumatlar açıq mənbələrdən gəlir və source/license attribution ilə saxlanır."
   },
   "cities": {
