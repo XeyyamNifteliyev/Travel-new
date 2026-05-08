@@ -38,6 +38,7 @@ export default function CompanionSearch() {
 
   const [companions, setCompanions] = useState<Companion[]>([]);
   const [countryImages, setCountryImages] = useState<Record<string, string>>({});
+  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -98,6 +99,7 @@ export default function CompanionSearch() {
 
   async function fetchCompanions() {
     setLoading(true);
+    const isFirstLoad = availableCountries.length === 0 && !filters.country;
     const params = new URLSearchParams();
     if (filters.country) params.set('country', filters.country);
     if (filters.city) params.set('city', filters.city);
@@ -148,6 +150,11 @@ export default function CompanionSearch() {
       author: c.author ? { name: c.author.name, avatarUrl: c.author.avatar_url } : undefined,
     }));
     setCompanions(mapped);
+
+    if (isFirstLoad) {
+      const countries = [...new Set(mapped.map((c: Companion) => c.destinationCountry))].sort() as string[];
+      setAvailableCountries(countries);
+    }
 
     const countryNames = [...new Set(mapped.map((c: Companion) => c.destinationCountry))];
     if (countryNames.length > 0) {
@@ -306,7 +313,7 @@ export default function CompanionSearch() {
                   className="w-full bg-bg-surface/80 border-none rounded-xl py-3 px-4 text-sm text-txt focus:ring-2 focus:ring-primary transition-all appearance-none"
                 >
                   <option value="">{t('allCountries')}</option>
-                  {REGIONS.map(r => (
+                  {availableCountries.map(r => (
                     <option key={r} value={r}>{r}</option>
                   ))}
                 </select>
