@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     if (reviewsResult.error) {
-      return NextResponse.json({ error: reviewsResult.error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Rəylər yüklənə bilmədi' }, { status: 500 });
     }
 
     const reviews = (reviewsResult.data || []).map((review: Record<string, unknown>) => ({
@@ -80,7 +80,7 @@ export async function PATCH(request: NextRequest) {
       .eq('id', reviewId);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
@@ -108,7 +108,7 @@ export async function DELETE(request: NextRequest) {
       .eq('id', reviewId);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

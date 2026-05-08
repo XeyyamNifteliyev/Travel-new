@@ -59,9 +59,8 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   } catch (error: unknown) {
     console.error('Cheap Dates error:', error);
-    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: message || 'Ucuz tarixlər tapılarkən xəta baş verdi' },
+      { error: 'Ucuz tarixlər tapılarkən xəta baş verdi' },
       { status: 500 }
     );
   }

@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await query;
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ tours: data });
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ tour: data }, { status: 201 });

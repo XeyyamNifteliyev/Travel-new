@@ -11,6 +11,10 @@ export async function POST(request: NextRequest) {
 
   const safeLocale = locale === 'en' || locale === 'ru' ? locale : 'az';
   const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Giriş tələb olunur' }, { status: 401 });
+
   const questionHash = await hashQuestion(question);
 
   const { data: countryRow } = await supabase

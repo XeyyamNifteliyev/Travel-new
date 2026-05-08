@@ -16,6 +16,16 @@ export async function POST(request: NextRequest) {
 
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Giriş tələb olunur' }, { status: 401 });
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+  if (profile?.role !== 'admin') return NextResponse.json({ error: 'Admin icazəsi tələb olunur' }, { status: 403 });
+
   const provider = getProvider();
   const prompt = `Sən TravelAZ saytının viza məlumat assistentisən. Azərbaycan vətəndaşlarına kömək edirsən.
 
@@ -106,6 +116,6 @@ Yalnız JSON qaytar, heç bir əlavə mətn yazma.`;
 
     return NextResponse.json({ success: true, slug: data.slug });
   } catch (err) {
-    return NextResponse.json({ error: 'AI məlumat yarada bilmədi', details: String(err) }, { status: 500 });
+    return NextResponse.json({ error: 'AI məlumat yarada bilmədi' }, { status: 500 });
   }
 }

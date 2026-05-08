@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await query;
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ companies: data });
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ company: data }, { status: 201 });
@@ -117,7 +117,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, ...updates } = body;
+    const { id, companyName, description, phone, whatsapp, telegram, email, website } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Company ID is required' }, { status: 400 });
@@ -125,14 +125,22 @@ export async function PATCH(request: NextRequest) {
 
     const { data, error } = await supabase
       .from('tour_companies')
-      .update(updates)
+      .update({
+        company_name: companyName,
+        description,
+        phone,
+        whatsapp,
+        telegram,
+        email,
+        website,
+      })
       .eq('id', id)
       .eq('user_id', user.id)
       .select()
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ company: data });

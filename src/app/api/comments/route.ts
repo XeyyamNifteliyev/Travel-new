@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await query;
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ comments: data });
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ comment: data }, { status: 201 });
@@ -98,7 +98,7 @@ export async function DELETE(request: NextRequest) {
       .eq('user_id', user.id);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

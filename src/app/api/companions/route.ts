@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await query;
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Sorğu xətası' }, { status: 500 });
     }
 
     return NextResponse.json({ companions: data || [] });
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Supabase error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Elan yaradıla bilmədi' }, { status: 500 });
     }
 
     return NextResponse.json({ companion: data }, { status: 201 });
@@ -144,11 +144,25 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, ...updates } = body;
+    const { id, destinationCountry, destinationCity, departureDate, returnDate, genderPreference, gender, ageMin, ageMax, interests, languages, description, status } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Companion ID is required' }, { status: 400 });
     }
+
+    const updates: Record<string, unknown> = {};
+    if (destinationCountry !== undefined) updates.destination_country = destinationCountry;
+    if (destinationCity !== undefined) updates.destination_city = destinationCity;
+    if (departureDate !== undefined) updates.departure_date = departureDate;
+    if (returnDate !== undefined) updates.return_date = returnDate;
+    if (genderPreference !== undefined) updates.gender_preference = genderPreference;
+    if (gender !== undefined) updates.gender = gender;
+    if (ageMin !== undefined) updates.age_min = ageMin;
+    if (ageMax !== undefined) updates.age_max = ageMax;
+    if (interests !== undefined) updates.interests = interests;
+    if (languages !== undefined) updates.languages = languages;
+    if (description !== undefined) updates.description = description;
+    if (status && ['open', 'filled', 'cancelled'].includes(status)) updates.status = status;
 
     const { data, error } = await supabase
       .from('companions')
@@ -159,7 +173,7 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ companion: data });
@@ -192,7 +206,7 @@ export async function DELETE(request: NextRequest) {
       .eq('user_id', user.id);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
