@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ArrowLeft, ExternalLink, Globe, Mail, MapPin, Phone, Star } from 'lucide-react';
@@ -71,27 +72,41 @@ export default async function PlaceDetailPage({ params }: PageProps) {
         {place.city?.name || place.country?.name || t('back')}
       </Link>
 
-      <section className="rounded-3xl border border-border bg-bg-surface p-6 md:p-8 mb-8">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-primary/10 text-primary font-semibold uppercase">{place.category}</span>
-              {place.city?.name && (
-                <span className="inline-flex items-center gap-1 text-xs text-txt-sec">
-                  <MapPin className="w-3 h-3" />
-                  {place.city.name}
-                </span>
-              )}
+      <section className="rounded-3xl border border-border bg-bg-surface overflow-hidden mb-8">
+        {place.coverPhotoUrl && (
+          place.website ? (
+            <a href={place.website} target="_blank" rel="noreferrer" className="block relative h-52 md:h-72 overflow-hidden group/img">
+              <Image src={place.coverPhotoUrl} alt={place.name} fill className="object-cover group-hover/img:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, 896px" priority />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+<span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 text-sm font-medium text-white bg-primary/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg hover:bg-primary transition-colors">
+                <ExternalLink className="w-4 h-4" />
+                {t('visitWebsite')}
+              </span>
+            </a>
+          ) : (
+            <div className="relative h-52 md:h-72 overflow-hidden">
+              <Image src={place.coverPhotoUrl} alt={place.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 896px" priority />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold">{place.name}</h1>
-            {place.description && <p className="text-txt-sec mt-4 max-w-3xl leading-7">{place.description}</p>}
+          )
+        )}
+        <div className="p-6 md:p-8">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="text-[11px] px-2.5 py-1 rounded-full bg-primary/10 text-primary font-semibold uppercase">{place.category}</span>
+            {place.city?.name && (
+              <span className="inline-flex items-center gap-1 text-xs text-txt-sec">
+                <MapPin className="w-3 h-3" />
+                {place.city.name}
+              </span>
+            )}
           </div>
-          <div className="rounded-2xl border border-border bg-bg p-4 min-w-48">
-            <div className="inline-flex items-center gap-2 text-2xl font-bold">
-              <Star className="w-5 h-5 text-amber-500 fill-current" />
+          <h1 className="text-4xl md:text-5xl font-bold">{place.name}</h1>
+          {place.description && <p className="text-txt-sec mt-4 max-w-3xl leading-7">{place.description}</p>}
+          <div className="mt-4 flex items-center gap-4">
+            <div className="inline-flex items-center gap-2 text-lg font-bold">
+              <Star className="w-4 h-4 text-amber-500 fill-current" />
               {place.ratingSummary > 0 ? place.ratingSummary.toFixed(1) : '-'}
             </div>
-            <div className="text-xs text-txt-sec mt-1">{place.reviewCount} {t('reviews')}</div>
+            <div className="text-sm text-txt-sec">{place.reviewCount} {t('reviews')}</div>
           </div>
         </div>
       </section>

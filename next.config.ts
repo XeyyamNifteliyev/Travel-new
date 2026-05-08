@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'en.wikipedia.org',
+      },
+      {
+        protocol: 'https',
         hostname: 'upload.wikimedia.org',
       },
       {
@@ -43,6 +47,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
       },
     ],
     formats: ['image/avif', 'image/webp'],

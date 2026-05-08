@@ -1,0 +1,3219 @@
+{
+  "city": {
+    "countrySlug": "japan",
+    "slug": "tokyo",
+    "name": "Tokyo",
+    "nameAz": "Tokio",
+    "nameEn": "Tokyo",
+    "nameRu": "Токио",
+    "lat": 35.6762,
+    "lng": 139.6503,
+    "population": 14094034,
+    "wikiTitle": "Tokyo",
+    "descriptionEn": "Tokyo, officially the Tokyo Metropolis, is the capital and most populous city of Japan. With a population of over 14 million in the city proper in 2023, it is one of the most populous urban areas in the world. The Greater Tokyo Area, which includes Tokyo and parts of six neighboring prefectures, is the most populous metropolitan area in the world, with 41 million residents as of 2024.",
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tokyo",
+    "license": "CC BY-SA",
+    "attributionText": "Wikipedia contributors, Tokyo"
+  },
+  "placeCount": 80,
+  "places": [
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "alice-on-wednesday",
+      "name": "Alice on Wednesday",
+      "name_az": null,
+      "name_en": "Alice on Wednesday",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6673035,
+      "lng": 139.7042469,
+      "address": null,
+      "website": "https://www.aliceonwednesday.jp/",
+      "phone": "0364279868",
+      "email": null,
+      "opening_hours": "Mo-Su 11:00-20:00",
+      "source": "openstreetmap",
+      "source_place_id": "node/4460646696",
+      "source_url": "https://www.openstreetmap.org/node/4460646696",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4460646696,
+          "lat": 35.6673035,
+          "lon": 139.7042469,
+          "tags": {
+            "name:en": "Alice on Wednesday",
+            "opening_hours": "Mo-Su 11:00-20:00",
+            "phone": "0364279868",
+            "tourism": "attraction",
+            "website": "https://www.aliceonwednesday.jp/"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.636Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "godzilla-store",
+      "name": "Godzilla Store",
+      "name_az": null,
+      "name_en": "Godzilla Store",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.69017,
+      "lng": 139.7060551,
+      "address": null,
+      "website": "https://godzilla.store/tokyo/",
+      "phone": "03-6709-9652",
+      "email": null,
+      "opening_hours": "Mo-Su 11:00-20:00",
+      "source": "openstreetmap",
+      "source_place_id": "node/6127218291",
+      "source_url": "https://www.openstreetmap.org/node/6127218291",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6127218291,
+          "lat": 35.69017,
+          "lon": 139.7060551,
+          "tags": {
+            "check_date": "2026-03-26",
+            "check_date:opening_hours": "2026-03-22",
+            "level": "0",
+            "name:en": "Godzilla Store",
+            "opening_hours": "Mo-Su 11:00-20:00",
+            "phone": "03-6709-9652",
+            "tourism": "attraction",
+            "website": "https://godzilla.store/tokyo/"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "place-m-red-photo-gallery",
+      "name": "Place M - Red Photo Gallery",
+      "name_az": null,
+      "name_en": "Place M - Red Photo Gallery",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6877509,
+      "lng": 139.7126698,
+      "address": null,
+      "website": "https://placem.com/",
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6632188885",
+      "source_url": "https://www.openstreetmap.org/node/6632188885",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6632188885,
+          "lat": 35.6877509,
+          "lon": 139.7126698,
+          "tags": {
+            "name:en": "Place M - Red Photo Gallery",
+            "tourism": "attraction",
+            "website": "https://placem.com/"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.646Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "tokyo-mystery-circus",
+      "name": "Tokyo mystery circus",
+      "name_az": null,
+      "name_en": "Tokyo mystery circus",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6953961,
+      "lng": 139.7007081,
+      "address": "5, 新宿区",
+      "website": "https://mysterycircus.jp/",
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/11216987537",
+      "source_url": "https://www.openstreetmap.org/node/11216987537",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 11216987537,
+          "lat": 35.6953961,
+          "lon": 139.7007081,
+          "tags": {
+            "addr:block_number": "27",
+            "addr:city": "新宿区",
+            "addr:housenumber": "5",
+            "addr:neighbourhood": "歌舞伎町一丁目",
+            "addr:province": "東京都",
+            "name:en": "Tokyo mystery circus",
+            "tourism": "attraction",
+            "website": "https://mysterycircus.jp/"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.651Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "クロス新宿ビジョン",
+      "name_az": null,
+      "name_en": "3D billboard (Shinjuku Cat)",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6926184,
+      "lng": 139.7007975,
+      "address": null,
+      "website": "https://shinjuku.xspace.tokyo",
+      "phone": null,
+      "email": null,
+      "opening_hours": "Mo-Su 07:00-25:00",
+      "source": "openstreetmap",
+      "source_place_id": "node/10849593505",
+      "source_url": "https://www.openstreetmap.org/node/10849593505",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 10849593505,
+          "lat": 35.6926184,
+          "lon": 139.7007975,
+          "tags": {
+            "advertising": "screen",
+            "animated": "screen",
+            "description": "新宿東口の猫",
+            "message": "commercial",
+            "name": "クロス新宿ビジョン",
+            "name:en": "3D billboard (Shinjuku Cat)",
+            "name:fr": "Chat 3D géant de Shinjuku",
+            "name:ja-Hira": "くろす しんじゅく びじょん",
+            "name:ja-Latn": "Kurosu Shinjuku bijon",
+            "opening_hours": "Mo-Su 07:00-25:00",
+            "operator": "Cross Space",
+            "sides": "1",
+            "start_date": "2020-07",
+            "support": "wall_mounted",
+            "tourism": "attraction",
+            "website": "https://shinjuku.xspace.tokyo",
+            "wikidata": "Q109702546",
+            "wikimedia_commons": "Category:Cross Shinjuku Vision",
+            "wikipedia": "ja:クロス新宿ビジョン"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.650Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "新宿ゴールデン街",
+      "name_az": null,
+      "name_en": "Shinjuku Golden Gai",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6940636,
+      "lng": 139.7046894,
+      "address": null,
+      "website": "http://goldengai.jp/",
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "relation/16562139",
+      "source_url": "https://www.openstreetmap.org/relation/16562139",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "relation",
+          "id": 16562139,
+          "center": {
+            "lat": 35.6940636,
+            "lon": 139.7046894
+          },
+          "tags": {
+            "alt_name:fr": "Quartier des bars à thème",
+            "contact:tripadvisor": "480651",
+            "contact:website": "http://goldengai.jp/",
+            "landuse": "retail",
+            "name": "新宿ゴールデン街",
+            "name:en": "Shinjuku Golden Gai",
+            "name:es": "Shinjuku Golden Gai",
+            "name:fr": "Shinjuku Golden Gai",
+            "name:ja-Hira": "しんじゅくゴールデンがい",
+            "name:ja-Latn": "Shinjuku Gōruden Gai",
+            "name:ko": "신쥬쿠 골든가",
+            "name:zh": "新宿黄金街",
+            "start_date": "1949",
+            "tourism": "attraction",
+            "type": "multipolygon",
+            "wikidata": "Q5363705",
+            "wikimedia_commons": "Category:Shinjuku Golden Gai",
+            "wikipedia": "ja:新宿ゴールデン街"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.661Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "旧朝倉家住宅",
+      "name_az": null,
+      "name_en": "Kyu Asakura House",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6472471,
+      "lng": 139.7015265,
+      "address": "東京都渋谷区猿楽町29-20",
+      "website": "https://www.city.shibuya.tokyo.jp/shisetsu/bunka-shisetsu/asakura/asakura_00004.html",
+      "phone": "+81 3-3476-1021",
+      "email": null,
+      "opening_hours": "Tu-Su 10:00-16:30",
+      "source": "openstreetmap",
+      "source_place_id": "node/13452696301",
+      "source_url": "https://www.openstreetmap.org/node/13452696301",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 13452696301,
+          "lat": 35.6472471,
+          "lon": 139.7015265,
+          "tags": {
+            "addr:postcode": "〒150-0033",
+            "addr:street": "東京都渋谷区猿楽町29-20",
+            "name": "旧朝倉家住宅",
+            "name:en": "Kyu Asakura House",
+            "name:ja": "旧朝倉家住宅",
+            "opening_hours": "Tu-Su 10:00-16:30",
+            "phone": "+81 3-3476-1021",
+            "tourism": "attraction",
+            "website": "https://www.city.shibuya.tokyo.jp/shisetsu/bunka-shisetsu/asakura/asakura_00004.html"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.655Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "birdhouse-private-house",
+      "name": "\"Birdhouse\" private house",
+      "name_az": null,
+      "name_en": "\"Birdhouse\" private house",
+      "name_ru": "Дом-скворечник",
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6709548,
+      "lng": 139.6418174,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5425963721",
+      "source_url": "https://www.openstreetmap.org/node/5425963721",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5425963721,
+          "lat": 35.6709548,
+          "lon": 139.6418174,
+          "tags": {
+            "name:en": "\"Birdhouse\" private house",
+            "name:ru": "Дом-скворечник",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.641Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "antique-life",
+      "name": "Antique Life",
+      "name_az": null,
+      "name_en": "Antique Life",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6631744,
+      "lng": 139.6680867,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6163717906",
+      "source_url": "https://www.openstreetmap.org/node/6163717906",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6163717906,
+          "lat": 35.6631744,
+          "lon": 139.6680867,
+          "tags": {
+            "name:en": "Antique Life",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "aoyama-st-grace-cathedral",
+      "name": "Aoyama St. Grace Cathedral",
+      "name_az": null,
+      "name_en": "Aoyama St. Grace Cathedral",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6646235,
+      "lng": 139.7095717,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4439024091",
+      "source_url": "https://www.openstreetmap.org/node/4439024091",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4439024091,
+          "lat": 35.6646235,
+          "lon": 139.7095717,
+          "tags": {
+            "name:en": "Aoyama St. Grace Cathedral",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.636Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "big-neon-boards",
+      "name": "Big Neon Boards",
+      "name_az": null,
+      "name_en": "Big Neon Boards",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6907459,
+      "lng": 139.7015121,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5575697322",
+      "source_url": "https://www.openstreetmap.org/node/5575697322",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5575697322,
+          "lat": 35.6907459,
+          "lon": 139.7015121,
+          "tags": {
+            "name:en": "Big Neon Boards",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.641Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "bleu-curacao-france",
+      "name": "Bleu Curaçao France",
+      "name_az": null,
+      "name_en": "Bleu Curaçao France",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6595303,
+      "lng": 139.6678152,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6163717793",
+      "source_url": "https://www.openstreetmap.org/node/6163717793",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6163717793,
+          "lat": 35.6595303,
+          "lon": 139.6678152,
+          "tags": {
+            "name:en": "Bleu Curaçao France",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "c-11-368",
+      "name": "C-11型蒸気機関車 368号機",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.7043073,
+      "lng": 139.6711388,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/8155277073",
+      "source_url": "https://www.openstreetmap.org/node/8155277073",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 8155277073,
+          "lat": 35.7043073,
+          "lon": 139.6711388,
+          "tags": {
+            "locomotive:type": "steam",
+            "name": "C-11型蒸気機関車 368号機",
+            "name:ja": "C-11型蒸気機関車 368号機",
+            "short_name": "C11 368",
+            "start_date": "1946",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.648Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "cat-street",
+      "name": "Cat Street",
+      "name_az": null,
+      "name_en": "Cat Street",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.666977,
+      "lng": 139.7063131,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/10816244605",
+      "source_url": "https://www.openstreetmap.org/node/10816244605",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 10816244605,
+          "lat": 35.666977,
+          "lon": 139.7063131,
+          "tags": {
+            "addr:postcode": "150-0001",
+            "name:en": "Cat Street",
+            "tourism": "attraction",
+            "wikidata": "Q11511093"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.650Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "cat-street",
+      "name": "Cat Street",
+      "name_az": null,
+      "name_en": "Cat Street",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6723225,
+      "lng": 139.7098527,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/10816259205",
+      "source_url": "https://www.openstreetmap.org/node/10816259205",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 10816259205,
+          "lat": 35.6723225,
+          "lon": 139.7098527,
+          "tags": {
+            "addr:postcode": "150-0001",
+            "name:en": "Cat Street",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.650Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "d51",
+      "name": "D51",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6885394,
+      "lng": 139.6313805,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/8078192912",
+      "source_url": "https://www.openstreetmap.org/node/8078192912",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 8078192912,
+          "lat": 35.6885394,
+          "lon": 139.6313805,
+          "tags": {
+            "historic": "locomotive",
+            "locomotive:type": "steam",
+            "name": "D51",
+            "ref": "D51 254",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.648Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "daikanyama-neighborhood",
+      "name": "Daikanyama neighborhood",
+      "name_az": null,
+      "name_en": "Daikanyama neighborhood",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6487983,
+      "lng": 139.7015874,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4899711029",
+      "source_url": "https://www.openstreetmap.org/node/4899711029",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4899711029,
+          "lat": 35.6487983,
+          "lon": 139.7015874,
+          "tags": {
+            "name:en": "Daikanyama neighborhood",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.637Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "electric-street",
+      "name": "Electric Street",
+      "name_az": null,
+      "name_en": "Electric Street",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.688775,
+      "lng": 139.6975936,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4881036321",
+      "source_url": "https://www.openstreetmap.org/node/4881036321",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4881036321,
+          "lat": 35.688775,
+          "lon": 139.6975936,
+          "tags": {
+            "name:en": "Electric Street",
+            "tourism": "attraction",
+            "wheelchair": "no"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.637Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "galaxy-shop",
+      "name": "Galaxy Shop",
+      "name_az": null,
+      "name_en": "Galaxy Shop",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6697365,
+      "lng": 139.706195,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/10288326509",
+      "source_url": "https://www.openstreetmap.org/node/10288326509",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 10288326509,
+          "lat": 35.6697365,
+          "lon": 139.706195,
+          "tags": {
+            "name:en": "Galaxy Shop",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.649Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "harajuku-station",
+      "name": "Harajuku Station",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6709419,
+      "lng": 139.7023936,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6340053385",
+      "source_url": "https://www.openstreetmap.org/node/6340053385",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6340053385,
+          "lat": 35.6709419,
+          "lon": 139.7023936,
+          "tags": {
+            "name": "Harajuku Station",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.645Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "harajuku-street",
+      "name": "Harajuku Street",
+      "name_az": null,
+      "name_en": "Harajuku Street",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6710162,
+      "lng": 139.7079177,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6861499285",
+      "source_url": "https://www.openstreetmap.org/node/6861499285",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6861499285,
+          "lat": 35.6710162,
+          "lon": 139.7079177,
+          "tags": {
+            "name:en": "Harajuku Street",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.646Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "joysound",
+      "name": "JOYSOUND カラオケ",
+      "name_az": null,
+      "name_en": "JOYSOUND Karaoke",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6576735,
+      "lng": 139.6989454,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/12880383001",
+      "source_url": "https://www.openstreetmap.org/node/12880383001",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 12880383001,
+          "lat": 35.6576735,
+          "lon": 139.6989454,
+          "tags": {
+            "name": "JOYSOUND カラオケ",
+            "name:en": "JOYSOUND Karaoke",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.654Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "junjo-shotengai",
+      "name": "Junjo Shotengai",
+      "name_az": null,
+      "name_en": "Junjo Shotengai",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.7062622,
+      "lng": 139.6497211,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5084840728",
+      "source_url": "https://www.openstreetmap.org/node/5084840728",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5084840728,
+          "lat": 35.7062622,
+          "lon": 139.6497211,
+          "tags": {
+            "name:en": "Junjo Shotengai",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.640Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "karasuyama-kamoike-pond",
+      "name": "Karasuyama Kamoike pond",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6805432,
+      "lng": 139.5942753,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/10121044317",
+      "source_url": "https://www.openstreetmap.org/node/10121044317",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 10121044317,
+          "lat": 35.6805432,
+          "lon": 139.5942753,
+          "tags": {
+            "name": "Karasuyama Kamoike pond",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.649Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "karasuyama-teramachi-temple-town",
+      "name": "Karasuyama Teramachi (temple town)",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6787799,
+      "lng": 139.5956066,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/10121047018",
+      "source_url": "https://www.openstreetmap.org/node/10121047018",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 10121047018,
+          "lat": 35.6787799,
+          "lon": 139.5956066,
+          "tags": {
+            "name": "Karasuyama Teramachi (temple town)",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.649Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "kasei-chan-monument",
+      "name": "Kasei-chan Monument",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.7222125,
+      "lng": 139.6444237,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/12312979259",
+      "source_url": "https://www.openstreetmap.org/node/12312979259",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 12312979259,
+          "lat": 35.7222125,
+          "lon": 139.6444237,
+          "tags": {
+            "name": "Kasei-chan Monument",
+            "name:ja": "かせいチャンモニュメント",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.653Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "koizumi-yakumo-park-lafkadio-hearn",
+      "name": "KOIZUMI YAKUMO PARK LAFKADIO HEARN",
+      "name_az": null,
+      "name_en": "KOIZUMI YAKUMO PARK LAFKADIO HEARN",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6996534,
+      "lng": 139.7049386,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/11801372169",
+      "source_url": "https://www.openstreetmap.org/node/11801372169",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 11801372169,
+          "lat": 35.6996534,
+          "lon": 139.7049386,
+          "tags": {
+            "name:en": "KOIZUMI YAKUMO PARK LAFKADIO HEARN",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.652Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "la-porte-aoyama",
+      "name": "La Porte Aoyama",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6628143,
+      "lng": 139.709538,
+      "address": "8, 渋谷区",
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4803759626",
+      "source_url": "https://www.openstreetmap.org/node/4803759626",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4803759626,
+          "lat": 35.6628143,
+          "lon": 139.709538,
+          "tags": {
+            "addr:block_number": "51",
+            "addr:city": "渋谷区",
+            "addr:country": "JP",
+            "addr:housenumber": "8",
+            "addr:neighbourhood": "神宮前五丁目",
+            "addr:postcode": "150-0001",
+            "addr:province": "東京都",
+            "name": "La Porte Aoyama",
+            "name:ja": "La Porte Aoyama",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.637Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "look-st",
+      "name": "Look St",
+      "name_az": null,
+      "name_en": "Look St",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.7025883,
+      "lng": 139.6480624,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5084839932",
+      "source_url": "https://www.openstreetmap.org/node/5084839932",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5084839932,
+          "lat": 35.7025883,
+          "lon": 139.6480624,
+          "tags": {
+            "name:en": "Look St",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.640Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "meiji-jingu-forest",
+      "name": "Meiji Jingū Forest",
+      "name_az": null,
+      "name_en": "Meiji Jingū Forest",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6754882,
+      "lng": 139.6973748,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4784287722",
+      "source_url": "https://www.openstreetmap.org/node/4784287722",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4784287722,
+          "lat": 35.6754882,
+          "lon": 139.6973748,
+          "tags": {
+            "name:en": "Meiji Jingū Forest",
+            "name:signed": "no",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.637Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "miyashita-park-north",
+      "name": "MIYASHITA PARK North",
+      "name_az": null,
+      "name_en": "Miyashita Park North",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6628373,
+      "lng": 139.7018875,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/13012902080",
+      "source_url": "https://www.openstreetmap.org/node/13012902080",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 13012902080,
+          "lat": 35.6628373,
+          "lon": 139.7018875,
+          "tags": {
+            "name": "MIYASHITA PARK North",
+            "name:en": "Miyashita Park North",
+            "name:ja": "ミヤシタパークノース",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.654Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "miyashita-park-south",
+      "name": "MIYASHITA PARK South",
+      "name_az": null,
+      "name_en": "Miyashita Park south",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6611547,
+      "lng": 139.7017118,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/13012902081",
+      "source_url": "https://www.openstreetmap.org/node/13012902081",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 13012902081,
+          "lat": 35.6611547,
+          "lon": 139.7017118,
+          "tags": {
+            "name": "MIYASHITA PARK South",
+            "name:en": "Miyashita Park south",
+            "name:ja": "ミヤシタパークサウス",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.654Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "mosaic-street",
+      "name": "Mosaic Street",
+      "name_az": null,
+      "name_en": "Mosaic Street",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6910955,
+      "lng": 139.6991799,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": "Mo-Su 10:00-21:00",
+      "source": "openstreetmap",
+      "source_place_id": "node/4719495289",
+      "source_url": "https://www.openstreetmap.org/node/4719495289",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4719495289,
+          "lat": 35.6910955,
+          "lon": 139.6991799,
+          "tags": {
+            "name:en": "Mosaic Street",
+            "opening_hours": "Mo-Su 10:00-21:00",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.637Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "night-market",
+      "name": "night Market",
+      "name_az": null,
+      "name_en": "night Market",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6613765,
+      "lng": 139.668979,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4941661124",
+      "source_url": "https://www.openstreetmap.org/node/4941661124",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4941661124,
+          "lat": 35.6613765,
+          "lon": 139.668979,
+          "tags": {
+            "name:en": "night Market",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.638Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "omotesando-dori-winter-illumination",
+      "name": "Omotesando Dori Winter Illumination",
+      "name_az": null,
+      "name_en": "Omotesando Dori Winter Illumination",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6673218,
+      "lng": 139.7080856,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6127216100",
+      "source_url": "https://www.openstreetmap.org/node/6127216100",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6127216100,
+          "lat": 35.6673218,
+          "lon": 139.7080856,
+          "tags": {
+            "name:en": "Omotesando Dori Winter Illumination",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "pig-design",
+      "name": "Pig Design",
+      "name_az": null,
+      "name_en": "Pig Design",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6629106,
+      "lng": 139.6674055,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6163717799",
+      "source_url": "https://www.openstreetmap.org/node/6163717799",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6163717799,
+          "lat": 35.6629106,
+          "lon": 139.6674055,
+          "tags": {
+            "name:en": "Pig Design",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "reflection-of-a-mineral-house",
+      "name": "Reflection of a Mineral House",
+      "name_az": null,
+      "name_en": "Reflection of a Mineral House",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6863921,
+      "lng": 139.6756869,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5369137422",
+      "source_url": "https://www.openstreetmap.org/node/5369137422",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5369137422,
+          "lat": 35.6863921,
+          "lon": 139.6756869,
+          "tags": {
+            "name:en": "Reflection of a Mineral House",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.640Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "rue-commercante",
+      "name": "rue commerçante",
+      "name_az": null,
+      "name_en": "rue commerçante",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.7025022,
+      "lng": 139.6480076,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6982004585",
+      "source_url": "https://www.openstreetmap.org/node/6982004585",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6982004585,
+          "lat": 35.7025022,
+          "lon": 139.6480076,
+          "tags": {
+            "name:en": "rue commerçante",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.646Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "samurai-museum-tokyo-ticket-centre",
+      "name": "Samurai Museum Tokyo Ticket Centre",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6854903,
+      "lng": 139.690713,
+      "address": "1, 新宿区",
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/12850486293",
+      "source_url": "https://www.openstreetmap.org/node/12850486293",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 12850486293,
+          "lat": 35.6854903,
+          "lon": 139.690713,
+          "tags": {
+            "addr:block_number": "7",
+            "addr:city": "新宿区",
+            "addr:housenumber": "1",
+            "addr:neighbourhood": "西新宿三丁目",
+            "addr:postcode": "160-0023",
+            "addr:province": "東京都",
+            "name": "Samurai Museum Tokyo Ticket Centre",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.654Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "shibuya-blue-cave-winter-illumination",
+      "name": "Shibuya Blue Cave Winter Illumination",
+      "name_az": null,
+      "name_en": "Shibuya Blue Cave Winter Illumination",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6660655,
+      "lng": 139.6982005,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6127218493",
+      "source_url": "https://www.openstreetmap.org/node/6127218493",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6127218493,
+          "lat": 35.6660655,
+          "lon": 139.6982005,
+          "tags": {
+            "name:en": "Shibuya Blue Cave Winter Illumination",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "shibuya-san-tourist-information-art-center",
+      "name": "shibuya-san tourist information＆art center",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6575928,
+      "lng": 139.7004876,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/12995300064",
+      "source_url": "https://www.openstreetmap.org/node/12995300064",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 12995300064,
+          "lat": 35.6575928,
+          "lon": 139.7004876,
+          "tags": {
+            "name": "shibuya-san tourist information＆art center",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.654Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "shimokitazawa-gate",
+      "name": "Shimokitazawa Gate",
+      "name_az": null,
+      "name_en": "Shimokitazawa Gate",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6622042,
+      "lng": 139.6681299,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6163717796",
+      "source_url": "https://www.openstreetmap.org/node/6163717796",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6163717796,
+          "lat": 35.6622042,
+          "lon": 139.6681299,
+          "tags": {
+            "name:en": "Shimokitazawa Gate",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "shinjuku-information-center",
+      "name": "Shinjuku Information Center",
+      "name_az": null,
+      "name_en": "Shinjuku Information Center",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6895874,
+      "lng": 139.701863,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5237361821",
+      "source_url": "https://www.openstreetmap.org/node/5237361821",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5237361821,
+          "lat": 35.6895874,
+          "lon": 139.701863,
+          "tags": {
+            "name:en": "Shinjuku Information Center",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.640Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "shinjuku-southern-terrace-winter-illumination",
+      "name": "Shinjuku Southern Terrace Winter Illumination",
+      "name_az": null,
+      "name_en": "Shinjuku Southern Terrace Winter Illumination",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6868199,
+      "lng": 139.7004528,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6127218492",
+      "source_url": "https://www.openstreetmap.org/node/6127218492",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6127218492,
+          "lat": 35.6868199,
+          "lon": 139.7004528,
+          "tags": {
+            "name:en": "Shinjuku Southern Terrace Winter Illumination",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "suica",
+      "name": "Suica ペンギンの広場",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.68812,
+      "lng": 139.7009331,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": "24/7",
+      "source": "openstreetmap",
+      "source_place_id": "node/11991698170",
+      "source_url": "https://www.openstreetmap.org/node/11991698170",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 11991698170,
+          "lat": 35.68812,
+          "lon": 139.7009331,
+          "tags": {
+            "addr:postcode": "151-0051",
+            "name": "Suica ペンギンの広場",
+            "opening_hours": "24/7",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.652Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "taito-station-shinjuku-south-exit",
+      "name": "Taito Station Shinjuku South Exit",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.689805,
+      "lng": 139.7022802,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4303422825",
+      "source_url": "https://www.openstreetmap.org/node/4303422825",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4303422825,
+          "lat": 35.689805,
+          "lon": 139.7022802,
+          "tags": {
+            "name": "Taito Station Shinjuku South Exit",
+            "name:ja": "タイトー ゲームセンター",
+            "name:ko": "타이토 스테이션 게임 아케이드",
+            "tourism": "attraction",
+            "wheelchair": "limited"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.635Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "takeshita-street",
+      "name": "Takeshita Street",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6715932,
+      "lng": 139.7030663,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/13264304601",
+      "source_url": "https://www.openstreetmap.org/node/13264304601",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 13264304601,
+          "lat": 35.6715932,
+          "lon": 139.7030663,
+          "tags": {
+            "name": "Takeshita Street",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.655Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "time-capsule-1982-2032",
+      "name": "Time capsule 1982-2032",
+      "name_az": null,
+      "name_en": "Time capsule 1982-2032",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6434256,
+      "lng": 139.6823485,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5021841424",
+      "source_url": "https://www.openstreetmap.org/node/5021841424",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5021841424,
+          "lat": 35.6434256,
+          "lon": 139.6823485,
+          "tags": {
+            "name:en": "Time capsule 1982-2032",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.639Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "ultraman-ultraseven-manhole-covers",
+      "name": "Ultraman & Ultraseven manhole covers",
+      "name_az": null,
+      "name_en": "Ultraman & Ultraseven manhole covers",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6429171,
+      "lng": 139.6087706,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/11283901470",
+      "source_url": "https://www.openstreetmap.org/node/11283901470",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 11283901470,
+          "lat": 35.6429171,
+          "lon": 139.6087706,
+          "tags": {
+            "manhole": "yes",
+            "name:en": "Ultraman & Ultraseven manhole covers",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.651Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "vintage-shopping",
+      "name": "Vintage Shopping",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6592455,
+      "lng": 139.6674591,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/13269534201",
+      "source_url": "https://www.openstreetmap.org/node/13269534201",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 13269534201,
+          "lat": 35.6592455,
+          "lon": 139.6674591,
+          "tags": {
+            "name": "Vintage Shopping",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.655Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "yoyogi-park-rockers",
+      "name": "Yoyogi Park Rockers",
+      "name_az": null,
+      "name_en": "Yoyogi Park Rockers",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6690741,
+      "lng": 139.7011219,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": "Su 00:00-24:00",
+      "source": "openstreetmap",
+      "source_place_id": "node/5537282825",
+      "source_url": "https://www.openstreetmap.org/node/5537282825",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5537282825,
+          "lat": 35.6690741,
+          "lon": 139.7011219,
+          "tags": {
+            "name:en": "Yoyogi Park Rockers",
+            "opening_hours": "Su 00:00-24:00",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.641Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "yunika-vision",
+      "name": "YUNIKA VISION",
+      "name_az": null,
+      "name_en": "YUNIKA VISION",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6934337,
+      "lng": 139.7005679,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5640559022",
+      "source_url": "https://www.openstreetmap.org/node/5640559022",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5640559022,
+          "lat": 35.6934337,
+          "lon": 139.7005679,
+          "tags": {
+            "name:en": "YUNIKA VISION",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.642Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "ダイダラボッチ伝説の地",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6659442,
+      "lng": 139.6623138,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/3257774992",
+      "source_url": "https://www.openstreetmap.org/node/3257774992",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 3257774992,
+          "lat": 35.6659442,
+          "lon": 139.6623138,
+          "tags": {
+            "name": "ダイダラボッチ伝説の地",
+            "source": "knoledge",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.633Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "バードサンクチュアリ",
+      "name_az": null,
+      "name_en": "Bird Sanctuary",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6711253,
+      "lng": 139.6982773,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5920275585",
+      "source_url": "https://www.openstreetmap.org/node/5920275585",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5920275585,
+          "lat": 35.6711253,
+          "lon": 139.6982773,
+          "tags": {
+            "name": "バードサンクチュアリ",
+            "name:en": "Bird Sanctuary",
+            "name:es": "Vistazo a las aves",
+            "name:fr": "Sanctuaire d'oiseaux",
+            "name:ja-Latn": "Bādo-sankuchuari",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.642Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "268",
+      "name": "京急デハ268",
+      "name_az": null,
+      "name_en": "Keikyu DeHa 268",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.721599,
+      "lng": 139.6799848,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/2707990752",
+      "source_url": "https://www.openstreetmap.org/node/2707990752",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 2707990752,
+          "lat": 35.721599,
+          "lon": 139.6799848,
+          "tags": {
+            "historic": "railway_car",
+            "name": "京急デハ268",
+            "name:en": "Keikyu DeHa 268",
+            "name:ja-Latn": "Keikyū DeHa 268",
+            "ref": "268",
+            "source": "survey",
+            "tourism": "attraction",
+            "wikipedia": "ja:湘南電気鉄道デ1形電車"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.632Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "代田富士見橋",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6579103,
+      "lng": 139.6600005,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/3376106759",
+      "source_url": "https://www.openstreetmap.org/node/3376106759",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 3376106759,
+          "lat": 35.6579103,
+          "lon": 139.6600005,
+          "tags": {
+            "name": "代田富士見橋",
+            "note": "富士山の眺望がすばらしい！　2015年3月8日開通",
+            "source": "survey",
+            "tourism": "attraction",
+            "wheelchair": "yes"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.633Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "大田黒公園記念館",
+      "name_az": null,
+      "name_en": "Ōtaguro Park Memorial Hall",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.7005489,
+      "lng": 139.6245414,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/328597978",
+      "source_url": "https://www.openstreetmap.org/way/328597978",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 328597978,
+          "center": {
+            "lat": 35.7005489,
+            "lon": 139.6245414
+          },
+          "tags": {
+            "building": "house",
+            "building:architecture": "western",
+            "building:levels": "2",
+            "description": "旧大田黒家住宅洋館",
+            "description:en": "Former Ōtaguro Family Western-Style Residence",
+            "description:fr": "Ancienne résidence de style occidental de la famille Ōtaguro",
+            "heritage": "yes",
+            "heritage:since": "2016",
+            "material": "brick",
+            "name": "大田黒公園記念館",
+            "name:en": "Ōtaguro Park Memorial Hall",
+            "name:fr": "Bâtiment commémoratif du parc Ōtaguro",
+            "name:ja-Hira": "おおたぐろ こうえん きねんかん",
+            "name:ja-Latn": "Ōtaguro kōen kinen-kan",
+            "roof:orientation": "along",
+            "roof:shape": "gabled",
+            "start_date": "1933",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.659Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "天神湯 ( てんじんゆ )",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6991187,
+      "lng": 139.6896393,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4348162791",
+      "source_url": "https://www.openstreetmap.org/node/4348162791",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4348162791,
+          "lat": 35.6991187,
+          "lon": 139.6896393,
+          "tags": {
+            "name": "天神湯 ( てんじんゆ )",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.636Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "奉献葡萄酒樽",
+      "name_az": null,
+      "name_en": "Barrels of French Bourgogne wine",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6736541,
+      "lng": 139.7017042,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6618323185",
+      "source_url": "https://www.openstreetmap.org/node/6618323185",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6618323185,
+          "lat": 35.6736541,
+          "lon": 139.7017042,
+          "tags": {
+            "name": "奉献葡萄酒樽",
+            "name:en": "Barrels of French Bourgogne wine",
+            "name:fr": "Tonneaux de vin de Bourgogne",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.646Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "奉献酒樽",
+      "name_az": null,
+      "name_en": "Barrels of Sake Wrapped in Straw",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6736842,
+      "lng": 139.7019092,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6199655893",
+      "source_url": "https://www.openstreetmap.org/node/6199655893",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6199655893,
+          "lat": 35.6736842,
+          "lon": 139.7019092,
+          "tags": {
+            "image": "https://photos.app.goo.gl/3c283BeyCxrUvPYo8",
+            "name": "奉献酒樽",
+            "name:en": "Barrels of Sake Wrapped in Straw",
+            "name:fr": "Ballots de Saké",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "思い出横丁",
+      "name_az": null,
+      "name_en": "Omoide-yokochō",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6930689,
+      "lng": 139.6995016,
+      "address": "新宿区",
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4154282189",
+      "source_url": "https://www.openstreetmap.org/node/4154282189",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4154282189,
+          "lat": 35.6930689,
+          "lon": 139.6995016,
+          "tags": {
+            "addr:block_number": "2",
+            "addr:city": "新宿区",
+            "addr:housename": "ナガセ西新宿ビル 13",
+            "addr:neighbourhood": "1丁目",
+            "addr:postcode": "160-0023",
+            "addr:province": "東京都",
+            "loc_name:ja": "小便横丁",
+            "name": "思い出横丁",
+            "name:en": "Omoide-yokochō",
+            "name:es": "Omoide-yokochō",
+            "name:fr": "Omoide-yokochō",
+            "name:ja-Hira": "おもいで よこちょう",
+            "name:ja-Latn": "Omoide-yokochō",
+            "name:ko": "오모이데 골목",
+            "name:zh": "思出横丁",
+            "tourism": "attraction",
+            "wheelchair": "yes",
+            "wikidata": "Q11501868",
+            "wikimedia_commons": "Category:Omoide-Yokochō, Shinjuku",
+            "wikipedia": "ja:新宿西口商店街"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.635Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "招福猫児奉納所",
+      "name_az": null,
+      "name_en": "Place of Offerings for Maneki-nekos",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6484698,
+      "lng": 139.6470151,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/1465670217",
+      "source_url": "https://www.openstreetmap.org/way/1465670217",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 1465670217,
+          "center": {
+            "lat": 35.6484698,
+            "lon": 139.6470151
+          },
+          "tags": {
+            "attraction": "maneki-neko",
+            "highway": "footway",
+            "image": "https://image=https://commons.wikimedia.org/wiki/File:Gotoku-ji_Temple_11.jpg",
+            "name": "招福猫児奉納所",
+            "name:en": "Place of Offerings for Maneki-nekos",
+            "name:ja": "招福猫児奉納所",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.661Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "招福猫児奉納所",
+      "name_az": null,
+      "name_en": "Place of Offerings for Maneki-nekos",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6485204,
+      "lng": 139.6471077,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/1465670228",
+      "source_url": "https://www.openstreetmap.org/way/1465670228",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 1465670228,
+          "center": {
+            "lat": 35.6485204,
+            "lon": 139.6471077
+          },
+          "tags": {
+            "attraction": "maneki-neko",
+            "highway": "footway",
+            "name": "招福猫児奉納所",
+            "name:en": "Place of Offerings for Maneki-nekos",
+            "name:ja": "招福猫児奉納所",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.661Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "招福猫児奉納所",
+      "name_az": null,
+      "name_en": "Place of Offerings for Maneki-nekos",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6484708,
+      "lng": 139.6470154,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/1465670229",
+      "source_url": "https://www.openstreetmap.org/way/1465670229",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 1465670229,
+          "center": {
+            "lat": 35.6484708,
+            "lon": 139.6470154
+          },
+          "tags": {
+            "area": "yes",
+            "attraction": "maneki-neko",
+            "image": "https://commons.wikimedia.org/wiki/File:Gotoku-ji_Temple_11.jpg",
+            "name": "招福猫児奉納所",
+            "name:en": "Place of Offerings for Maneki-nekos",
+            "name:ja": "招福猫児奉納所",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.661Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "招福猫児奉納所",
+      "name_az": null,
+      "name_en": "Place of Offerings for Maneki-nekos",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6485218,
+      "lng": 139.647106,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/1465670230",
+      "source_url": "https://www.openstreetmap.org/way/1465670230",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 1465670230,
+          "center": {
+            "lat": 35.6485218,
+            "lon": 139.647106
+          },
+          "tags": {
+            "area": "yes",
+            "attraction": "maneki-neko",
+            "name": "招福猫児奉納所",
+            "name:en": "Place of Offerings for Maneki-nekos",
+            "name:ja": "招福猫児奉納所",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.661Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "方南銀座商店街",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.683558,
+      "lng": 139.6584106,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/5172041100",
+      "source_url": "https://www.openstreetmap.org/node/5172041100",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 5172041100,
+          "lat": 35.683558,
+          "lon": 139.6584106,
+          "tags": {
+            "name": "方南銀座商店街",
+            "tourism": "attraction",
+            "wheelchair": "yes"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.640Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "松原一丁目日章館亀井邸",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6670907,
+      "lng": 139.6524318,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/1311447303",
+      "source_url": "https://www.openstreetmap.org/way/1311447303",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 1311447303,
+          "center": {
+            "lat": 35.6670907,
+            "lon": 139.6524318
+          },
+          "tags": {
+            "area": "yes",
+            "name": "松原一丁目日章館亀井邸",
+            "note": "個人邸宅であり、土地所有者個人と契約し、区民を対象に公開されている緑地と記載されていました。契約期間として2019年12月26日より2024年12月25日が指定されています。",
+            "operator": "一般財団法人世田谷トラストまちづくり",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.661Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "桜園地",
+      "name_az": null,
+      "name_en": "Cherry Tree Area",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6822804,
+      "lng": 139.7102065,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/1376695886",
+      "source_url": "https://www.openstreetmap.org/way/1376695886",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 1376695886,
+          "center": {
+            "lat": 35.6822804,
+            "lon": 139.7102065
+          },
+          "tags": {
+            "landuse": "forest",
+            "name": "桜園地",
+            "name:en": "Cherry Tree Area",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.661Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "歌舞伎町",
+      "name_az": null,
+      "name_en": "Kabukicho",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6952491,
+      "lng": 139.7031183,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/4881027723",
+      "source_url": "https://www.openstreetmap.org/node/4881027723",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 4881027723,
+          "lat": 35.6952491,
+          "lon": 139.7031183,
+          "tags": {
+            "name": "歌舞伎町",
+            "name:en": "Kabukicho",
+            "tourism": "attraction",
+            "wheelchair": "no"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.637Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "歌舞伎町一番街通り",
+      "name_az": null,
+      "name_en": "Kabukicho Ichibangai-dori Street",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6943326,
+      "lng": 139.7011998,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/155235354",
+      "source_url": "https://www.openstreetmap.org/way/155235354",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 155235354,
+          "center": {
+            "lat": 35.6943326,
+            "lon": 139.7011998
+          },
+          "tags": {
+            "highway": "pedestrian",
+            "motor_vehicle:conditional": "no @ (月～土：16:00～翌 5:00; 日・祝：12:00～翌 5:00)",
+            "name": "歌舞伎町一番街通り",
+            "name:en": "Kabukicho Ichibangai-dori Street",
+            "name:es": "Calle Kabukicho Ichibangai",
+            "name:ko": "가부키쵸1번가",
+            "name:zh": "歌舞伎町一番街",
+            "oneway": "yes",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.658Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "a0",
+      "name": "渋谷駅 A0",
+      "name_az": null,
+      "name_en": "Exit A0",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6593672,
+      "lng": 139.6985057,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/6222818680",
+      "source_url": "https://www.openstreetmap.org/node/6222818680",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 6222818680,
+          "lat": 35.6593672,
+          "lon": 139.6985057,
+          "tags": {
+            "name": "渋谷駅 A0",
+            "name:en": "Exit A0",
+            "railway": "subway_entrance",
+            "ref": "A0",
+            "source": "knowledge",
+            "tourism": "attraction",
+            "was:ref": "1",
+            "wheelchair": "no"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.643Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "渋谷駅前交差点",
+      "name_az": null,
+      "name_en": "front of Shibuya station",
+      "name_ru": "Сибуйский диагональный пешеходный переход",
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6595216,
+      "lng": 139.7004973,
+      "address": "渋谷区",
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/1335178864",
+      "source_url": "https://www.openstreetmap.org/way/1335178864",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 1335178864,
+          "center": {
+            "lat": 35.6595216,
+            "lon": 139.7004973
+          },
+          "tags": {
+            "addr:city": "渋谷区",
+            "alt_name": "渋谷スクランブル交差点",
+            "alt_name:en": "Shibuya Scramble Crossing",
+            "area": "yes",
+            "image": "https://commons.wikimedia.org/wiki/File:2019_Shibuya_Crossing_-_Shibuya_Scramble_Square_-_SHIBUYA_SKY_1.jpg",
+            "image:0": "https://photos.app.goo.gl/UFwnLRyZgrA8Sy2b6",
+            "junction": "yes",
+            "lit": "yes",
+            "name": "渋谷駅前交差点",
+            "name:de": "Shibuya Crossing",
+            "name:el": "Διασταύρωση Σιμπούγια",
+            "name:en": "front of Shibuya station",
+            "name:es": "Shibuya Crossing",
+            "name:eu": "Shibuyako bidegurutzea",
+            "name:fa": "تقاطع شیبویا",
+            "name:fr": "Shibuya Crossing",
+            "name:he": "מעבר החצייה של שיבויה",
+            "name:id": "Persimpangan Shibuya",
+            "name:it": "Incrocio di Shibuya",
+            "name:ja": "渋谷駅前交差点",
+            "name:ko": "시부야 스크램블 교차점",
+            "name:ms": "Persimpangan Shibuya",
+            "name:pt": "Cruzamento de Shibuya",
+            "name:ru": "Сибуйский диагональный пешеходный переход",
+            "name:th": "ทางม้าลายชิบูยะ",
+            "name:zh": "澀谷路口",
+            "note": "Pedestrian scramble; people in practice do area-routing.Drawn to extent of yellow tactile markings.Marked as motor_vehicle=no to not allow area-routing for cars, only people/bicycles. Cars continue to use linear-routing along roads and restrictions.",
+            "surface": "paved",
+            "tourism": "attraction",
+            "url": "https://youtu.be/0ONXRMlI8hw?si=jwgknPUNRCuK2koL",
+            "url:0": "https://youtu.be/Od6EeCWytZo?si=HCjq4bkFoEyQ1MY3",
+            "wikidata": "Q21083961",
+            "wikimedia_commons": "Category:Shibuya Crossing",
+            "wikipedia": "en:Shibuya Crossing"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.661Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "神宮橋",
+      "name_az": null,
+      "name_en": "Jingu Bridge",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6697179,
+      "lng": 139.7024123,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/553522499",
+      "source_url": "https://www.openstreetmap.org/way/553522499",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 553522499,
+          "center": {
+            "lat": 35.6697179,
+            "lon": 139.7024123
+          },
+          "tags": {
+            "bridge:structure": "beam",
+            "contact:tripadvisor": "13287787",
+            "layer": "1",
+            "man_made": "bridge",
+            "name": "神宮橋",
+            "name:en": "Jingu Bridge",
+            "name:fr": "Pont du Jingu",
+            "name:it": "Ponte Jingu",
+            "name:ja-Hira": "じゅいんぐうばし",
+            "name:ja-Latn": "Jingū-bashi",
+            "name:zh": "神宮橋",
+            "start_date": "1920-09",
+            "tourism": "attraction",
+            "wheelchair": "yes",
+            "wikidata": "Q11589493",
+            "wikimedia_commons": "Category:Jingu Bashi",
+            "wikipedia": "en:Jingūbashi"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.659Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "表参道の石灯籠",
+      "name_az": null,
+      "name_en": "Stone Lanterns on Omotesandō at Aoyama Dōri",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6654252,
+      "lng": 139.7123143,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/819966511",
+      "source_url": "https://www.openstreetmap.org/way/819966511",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 819966511,
+          "center": {
+            "lat": 35.6654252,
+            "lon": 139.7123143
+          },
+          "tags": {
+            "area": "yes",
+            "name": "表参道の石灯籠",
+            "name:en": "Stone Lanterns on Omotesandō at Aoyama Dōri",
+            "name:ja": "表参道の石灯籠",
+            "name:ja-Latn": "Omotesandō no ishidōrō",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.660Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "表参道の石灯籠",
+      "name_az": null,
+      "name_en": "Stone Lanterns on Omotesandō at Aoyama Dōri",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6652294,
+      "lng": 139.7121609,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/819966512",
+      "source_url": "https://www.openstreetmap.org/way/819966512",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 819966512,
+          "center": {
+            "lat": 35.6652294,
+            "lon": 139.7121609
+          },
+          "tags": {
+            "area": "yes",
+            "name": "表参道の石灯籠",
+            "name:en": "Stone Lanterns on Omotesandō at Aoyama Dōri",
+            "name:ja": "表参道の石灯籠",
+            "name:ja-Latn": "Omotesandō no ishidōrō",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.660Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "観世能楽堂",
+      "name_az": null,
+      "name_en": "Kanze No Theater",
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6620432,
+      "lng": 139.6935718,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/252675438",
+      "source_url": "https://www.openstreetmap.org/node/252675438",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 252675438,
+          "lat": 35.6620432,
+          "lon": 139.6935718,
+          "tags": {
+            "name": "観世能楽堂",
+            "name:en": "Kanze No Theater",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.618Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "",
+      "name": "電車車両",
+      "name_az": null,
+      "name_en": null,
+      "name_ru": null,
+      "category": "attraction",
+      "subcategory": "attraction",
+      "lat": 35.6478364,
+      "lng": 139.6449021,
+      "address": null,
+      "website": null,
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/356944461",
+      "source_url": "https://www.openstreetmap.org/way/356944461",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 356944461,
+          "center": {
+            "lat": 35.6478364,
+            "lon": 139.6449021
+          },
+          "tags": {
+            "building": "yes",
+            "historic": "railway_car",
+            "mapillary": "1092154578802485;327134760203352",
+            "name": "電車車両",
+            "ref": "601",
+            "tourism": "attraction"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.659Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "nhk",
+      "name": "NHKスタジオパーク",
+      "name_az": null,
+      "name_en": "NHK Studio Park",
+      "name_ru": null,
+      "category": "museum",
+      "subcategory": "museum",
+      "lat": 35.6651148,
+      "lng": 139.6965929,
+      "address": "1, 渋谷区",
+      "website": "https://www.nhk.or.jp/studiopark/",
+      "phone": "+81 3-3485-8034",
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "node/1177156758",
+      "source_url": "https://www.openstreetmap.org/node/1177156758",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 1177156758,
+          "lat": 35.6651148,
+          "lon": 139.6965929,
+          "tags": {
+            "addr:block_number": "2",
+            "addr:city": "渋谷区",
+            "addr:country": "JP",
+            "addr:housename": "NHKスタジオパーク",
+            "addr:housenumber": "1",
+            "addr:neighbourhood": "神南二丁目",
+            "addr:postcode": "150-8001",
+            "addr:province": "東京都",
+            "fax": "+81 3-3485-8204",
+            "name": "NHKスタジオパーク",
+            "name:en": "NHK Studio Park",
+            "name:es": "NHK Studio Park",
+            "name:ja": "NHKスタジオパーク",
+            "name:zh": "NHK攝影棚公園",
+            "phone": "+81 3-3485-8034",
+            "tourism": "museum",
+            "website": "https://www.nhk.or.jp/studiopark/",
+            "wheelchair": "yes",
+            "wikidata": "Q10854719",
+            "wikimedia_commons": "Category:NHK Studio Park",
+            "wikipedia": "ja:NHKスタジオパーク"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.621Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "parco-museum-tokyo",
+      "name": "Parco Museum Tokyo",
+      "name_az": null,
+      "name_en": "Parco Museum Tokyo",
+      "name_ru": null,
+      "category": "museum",
+      "subcategory": "museum",
+      "lat": 35.661839,
+      "lng": 139.6990062,
+      "address": "1, 渋谷区",
+      "website": "https://art.parco.jp/",
+      "phone": "+81 3-6455-2697",
+      "email": null,
+      "opening_hours": "Mo-Su 11:00-20:30",
+      "source": "openstreetmap",
+      "source_place_id": "node/13524208445",
+      "source_url": "https://www.openstreetmap.org/node/13524208445",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "node",
+          "id": 13524208445,
+          "lat": 35.661839,
+          "lon": 139.6990062,
+          "tags": {
+            "addr:block_number": "15",
+            "addr:city": "渋谷区",
+            "addr:housename": "渋谷PARCO",
+            "addr:housenumber": "1",
+            "addr:neighbourhood": "宇田川町",
+            "addr:postcode": "150-8377",
+            "addr:province": "東京都",
+            "addr:quarter": "宇田川町",
+            "contact:phone": "+81 3-6455-2697",
+            "contact:website": "https://art.parco.jp/",
+            "level": "3",
+            "level:ref": "4F",
+            "name": "Parco Museum Tokyo",
+            "name:en": "Parco Museum Tokyo",
+            "name:fr": "Parco Museum Tokyo",
+            "opening_hours": "Mo-Su 11:00-20:30",
+            "tourism": "museum"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.656Z"
+    },
+    {
+      "country_id": "COUNTRY_ID_PLACEHOLDER",
+      "slug": "shokokan",
+      "name": "Shōkokan",
+      "name_az": null,
+      "name_en": "Shōkokan",
+      "name_ru": null,
+      "category": "museum",
+      "subcategory": "museum",
+      "lat": 35.6440061,
+      "lng": 139.6837567,
+      "address": null,
+      "website": "https://www.mod.go.jp/gsdf/mss/sp/sp6-400-museum.html",
+      "phone": null,
+      "email": null,
+      "opening_hours": null,
+      "source": "openstreetmap",
+      "source_place_id": "way/163051276",
+      "source_url": "https://www.openstreetmap.org/way/163051276",
+      "license": "ODbL",
+      "attribution_text": "OpenStreetMap contributors",
+      "raw_data": {
+        "osm": {
+          "type": "way",
+          "id": 163051276,
+          "center": {
+            "lat": 35.6440061,
+            "lon": 139.6837567
+          },
+          "tags": {
+            "building": "yes",
+            "museum": "history",
+            "name:en": "Shōkokan",
+            "name:ja": "彰古館",
+            "name:ja-Latn": "Shōkokan",
+            "tourism": "museum",
+            "website": "https://www.mod.go.jp/gsdf/mss/sp/sp6-400-museum.html"
+          }
+        },
+        "import_city": "tokyo"
+      },
+      "last_synced_at": "2026-05-06T01:54:48.658Z"
+    }
+  ]
+}

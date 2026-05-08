@@ -15,30 +15,44 @@ export default async function RestaurantsPage({ params }: { params: Promise<{ lo
 
   const { data: placeRows } = await supabase
     .from('places')
-    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
+    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji, continent)')
     .in('category', ['restaurant', 'cafe'] as PlaceCategory[])
     .eq('status', 'active')
     .order('is_featured', { ascending: false })
-    .order('rating_summary', { ascending: false })
-    .limit(100);
-
-  const restaurants = ((placeRows || []) as PlaceWithRelationsRow[]).map((place) =>
-    mapPlaceToSummary(place, currentLocale)
-  );
-
-  const { data: cityRows } = await supabase
-    .from('cities')
-    .select('id, slug, name_az, name_en, name_ru')
     .order('popular_rank', { ascending: true })
-    .limit(20);
+    .order('rating_summary', { ascending: false })
+    .limit(1000);
 
-  const cities = (cityRows || []).map((city) => ({
-    id: city.id,
-    slug: city.slug,
-    name: currentLocale === 'en' ? city.name_en || city.name_az
-      : currentLocale === 'ru' ? city.name_ru || city.name_az
-      : city.name_az,
-  }));
+  const restaurants = ((placeRows || []) as PlaceWithRelationsRow[])
+    .map((place) => mapPlaceToSummary(place, currentLocale))
+    .filter((r) => !!r.coverPhotoUrl);
+
+  const europeanCountryIds = new Set<string>();
+  placeRows?.forEach((p: any) => {
+    if (p.countries?.continent === 'europe') europeanCountryIds.add(p.countries.id);
+  });
+
+  const cities = Array.from(
+    restaurants.reduce((acc, place) => {
+      if (!place.city) return acc;
+      const existing = acc.get(place.city.id);
+      const placeRow = placeRows?.find((p: any) => p.id === place.id);
+      const isEuropean = placeRow ? europeanCountryIds.has((placeRow as any).country_id) : false;
+      acc.set(place.city.id, {
+        id: place.city.id,
+        slug: place.city.slug,
+        name: place.city.name,
+        count: (existing?.count || 0) + 1,
+        isEuropean: existing?.isEuropean || isEuropean,
+      });
+      return acc;
+    }, new Map<string, { id: string; slug: string; name: string; count: number; isEuropean: boolean }>())
+  )
+    .map(([, city]) => city)
+    .sort((a, b) => {
+      if (a.isEuropean !== b.isEuropean) return a.isEuropean ? -1 : 1;
+      return b.count - a.count || a.name.localeCompare(b.name, locale);
+    });
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">

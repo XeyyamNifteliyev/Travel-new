@@ -82,6 +82,22 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
     places = (placeRows as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale));
   }
 
+  let foodPlaces: PlaceSummary[] = [];
+  const { data: foodPlaceRows, error: foodPlaceError } = await supabase
+    .from('places')
+    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
+    .eq('country_id', country.id)
+    .in('category', ['restaurant', 'cafe'])
+    .eq('status', 'active')
+    .order('is_featured', { ascending: false })
+    .order('popular_rank', { ascending: true })
+    .order('rating_summary', { ascending: false })
+    .limit(8);
+
+  if (!foodPlaceError && foodPlaceRows) {
+    foodPlaces = (foodPlaceRows as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale));
+  }
+
   return (
     <CountryDetailClient
       country={country}
@@ -89,6 +105,7 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
       blogs={(blogs as unknown as { id: string; title: string; cover_image?: string; created_at: string; views: number; profiles?: { display_name: string } | null }[]) || []}
       cities={cities}
       places={places}
+      foodPlaces={foodPlaces}
       locale={locale}
       hasVisaInfo={!!visaCheck}
     />

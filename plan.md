@@ -18,6 +18,8 @@ Tripadvisor content-i icazəsiz scrape və ya copy edilməyəcək. Product value
 - `--repair-invalid` rejimi əlavə edildi və ilk 15 ölkə problemli ID-dən tam `images.unsplash.com` URL-ə repair edildi.
 - Ana səhifədə hardcoded şəhər kartları DB-dən gələn `cities` datası ilə əvəz edildi.
 - Ana səhifədə real `places` preview əlavə edildi.
+- Restoran/kafe üçün ayrıca Overpass import pipeline əlavə edildi və ilk batch-də 10 məşhur şəhər zənginləşdirildi.
+- `/restaurants` səhifəsində şəhər filter-i yalnız restoran/kafe datası olan şəhərləri göstərir və bütün yeni mətnlər `az/en/ru` JSON-larına bağlandı.
 
 Cari DB snapshot:
 
@@ -25,11 +27,11 @@ Cari DB snapshot:
 | --- | ---: |
 | `countries` | 189 |
 | `cities` | 26 |
-| `places` | 1593 |
+| `places` | 1713 |
 | `country_highlights` | 43 |
 | `place_reviews` | 0 |
-| `place_sources` | 1515 |
-| `external_import_logs` | 29 |
+| `place_sources` | 1635 |
+| `external_import_logs` | 41 |
 | `countries.cover_photo_id IS NOT NULL` | 77 |
 | `cities.cover_photo_id IS NOT NULL` | 26 |
 
@@ -58,14 +60,23 @@ npm run enrich:images -- --type=countries --limit=50 --apply
 
 2. `country_highlights` əhatəsini 10 ölkədən 30+ ölkəyə genişləndir.
 
-3. `places` datasında `is_featured` və `popular_rank` kurasiyası et ki, ana səhifədə və şəhər səhifələrində ən yaxşı məkanlar birinci görünsün.
+3. Restoran/kafe datasını qalan məşhur şəhərlərə mərhələli yay:
 
-4. TravelAZ review sistemini canlı istifadəyə hazırla:
+```bash
+npm run audit:food-places
+npm run import:food-places -- --limit=10 --city-limit=10 --apply
+```
+
+   - Hər batch-dən sonra `/az/restaurants`, `/en/restaurants`, `/ru/restaurants` səhifələrində city filter və category label-ləri yoxla.
+
+4. `places` datasında `is_featured` və `popular_rank` kurasiyası et ki, ana səhifədə və şəhər səhifələrində ən yaxşı məkanlar birinci görünsün.
+
+5. TravelAZ review sistemini canlı istifadəyə hazırla:
    - review yazmağa CTA-ları gücləndir;
    - empty review state-ləri daha aydın et;
    - admin moderation workflow-u real admin hesabları ilə yoxla.
 
-5. Production visual QA:
+6. Production visual QA:
    - desktop və mobile ana səhifə;
    - `/az/countries`;
    - `/az/countries/turkey`;
@@ -73,7 +84,7 @@ npm run enrich:images -- --type=countries --limit=50 --apply
    - `/az/cities/istanbul`;
    - `/az/places/[id]`.
 
-6. Booking/payment mərhələsi üçün ayrıca plan hazırla.
+7. Booking/payment mərhələsi üçün ayrıca plan hazırla.
 
 ## Açıq Data Strategiyası
 

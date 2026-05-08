@@ -58,6 +58,24 @@ export function CategoryTabs({ places, locale }: CategoryTabsProps) {
     ? places
     : places.filter((p) => CATEGORY_GROUPS[activeCategory]?.includes(p.category));
 
+  const categoryLabel = (category: string) => {
+    if (category === 'restaurant') return t('categoryRestaurant');
+    if (category === 'cafe') return t('categoryCafe');
+    if (category === 'hotel') return t('categoryHotel');
+    if (category === 'museum') return t('categoryMuseum');
+    if (category === 'landmark') return t('categoryLandmark');
+    if (category === 'attraction') return t('categoryAttraction');
+    if (category === 'viewpoint') return t('categoryViewpoint');
+    if (category === 'historic') return t('categoryHistoric');
+    if (category === 'park') return t('categoryPark');
+    if (category === 'beach') return t('categoryBeach');
+    if (category === 'shopping') return t('categoryShopping');
+    if (category === 'nightlife') return t('categoryNightlife');
+    if (category === 'transport') return t('categoryTransport');
+    if (category === 'other') return t('categoryOther');
+    return category;
+  };
+
   return (
     <div>
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
@@ -94,7 +112,7 @@ export function CategoryTabs({ places, locale }: CategoryTabsProps) {
             >
               <div className="flex items-start justify-between gap-3">
                 <span className={`text-[10px] px-2 py-1 rounded-full font-semibold capitalize ${CATEGORY_COLORS[place.category] || CATEGORY_COLORS.other}`}>
-                  {place.category}
+                  {categoryLabel(place.category)}
                 </span>
                 {place.ratingSummary > 0 && (
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">

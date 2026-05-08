@@ -72,6 +72,7 @@ interface Props {
   blogs: BlogItem[];
   cities: CitySummary[];
   places: PlaceSummary[];
+  foodPlaces: PlaceSummary[];
   locale: string;
   hasVisaInfo?: boolean;
 }
@@ -127,7 +128,7 @@ const CATEGORY_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
-export default function CountryDetailClient({ country, highlights, blogs, cities, places, locale, hasVisaInfo }: Props) {
+export default function CountryDetailClient({ country, highlights, blogs, cities, places, foodPlaces, locale, hasVisaInfo }: Props) {
   const t = useTranslations('countries');
   const tc = useTranslations('common');
   const [heroError, setHeroError] = useState(false);
@@ -373,6 +374,53 @@ export default function CountryDetailClient({ country, highlights, blogs, cities
                 {place.description && (
                   <p className="text-xs text-txt-sec mt-2 line-clamp-3">{place.description}</p>
                 )}
+                <div className="flex items-center justify-between gap-3 mt-4 text-xs text-txt-sec">
+                  <span>{place.reviewCount} {tc('reviews')}</span>
+                  {place.sourceUrl && (
+                    <span className="inline-flex items-center gap-1">
+                      {t('source')} <ExternalLink className="w-3 h-3" />
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+          <p className="text-xs text-txt-sec mt-3">{t('openDataAttribution')}</p>
+        </div>
+      )}
+
+      {foodPlaces.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-end justify-between gap-4 mb-4">
+            <div>
+              <h2 className="font-bold text-lg flex items-center gap-2">
+                <span className="text-2xl">🍽️</span> {t('foodPlaces')}
+              </h2>
+              <p className="text-sm text-txt-sec mt-1">{t('foodPlacesSub')}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {foodPlaces.map(place => (
+              <Link key={place.id} href={`/${locale}/places/${place.id}`} className="block rounded-2xl border border-border bg-bg-surface p-4 hover:border-primary/30 hover:shadow-lg transition-all">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-primary font-semibold">
+                    {(CATEGORY_LABELS[locale] || CATEGORY_LABELS.az)[place.category] || place.category}
+                  </span>
+                  {place.ratingSummary > 0 && (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
+                      <Star className="w-3 h-3 fill-current" />
+                      {place.ratingSummary.toFixed(1)}
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-semibold text-sm mt-3 line-clamp-2">{place.name}</h3>
+                {place.city?.name && (
+                  <p className="inline-flex items-center gap-1 text-xs text-txt-sec mt-2">
+                    <MapPin className="w-3 h-3" />
+                    {place.city.name}
+                  </p>
+                )}
+                {place.address && <p className="text-xs text-txt-sec mt-2 line-clamp-2">{place.address}</p>}
                 <div className="flex items-center justify-between gap-3 mt-4 text-xs text-txt-sec">
                   <span>{place.reviewCount} {tc('reviews')}</span>
                   {place.sourceUrl && (

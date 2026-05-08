@@ -136,8 +136,12 @@ npm run enrich:images -- --type=cities --limit=20 --apply
 npm run enrich:images -- --type=countries --limit=50 --apply
 npm run audit:country-images
 npm run audit:country-content
+npm run audit:food-places
 npm run enrich:country-content -- --limit=30 --dry-run
 npm run enrich:country-content -- --limit=30 --apply
+npm run import:food-places -- --city=istanbul --dry-run
+npm run import:food-places -- --city=istanbul --apply
+npm run import:food-places -- --limit=10 --city-limit=10 --apply
 npm run seed:country-highlights -- --apply
 ```
 
@@ -156,6 +160,10 @@ Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq ü�
 - `scripts/audit-country-images.js` - ölkə şəkil audit report-u
 - `scripts/audit-country-content.js` - ölkə kart content audit report-u
 - `scripts/enrich-country-content.js` - RestCountries və Wikipedia əsasında boş ölkə content field-lərini doldurur
+- `scripts/audit-food-places.js` - restoran/kafe coverage audit report-u
+- `scripts/import-food-places.js` - Overpass əsaslı restoran/kafe import pipeline
+- `src/app/[locale]/restaurants/page.tsx` - restoran/kafe səhifəsi, yalnız food datası olan şəhərlər üzrə filter
+- `src/app/[locale]/restaurants/restaurant-grid-client.tsx` - restoran/kafe search, category və city filter UI
 - `scripts/import-open-travel-data.js` - Overpass/Wikipedia/GeoNames import pipeline
 - `scripts/seed-country-highlights.js` - ölkə highlight seed script-i
 - `src/messages/*.json` - i18n mesajları
@@ -256,15 +264,24 @@ Hər import source/license metadata saxlamalıdır.
    - `is_featured` və `popular_rank` real travel dəyərinə görə düzülməlidir.
    - Ana səhifədə ən yaxşı məkanlar görünməlidir.
 
-4. Review sistemini canlandırmaq.
+4. Restoran və kafe datasını məşhur şəhərlərə yaymaq.
+   - Mənbə yalnız OpenStreetMap/Overpass olmalıdır; Tripadvisor scraping edilməməlidir.
+   - Əvvəl audit: `npm run audit:food-places`.
+   - Bir şəhər test: `npm run import:food-places -- --city=istanbul --dry-run`, sonra `--apply`.
+   - Batch import: `npm run import:food-places -- --limit=10 --city-limit=10 --apply`.
+   - Hədəf: featured/popular şəhərlərdə ən azı 10-20 restoran/kafe.
+   - `/restaurants` səhifəsində şəhər filter-i yalnız restoran/kafe datası olan şəhərləri göstərməlidir.
+   - Yeni restoran/kafe UI mətnləri mütləq `src/messages/az.json`, `en.json`, `ru.json` içində olmalıdır.
+
+5. Review sistemini canlandırmaq.
    - `place_reviews=0`.
    - Review CTA-ları, empty state-lər və admin moderation real hesablarla yoxlanmalıdır.
 
-5. Booking/payment.
+6. Booking/payment.
    - Hələ bu mərhələyə daxil deyil.
    - Sonra booking confirmation, payment flow, provider order API-ləri, cancellation/refund policy planlanmalıdır.
 
-6. Production visual QA və Core Web Vitals.
+7. Production visual QA və Core Web Vitals.
 
 ## Yoxlama Bazası
 

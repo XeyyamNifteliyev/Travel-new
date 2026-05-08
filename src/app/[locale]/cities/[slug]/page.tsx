@@ -56,7 +56,23 @@ export default async function CityDetailPage({ params }: PageProps) {
     .order('rating_summary', { ascending: false })
     .limit(24);
 
-  const places = ((placeRows || []) as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale));
+  const { data: foodPlaceRows } = await supabase
+    .from('places')
+    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
+    .eq('city_id', city.id)
+    .eq('status', 'active')
+    .in('category', ['restaurant', 'cafe'])
+    .order('is_featured', { ascending: false })
+    .order('popular_rank', { ascending: true })
+    .order('rating_summary', { ascending: false })
+    .limit(24);
+
+  const uniquePlaceRows = new Map<string, PlaceWithRelationsRow>();
+  for (const place of [...((placeRows || []) as PlaceWithRelationsRow[]), ...((foodPlaceRows || []) as PlaceWithRelationsRow[])]) {
+    uniquePlaceRows.set(place.id, place);
+  }
+
+  const places = Array.from(uniquePlaceRows.values()).map((place) => mapPlaceToSummary(place, currentLocale));
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
