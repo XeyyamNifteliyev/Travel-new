@@ -18,6 +18,9 @@ const PUBLIC_PATHS = [
   '/companions',
   '/videos',
   '/ai-planner',
+  '/auth',
+  '/restaurants',
+  '/news',
 ];
 
 function isPublicPath(pathname: string): boolean {
@@ -56,11 +59,16 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   response.cookies.getAll().forEach(({ name, value }) => {
     intlResponse.cookies.set(name, value);
   });
+
+  if (!user) {
+    const locale = request.nextUrl.pathname.match(/^\/(az|ru|en)/)?.[1] || 'az';
+    return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url));
+  }
 
   return intlResponse;
 }

@@ -10,7 +10,6 @@ import {
   BarChart3, CheckCircle2, FileText, LayoutDashboard, LogOut, Map, Menu,
   MessageSquareText, Settings, Shield, Users, Video, X
 } from 'lucide-react';
-import Link from 'next/link';
 import { ReviewModerationPanel } from '@/components/place/review-moderation-panel';
 import { DashboardOverview } from '@/components/profile/dashboard-overview';
 import { MyBlogs } from '@/components/profile/my-blogs';

@@ -41,6 +41,18 @@ nul
 # misc
 *.pem
 
+# temp/plan files
+plan.md
+olke.md
+turzim.md
+api.md
+PROGRESS.md
+youtube-results.json
+data/*.json
+
+# design mockups
+/NewDesign
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
