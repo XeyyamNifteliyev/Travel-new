@@ -22,6 +22,8 @@ Tripadvisor-dan icazəsiz scraping, review kopyalama və content kopyalama edilm
 - `scripts/audit-country-content.js` və `scripts/enrich-country-content.js` əlavə edildi.
 - Bütün 189 ölkə üçün kart datası tamamlandı: `capital`, `short_desc`, `short_desc_en`, `short_desc_ru`, `avg_flight_azn`, `avg_hotel_azn`, `avg_daily_azn`, `best_months`.
 - Ölkə kartlarının content hissəsinə sabit minimum hündürlük verildi ki, məlumatı az/çox olan kartlar vizual olaraq bir-birindən çox fərqlənməsin.
+- Viza detail və viza widget i18n axını düzəldildi: detail subtitle, quick AI sualları, optional/error/time/source labels JSON-a çıxarıldı; `visa_documents` üçün `description_en/ru` və `notes_en/ru` oxunur; `scripts/localize-visa-notes.js` ilə Albaniya daxil 45 viza qeydi `az/ru` lokalizasiyası ilə yeniləndi.
+- Yoldaş Tap bölməsi üçün 15 peşəkar demo elan seed edildi. Elanlar fərqli şəxslərə məxsusdur, `created_at` tarixləri 2026-03-12 və 2026-05-07 aralığında yayılıb, köhnə açıq test elanları `cancelled` statusuna keçirildi.
 
 ## Şəkil Problemi - Aktiv Prioritet
 
@@ -30,8 +32,8 @@ Hazırda layihənin ən böyük vizual problemi ölkə kartlarındakı şəkill�
 Son audit nəticəsinə görə:
 
 - `countries`: 189
-- `countries.cover_photo_id IS NOT NULL`: təxminən 77-80
-- 100+ ölkədə `cover_photo_id` boşdur.
+- `countries.cover_photo_id IS NOT NULL`: 96
+- 93 ölkədə `cover_photo_id` boşdur.
 - Boş ölkələr runtime fallback pool-a düşür və çox kartda eyni şəkillər görünür.
 - Bəzi ölkələrdə qısa Unsplash API ID-ləri var, məsələn `OxtZP_h8tbQ`; bunlar tam `images.unsplash.com` URL deyil.
 - Məqsəd fallback-ları azaltmaq deyil, hər ölkəyə öz ölkəsinə aid gözəl, işlək və mümkün qədər unikal şəkil yazmaqdır.
@@ -151,6 +153,10 @@ npm run enrich:place-images -- --limit=80 --category=attraction,museum,landmark,
 npm run enrich:place-images -- --limit=80 --offset=60 --category=attraction,museum,landmark,historic,viewpoint --source=unsplash --apply
 npm run enrich:place-images -- --city=new-york --limit=25 --category=attraction,museum,landmark,historic,viewpoint --source=pexels --apply
 npm run seed:country-highlights -- --apply
+npm run seed:professional-blogs -- --apply
+npm run seed:professional-news -- --apply
+npm run localize:visa-notes -- --apply
+npm run seed:professional-companions -- --apply
 ```
 
 Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq üçün `--apply` və `.env.local` içində `SUPABASE_SERVICE_ROLE_KEY` lazımdır.
@@ -180,6 +186,8 @@ Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq ü�
 - `src/app/[locale]/places/[id]/page.tsx` - place detail; generik fallback abzas göstərməməlidir. Description yalnız real/curated mənbədən gələndə görünməli, boş olanda isə mövcud metadata/source/fakt kartları göstərilməlidir.
 - `scripts/import-open-travel-data.js` - Overpass/Wikipedia/GeoNames import pipeline
 - `scripts/seed-country-highlights.js` - ölkə highlight seed script-i
+- `scripts/localize-visa-notes.js` - `visa_info.notes_az/ru` sahələrində ingiliscə və ya boş qalan viza qeydlərini idarəli şəkildə lokalizasiya edir
+- `scripts/seed-professional-companions.js` - Yoldaş Tap üçün 15 peşəkar demo elan yaradır və köhnə açıq test elanlarını gizlədir
 - `src/messages/*.json` - i18n mesajları
 
 ## Database və Migration-lar
@@ -260,6 +268,9 @@ Hər import source/license metadata saxlamalıdır.
 - Country highlights seed.
 - Ölkə pagination və server-side qitə filterləri.
 - Bütün 189 ölkə üçün kart content enrichment: capital, 3 dildə short description, təxmini flight/hotel/daily qiymətlər və best months.
+- Blog səhifəsindəki test/junk published yazılar draft-a keçirildi və 16 peşəkar TravelAZ redaksiya bloqu əlavə edildi. Bütün published bloglarda cover image var. `scripts/seed-professional-blogs.js` idempotentdir və `npm run seed:professional-blogs -- --apply` ilə təkrar işlədilə bilər.
+- Xəbərlər bölməsi yenidən viza/giriş qaydaları məntiqinə keçirildi: 15 published xəbər var, hamısında cover image var, köhnə bəyənilməyən platforma xəbərləri DB-dən silindi. `scripts/seed-professional-news.js` idempotentdir və `npm run seed:professional-news -- --apply` ilə təkrar işlədilə bilər.
+- Kontent fərqi: Blog uzun bələdçi, marşrut və təcrübə məqaləsidir; Xəbər isə qısa viza/giriş qaydası update-i, vizasız istiqamət xatırlatması və praktik sərhəd bildirişidir. Xəbərdə dəqiq hüquqi/viza qərarı kimi iddia yazılmamalı, dəyişən qaydalar üçün rəsmi mənbə yoxlama qeydi saxlanmalıdır.
 
 ## Natamam Qalanlar
 
@@ -287,7 +298,7 @@ Hər import source/license metadata saxlamalıdır.
    - Place description-lar generic “TravelAZ bazasında saxlanan” mətnləri deyil; Wikipedia tapılarsa mənbəli summary, tapılmazsa OSM/DB-dəki real faktlardan SEO uyğun praktik mətn yazılır.
    - 2026-05-08 image update: place image coverage `401/2076`-dır. İstanbul və Parisdən əlavə global image batch başladıldı. `enrich-place-images` artıq `--offset` dəstəkləyir və Unsplash nəticəsini yalnız məkan/şəhər/kateqoriya uyğunluğu varsa qəbul edir; təsadüfi ilk nəticə yazılmamalıdır.
    - Qalan image işi bütün şəhərlər üzrə davam etməlidir: əvvəl `npm run audit:place-content`, sonra 80-lik `--offset` batch-lər. Uyğun şəkil tapılmayan məkanlar manual/Wikimedia review tələb edir.
-   - 2026-05-08 Pexels update: `PEXELS_API_KEY` ilə `enrich-place-images` içinə `--source=pexels` əlavə edildi. Coverage `593/2076` oldu. Növbəti image mərhələsi Pexels city batch-lərini qalan yüksək boşluqlu şəhərlərə tətbiq etməkdir.
+   - 2026-05-09 Pexels update: `PEXELS_API_KEY` ilə `enrich-place-images --source=pexels` batch-i davam etdirildi. Coverage `763/2076` oldu. Növbəti mərhələ qalan şəhərlərdə Pexels/Wikimedia/manual review batch-ləridir.
 
 4. Restoran və kafe datasını məşhur şəhərlərə yaymaq.
    - Mənbə yalnız OpenStreetMap/Overpass olmalıdır; Tripadvisor scraping edilməməlidir.

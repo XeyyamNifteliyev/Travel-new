@@ -235,7 +235,16 @@ export default function BlogDetailPage() {
         </div>
 
         {blog.cover_image && (
-          <Image src={blog.cover_image} alt={blog.title} width={1200} height={600} className="w-full rounded-2xl mb-8 shadow-lg" />
+          <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-2xl shadow-lg">
+            <Image
+              src={blog.cover_image}
+              alt={blog.title}
+              fill
+              sizes="(min-width: 768px) 768px, 100vw"
+              className="object-cover"
+              priority
+            />
+          </div>
         )}
 
         {author && (

@@ -20,6 +20,19 @@ function formatBlogDate(dateStr: string) {
   return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+function getBlogExcerpt(blog: Blog) {
+  const source = blog.excerpt || blog.content || blog.title;
+  const text = source
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (text.length <= 150) return text;
+  return `${text.slice(0, 147).trim()}...`;
+}
+
 interface BlogCardProps {
   blog: Blog;
   index?: number;
@@ -71,7 +84,7 @@ export function BlogCard({ blog, index = 0 }: BlogCardProps) {
           </h3>
 
           <p className="text-txt-sec text-sm font-medium line-clamp-2 mb-4 leading-snug flex-grow">
-            {blog.excerpt || blog.title}
+            {getBlogExcerpt(blog)}
           </p>
 
           <div className="flex items-center justify-between pt-3 border-t border-border/10">

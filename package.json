@@ -19,7 +19,11 @@
     "enrich:place-images": "node scripts/enrich-place-images.js",
     "enrich:restaurant-images": "node scripts/enrich-restaurant-images.js",
     "enrich:place-descriptions": "node scripts/enrich-place-descriptions.js",
-    "seed:curated-place-descriptions": "node scripts/seed-curated-place-descriptions.js"
+    "seed:curated-place-descriptions": "node scripts/seed-curated-place-descriptions.js",
+    "seed:professional-blogs": "node scripts/seed-professional-blogs.js",
+    "seed:professional-news": "node scripts/seed-professional-news.js",
+    "localize:visa-notes": "node scripts/localize-visa-notes.js",
+    "seed:professional-companions": "node scripts/seed-professional-companions.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",

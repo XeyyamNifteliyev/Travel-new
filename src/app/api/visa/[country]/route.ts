@@ -15,8 +15,8 @@ export async function GET(
       countries!inner(id, name_az, name_en, name_ru, slug, flag_emoji),
       visa_documents(
         id, document_name_az, document_name_en, document_name_ru,
-        description_az, is_required, document_category,
-        accepted_formats, max_size_mb, notes_az, sort_order
+        description_az, description_en, description_ru, is_required, document_category,
+        accepted_formats, max_size_mb, notes_az, notes_en, notes_ru, sort_order
       )
     `)
     .eq('countries.slug', slug)

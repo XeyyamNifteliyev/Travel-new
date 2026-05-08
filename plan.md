@@ -31,8 +31,12 @@ Tripadvisor content-i icazəsiz scrape və ya copy edilməyəcək. Product value
 - Paris üçün 20 görməli yer image batch-i işlədildi: 13 yeni place-specific şəkil yazıldı, 2 duplicate bloklandı, 5 məkan manual review üçün qaldı.
 - Image işi şəhər nümunələri ilə məhdud deyil: global `enrich-place-images` batch başladıldı və image coverage `401/2076` oldu. Script `--offset` dəstəkləyir və zəif Unsplash nəticələrini yazmır.
 - Növbəti image mərhələsi: bütün şəhərlər üçün 80-lik `--offset` batch-lər + tapılmayan məkanların manual/Wikimedia review-u.
-- Pexels ikinci image mənbəyi kimi `enrich-place-images`-ə əlavə edildi (`--source=pexels`). 2026-05-08 son status: image coverage `593/2076`.
-- Pexels batch-lər New York, Berlin, Seul, Budapeşt, Vyana, Bakı, Kuala Lumpur, Antalya, Cairo, Amsterdam, Barcelona və Prague üçün işlədildi. Növbəti addım qalan şəhərləri eyni batch strategiyası ilə davam etdirməkdir.
+- Pexels ikinci image mənbəyi kimi `enrich-place-images`-ə əlavə edildi (`--source=pexels`). 2026-05-09 son status: image coverage `763/2076`.
+- Pexels batch-lər New York, Berlin, Seul, Budapeşt, Vyana, Bakı, Kuala Lumpur, Antalya, Cairo, Amsterdam, Barcelona, Prague, Lisbon, Dubrovnik, Tokyo, Singapore, Tehran, Bangkok və Athens üçün işlədildi. Son əlavə batch Budapeşt, Vyana və New York üçün 7 yeni məkan şəkli yazdı. Növbəti addım qalan şəhərləri eyni batch strategiyası ilə davam etdirməkdir.
+- Blog səhifəsindəki 5 test/junk published yazı `draft` edildi və yerinə 16 peşəkar TravelAZ redaksiya yazısı əlavə olundu. Mövzular: Avropa səfər planı, İstanbul, viza sənədləri, Paris, solo səyahət, restoran/kafe seçimi, Tbilisi, Dubai, Roma, Yaponiya, Bali, London, Bangkok, Praqa, Budapeşt və Seul.
+- `scripts/seed-professional-blogs.js` və `npm run seed:professional-blogs -- --apply` əlavə edildi. Script idempotentdir: köhnə test yazılarını draft edir, mövcud professional title-ları update edir, çatışmayanları insert edir.
+- Xəbərlər bölməsi viza/giriş qaydaları yönümlü yeniləndi: 15 published xəbər var, hamısına cover image yazılıb, köhnə bəyənilməyən platforma xəbərləri DB-dən silinib.
+- `scripts/seed-professional-news.js` və `npm run seed:professional-news -- --apply` əlavə edildi. Xəbərlər qısa viza/giriş qaydası update-i və praktik sərhəd bildirişi kimi saxlanır; bloglar isə uzun bələdçi və təcrübə yazılarıdır.
 
 Cari DB snapshot:
 
@@ -45,7 +49,7 @@ Cari DB snapshot:
 | `place_reviews` | 0 |
 | `place_sources` | 1635 |
 | `external_import_logs` | 41 |
-| `countries.cover_photo_id IS NOT NULL` | 77 |
+| `countries.cover_photo_id IS NOT NULL` | 96 |
 | `cities.cover_photo_id IS NOT NULL` | 26 |
 
 ## Tamamlanan Əsas İşlər

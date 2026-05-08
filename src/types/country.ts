@@ -110,11 +110,15 @@ export interface VisaDocument {
   document_name_en?: string;
   document_name_ru?: string;
   description_az?: string;
+  description_en?: string;
+  description_ru?: string;
   is_required: boolean;
   document_category: string;
   accepted_formats?: string[];
   max_size_mb?: number;
   notes_az?: string;
+  notes_en?: string;
+  notes_ru?: string;
   sort_order: number;
 }
 

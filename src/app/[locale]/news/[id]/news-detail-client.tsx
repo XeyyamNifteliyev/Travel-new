@@ -6,9 +6,9 @@ import { useTranslations } from 'next-intl';
 import { ArrowLeft, Calendar, Tag } from 'lucide-react';
 
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
-  az: { visa_change: 'Viza dəyişiklikləri', general: 'Ümumi', travel_tip: 'Səyahət məsləhətləri' },
-  en: { visa_change: 'Visa changes', general: 'General', travel_tip: 'Travel tips' },
-  ru: { visa_change: 'Изменения виз', general: 'Общие', travel_tip: 'Советы' },
+  az: { visa_change: 'Viza yenilikləri', general: 'TravelAZ yenilikləri', travel_tip: 'Səyahət bildirişi' },
+  en: { visa_change: 'Visa updates', general: 'TravelAZ updates', travel_tip: 'Travel brief' },
+  ru: { visa_change: 'Визовые обновления', general: 'Новости TravelAZ', travel_tip: 'Тревел-сводка' },
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -37,8 +37,15 @@ export default function NewsDetailClient({ news, locale }: { news: Record<string
       </Link>
 
       {imageUrl && (
-        <div className="aspect-video rounded-xl overflow-hidden mb-6">
-          <Image src={imageUrl} alt={title} className="w-full h-full object-cover" fill />
+        <div className="relative mb-6 aspect-video overflow-hidden rounded-xl">
+          <Image
+            src={imageUrl}
+            alt={title}
+            className="object-cover"
+            fill
+            sizes="(min-width: 1024px) 896px, 100vw"
+            priority
+          />
         </div>
       )}
 

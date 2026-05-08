@@ -27,7 +27,7 @@ export default async function VisaDetailPage({
 
   const { data: docs } = await supabase
     .from('visa_documents')
-    .select('id, visa_type, document_name_az, document_name_en, document_name_ru, description_az, is_required, document_category, accepted_formats, max_size_mb, notes_az, sort_order')
+    .select('id, visa_type, document_name_az, document_name_en, document_name_ru, description_az, description_en, description_ru, is_required, document_category, accepted_formats, max_size_mb, notes_az, notes_en, notes_ru, sort_order')
     .eq('country_id', countryId)
     .order('sort_order');
 
@@ -50,11 +50,15 @@ export default async function VisaDetailPage({
         document_name_en: d.document_name_en as string | undefined,
         document_name_ru: d.document_name_ru as string | undefined,
         description_az: d.description_az as string | undefined,
+        description_en: d.description_en as string | undefined,
+        description_ru: d.description_ru as string | undefined,
         is_required: d.is_required as boolean,
         document_category: d.document_category as string,
         accepted_formats: d.accepted_formats as string[] | undefined,
         max_size_mb: d.max_size_mb as number | undefined,
         notes_az: d.notes_az as string | undefined,
+        notes_en: d.notes_en as string | undefined,
+        notes_ru: d.notes_ru as string | undefined,
         sort_order: d.sort_order as number,
       }))}
       locale={locale}

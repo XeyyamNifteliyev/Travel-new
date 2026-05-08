@@ -2,44 +2,12 @@
 
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { MessageCircle, Send, Loader2 } from 'lucide-react';
+import { Loader2, MessageCircle, Send } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
-
-const QUICK_QUESTIONS: Record<string, Record<string, string[]>> = {
-  az: {
-    required: [
-      'Hansı sənədlər tələb olunur?',
-      'Viza nə qədər vaxt aparır?',
-      'Randevu necə alınır?',
-      'Viza haqqı nə qədərdir?',
-      'Müraciət rədd edilərsə nə etməli?',
-    ],
-    not_required: [
-      'Qalma müddəti nə qədərdir?',
-      'Sərhəddə nə tələb olunur?',
-      'Qayıdış bileti lazımdır?',
-    ],
-    on_arrival: [
-      'Gəlişdə viza necə alınır?',
-      'Neçə gün qalmaq olar?',
-      'Viza haqqı varmı?',
-    ],
-  },
-  en: {
-    required: ['What documents are needed?', 'How long does it take?', 'How to get appointment?', 'What is the visa fee?'],
-    not_required: ['How long can I stay?', 'What is needed at border?', 'Return ticket required?'],
-    on_arrival: ['How to get visa on arrival?', 'How many days can I stay?', 'Is there a fee?'],
-  },
-  ru: {
-    required: ['Какие документы нужны?', 'Сколько времени занимает?', 'Как записаться?', 'Сколько стоит виза?'],
-    not_required: ['Сколько можно находиться?', 'Что нужно на границе?', 'Нужен обратный билет?'],
-    on_arrival: ['Как получить визу?', 'Сколько дней можно?', 'Есть ли сбор?'],
-  },
-};
 
 export default function VisaAIChat({
   countrySlug,
@@ -70,16 +38,17 @@ export default function VisaAIChat({
         body: JSON.stringify({ question, country_slug: countrySlug, locale }),
       });
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.answer || data.error }]);
+      setMessages((prev) => [...prev, { role: 'assistant', content: data.answer || data.error || t('aiError') }]);
     } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: 'Xəta baş verdi. Yenidən cəhd edin.' }]);
+      setMessages((prev) => [...prev, { role: 'assistant', content: t('aiError') }]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const typeKey = requirementType === 'not_required' || requirementType === 'on_arrival' ? requirementType : 'required';
-  const questions = (QUICK_QUESTIONS[locale] || QUICK_QUESTIONS.az)[typeKey] || QUICK_QUESTIONS.az.required;
+  const rawQuestions = t.raw(`aiQuestions.${typeKey}`) as string[];
+  const questions = Array.isArray(rawQuestions) ? rawQuestions : (t.raw('aiQuestions.required') as string[]);
 
   return (
     <div className="bg-bg-surface rounded-xl border border-border p-5 mt-6">

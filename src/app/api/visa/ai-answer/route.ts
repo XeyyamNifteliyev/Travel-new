@@ -9,6 +9,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Sual və ölkə tələb olunur' }, { status: 400 });
   }
 
+  const safeLocale = locale === 'en' || locale === 'ru' ? locale : 'az';
   const supabase = await createClient();
   const questionHash = await hashQuestion(question);
 
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
   if (countryRow) {
     const { data: cached } = await supabase
       .from('visa_qa_cache')
-      .select(`answer_az, answer_en, answer_ru, id`)
+      .select('answer_az, answer_en, answer_ru, id, hit_count')
       .eq('country_id', countryRow.id)
       .eq('question_hash', questionHash)
       .eq('is_valid', true)
@@ -29,11 +30,11 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (cached) {
-      const answer = cached[`answer_${locale}` as 'answer_az' | 'answer_en' | 'answer_ru'] || cached.answer_az;
+      const answer = cached[`answer_${safeLocale}` as 'answer_az' | 'answer_en' | 'answer_ru'] || cached.answer_az;
       if (answer) {
         await supabase
           .from('visa_qa_cache')
-          .update({ hit_count: (cached as { hit_count?: number }).hit_count ?? 0 + 1 })
+          .update({ hit_count: ((cached as { hit_count?: number }).hit_count ?? 0) + 1 })
           .eq('id', (cached as { id: string }).id);
         return NextResponse.json({ answer, from_cache: true });
       }
@@ -44,13 +45,13 @@ export async function POST(request: NextRequest) {
     .from('visa_info')
     .select(`
       *,
-      countries!inner(name_az, name_en, slug),
-      visa_documents(document_name_az, is_required, document_category)
+      countries!inner(name_az, name_en, name_ru, slug),
+      visa_documents(document_name_az, document_name_en, document_name_ru, is_required, document_category)
     `)
     .eq('countries.slug', country_slug)
     .single();
 
-  const context = buildVisaContext(visaData, country_slug);
+  const context = buildVisaContext(visaData, country_slug, safeLocale);
   const localeInstruction: Record<string, string> = {
     az: 'Azərbaycan dilində cavab ver.',
     en: 'Answer in English.',
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
   try {
     const provider = getProvider();
     const answer = await provider.generateText(
-      `${context}\n\n${localeInstruction[locale] || localeInstruction.az}\n\nSual: ${question}`
+      `${context}\n\n${localeInstruction[safeLocale]}\n\nSual: ${question}`
     );
 
     if (countryRow && answer) {
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
         is_valid: true,
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       };
-      cacheEntry[`answer_${locale}`] = answer;
+      cacheEntry[`answer_${safeLocale}`] = answer;
 
       await supabase.from('visa_qa_cache').upsert(cacheEntry, { onConflict: 'country_id,question_hash' });
     }
@@ -90,23 +91,34 @@ async function hashQuestion(question: string): Promise<string> {
   return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
 }
 
-function buildVisaContext(visaData: Record<string, unknown> | null, slug: string): string {
+function pickLocalized(row: Record<string, unknown>, field: string, locale: string): string {
+  return (
+    (row[`${field}_${locale}`] as string | undefined) ||
+    (row[`${field}_az`] as string | undefined) ||
+    (row[`${field}_en`] as string | undefined) ||
+    ''
+  );
+}
+
+function buildVisaContext(visaData: Record<string, unknown> | null, slug: string, locale: string): string {
   if (!visaData) {
     return `Ölkə: ${slug}. Ümumi viza qaydaları haqqında cavab ver. Azərbaycan pasportu kontekstində.`;
   }
 
   const docs = Array.isArray(visaData.visa_documents)
-    ? (visaData.visa_documents as { is_required: boolean; document_name_az: string }[])
+    ? (visaData.visa_documents as Record<string, unknown>[])
         .filter((d) => d.is_required)
-        .map((d) => d.document_name_az)
+        .map((d) => pickLocalized(d, 'document_name', locale))
         .join(', ')
     : '';
 
-  const country = visaData.countries as { name_az: string };
+  const country = visaData.countries as Record<string, unknown>;
+  const countryName = pickLocalized(country, 'name', locale) || pickLocalized(country, 'name', 'az');
+  const notes = pickLocalized(visaData, 'notes', locale);
 
   return `SEN: TravelAZ saytının viza assistentisən. Azərbaycan vətəndaşlarına kömək edirsən.
 
-ÖLKƏ: ${country.name_az}
+ÖLKƏ: ${countryName}
 Viza növü: ${visaData.requirement_type}
 E-viza: ${visaData.is_evisa ? 'Mövcuddur' : 'Mövcud deyil'}
 Viza haqqı: ${visaData.fee_usd ? `$${visaData.fee_usd}` : 'Pulsuz'}
@@ -118,7 +130,7 @@ TƏLƏB OLUNAN SƏNƏDLƏR:
 ${docs || 'Sənəd tələb olunmur'}
 
 QEYDLƏR:
-${(visaData.notes_az as string) || ''}
+${notes}
 
 CAVAB QAYDASI:
 - Dəqiq, aydın cavab ver

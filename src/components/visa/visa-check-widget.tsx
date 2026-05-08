@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Plane, ChevronDown, Loader2, ShieldCheck, AlertTriangle, FileText, Clock } from 'lucide-react';
 import type { VisaRequirement, VisaStatus } from '@/lib/visa/visalist-api';
 
@@ -22,55 +22,58 @@ const STATUS_CONFIG: Record<VisaStatus, { bg: string; text: string; icon: typeof
 const COUNTRY_OPTIONS = [
   { code: 'AZ', label: 'Azərbaycan 🇦🇿' },
   { code: 'TR', label: 'Türkiyə 🇹🇷' },
-  { code: 'RU', label: 'Россия 🇷🇺' },
-  { code: 'US', label: 'USA 🇺🇸' },
-  { code: 'GB', label: 'UK 🇬🇧' },
-  { code: 'DE', label: 'Deutschland 🇩🇪' },
-  { code: 'FR', label: 'France 🇫🇷' },
-  { code: 'GE', label: 'საქართველო 🇬🇪' },
-  { code: 'IR', label: 'ایران 🇮🇷' },
-  { code: 'AE', label: 'UAE 🇦🇪' },
-  { code: 'CN', label: '中国 🇨🇳' },
-  { code: 'IN', label: 'India 🇮🇳' },
-  { code: 'BR', label: 'Brasil 🇧🇷' },
-  { code: 'JP', label: '日本 🇯🇵' },
-  { code: 'KR', label: '한국 🇰🇷' },
-  { code: 'IT', label: 'Italia 🇮🇹' },
-  { code: 'ES', label: 'España 🇪🇸' },
-  { code: 'SA', label: 'السعودية 🇸🇦' },
-  { code: 'UZ', label: "O'zbekiston 🇺🇿" },
-  { code: 'KZ', label: 'Қазақстан 🇰🇿' },
-  { code: 'NL', label: 'Nederland 🇳🇱' },
-  { code: 'PT', label: 'Portugal 🇵🇹' },
-  { code: 'GR', label: 'Ελλάδα 🇬🇷' },
-  { code: 'CZ', label: 'Česko 🇨🇿' },
-  { code: 'HU', label: 'Magyarország 🇭🇺' },
-  { code: 'PL', label: 'Polska 🇵🇱' },
-  { code: 'EG', label: 'مصر 🇪🇬' },
-  { code: 'MA', label: 'المغرب 🇲🇦' },
-  { code: 'TH', label: 'ไทย 🇹🇭' },
-  { code: 'MY', label: 'Malaysia 🇲🇾' },
-  { code: 'SG', label: 'Singapore 🇸🇬' },
+  { code: 'RU', label: 'Rusiya 🇷🇺' },
+  { code: 'US', label: 'ABŞ 🇺🇸' },
+  { code: 'GB', label: 'Böyük Britaniya 🇬🇧' },
+  { code: 'DE', label: 'Almaniya 🇩🇪' },
+  { code: 'FR', label: 'Fransa 🇫🇷' },
+  { code: 'GE', label: 'Gürcüstan 🇬🇪' },
+  { code: 'IR', label: 'İran 🇮🇷' },
+  { code: 'AE', label: 'BƏƏ 🇦🇪' },
+  { code: 'CN', label: 'Çin 🇨🇳' },
+  { code: 'IN', label: 'Hindistan 🇮🇳' },
+  { code: 'BR', label: 'Braziliya 🇧🇷' },
+  { code: 'JP', label: 'Yaponiya 🇯🇵' },
+  { code: 'KR', label: 'Cənubi Koreya 🇰🇷' },
+  { code: 'IT', label: 'İtaliya 🇮🇹' },
+  { code: 'ES', label: 'İspaniya 🇪🇸' },
+  { code: 'SA', label: 'Səudiyyə Ərəbistanı 🇸🇦' },
+  { code: 'UZ', label: 'Özbəkistan 🇺🇿' },
+  { code: 'KZ', label: 'Qazaxıstan 🇰🇿' },
+  { code: 'NL', label: 'Niderland 🇳🇱' },
+  { code: 'PT', label: 'Portuqaliya 🇵🇹' },
+  { code: 'GR', label: 'Yunanıstan 🇬🇷' },
+  { code: 'CZ', label: 'Çexiya 🇨🇿' },
+  { code: 'HU', label: 'Macarıstan 🇭🇺' },
+  { code: 'PL', label: 'Polşa 🇵🇱' },
+  { code: 'EG', label: 'Misir 🇪🇬' },
+  { code: 'MA', label: 'Mərakeş 🇲🇦' },
+  { code: 'TH', label: 'Tailand 🇹🇭' },
+  { code: 'MY', label: 'Malayziya 🇲🇾' },
+  { code: 'SG', label: 'Sinqapur 🇸🇬' },
   { code: 'AU', label: 'Avstraliya 🇦🇺' },
   { code: 'CA', label: 'Kanada 🇨🇦' },
-  { code: 'CH', label: 'Schweiz 🇨🇭' },
-  { code: 'SE', label: 'Sverige 🇸🇪' },
-  { code: 'NO', label: 'Norge 🇳🇴' },
-  { code: 'UA', label: 'Україна 🇺🇦' },
-  { code: 'BY', label: 'Беларусь 🇧🇾' },
-  { code: 'IL', label: 'ישראל 🇮🇱' },
-  { code: 'QA', label: 'قطر 🇶🇦' },
-  { code: 'KW', label: 'الكويت 🇰🇼' },
-  { code: 'VN', label: 'Việt Nam 🇻🇳' },
-  { code: 'ID', label: 'Indonesia 🇮🇩' },
-  { code: 'PH', label: 'Pilipinas 🇵🇭' },
-  { code: 'AT', label: 'Österreich 🇦🇹' },
-  { code: 'BE', label: 'België 🇧🇪' },
+  { code: 'CH', label: 'İsveçrə 🇨🇭' },
+  { code: 'SE', label: 'İsveç 🇸🇪' },
+  { code: 'NO', label: 'Norveç 🇳🇴' },
+  { code: 'UA', label: 'Ukrayna 🇺🇦' },
+  { code: 'BY', label: 'Belarus 🇧🇾' },
+  { code: 'IL', label: 'İsrail 🇮🇱' },
+  { code: 'QA', label: 'Qətər 🇶🇦' },
+  { code: 'KW', label: 'Küveyt 🇰🇼' },
+  { code: 'VN', label: 'Vyetnam 🇻🇳' },
+  { code: 'ID', label: 'İndoneziya 🇮🇩' },
+  { code: 'PH', label: 'Filippin 🇵🇭' },
+  { code: 'AT', label: 'Avstriya 🇦🇹' },
+  { code: 'BE', label: 'Belçika 🇧🇪' },
 ];
+
+const SELECT_OPTION_CLASS = 'bg-white text-black';
 
 export function VisaCheckWidget({ defaultPassport = 'AZ', defaultDestination, compact }: VisaCheckWidgetProps) {
   const t = useTranslations('visaCheck');
-  const [passport, setPassport] = useState(defaultPassport);
+  const locale = useLocale();
+  const passport = 'AZ';
   const [destination, setDestination] = useState(defaultDestination ?? '');
   const [result, setResult] = useState<VisaRequirement | null>(null);
   const [loading, setLoading] = useState(false);
@@ -83,7 +86,7 @@ export function VisaCheckWidget({ defaultPassport = 'AZ', defaultDestination, co
     setResult(null);
 
     try {
-      const res = await fetch(`/api/visa/check?passport=${passport}&destination=${destination}`);
+      const res = await fetch(`/api/visa/check?passport=${passport}&destination=${destination}&locale=${locale}`);
       if (!res.ok) throw new Error('Failed');
       const data: VisaRequirement = await res.json();
       setResult(data);
@@ -100,12 +103,10 @@ export function VisaCheckWidget({ defaultPassport = 'AZ', defaultDestination, co
         <div className="flex items-center gap-3">
           <select
             value={passport}
-            onChange={(e) => setPassport(e.target.value)}
-            className="bg-white/5 border border-border rounded-lg px-3 py-2 text-sm text-txt focus:ring-2 focus:ring-primary"
+            disabled
+            className="bg-white/5 border border-border rounded-lg px-3 py-2 text-sm text-txt opacity-80 focus:ring-2 focus:ring-primary"
           >
-            {COUNTRY_OPTIONS.map((c) => (
-              <option key={c.code} value={c.code}>{c.label}</option>
-            ))}
+            <option value="AZ" className={SELECT_OPTION_CLASS}>Azərbaycan 🇦🇿</option>
           </select>
           <Plane className="w-4 h-4 text-primary flex-shrink-0" />
           <select
@@ -113,9 +114,9 @@ export function VisaCheckWidget({ defaultPassport = 'AZ', defaultDestination, co
             onChange={(e) => setDestination(e.target.value)}
             className="bg-white/5 border border-border rounded-lg px-3 py-2 text-sm text-txt focus:ring-2 focus:ring-primary"
           >
-            <option value="">{t('selectDestination')}</option>
+            <option value="" className={SELECT_OPTION_CLASS}>{t('selectDestination')}</option>
             {COUNTRY_OPTIONS.filter((c) => c.code !== passport).map((c) => (
-              <option key={c.code} value={c.code}>{c.label}</option>
+              <option key={c.code} value={c.code} className={SELECT_OPTION_CLASS}>{c.label}</option>
             ))}
           </select>
           <button
@@ -153,12 +154,10 @@ export function VisaCheckWidget({ defaultPassport = 'AZ', defaultDestination, co
           <div className="relative">
             <select
               value={passport}
-              onChange={(e) => setPassport(e.target.value)}
-              className="w-full bg-white/5 border border-border rounded-xl px-4 py-3 text-sm text-txt appearance-none focus:ring-2 focus:ring-primary"
+              disabled
+              className="w-full bg-white/5 border border-border rounded-xl px-4 py-3 text-sm text-txt opacity-80 appearance-none focus:ring-2 focus:ring-primary"
             >
-              {COUNTRY_OPTIONS.map((c) => (
-                <option key={c.code} value={c.code}>{c.label}</option>
-              ))}
+              <option value="AZ" className={SELECT_OPTION_CLASS}>Azərbaycan 🇦🇿</option>
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-txt-sec pointer-events-none" />
           </div>
@@ -172,9 +171,9 @@ export function VisaCheckWidget({ defaultPassport = 'AZ', defaultDestination, co
               onChange={(e) => setDestination(e.target.value)}
               className="w-full bg-white/5 border border-border rounded-xl px-4 py-3 text-sm text-txt appearance-none focus:ring-2 focus:ring-primary"
             >
-              <option value="">{t('selectDestination')}</option>
+              <option value="" className={SELECT_OPTION_CLASS}>{t('selectDestination')}</option>
               {COUNTRY_OPTIONS.filter((c) => c.code !== passport).map((c) => (
-                <option key={c.code} value={c.code}>{c.label}</option>
+                <option key={c.code} value={c.code} className={SELECT_OPTION_CLASS}>{c.label}</option>
               ))}
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-txt-sec pointer-events-none" />

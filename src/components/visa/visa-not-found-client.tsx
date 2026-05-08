@@ -75,10 +75,10 @@ export default function VisaNotFoundClient({ slug, locale }: { slug: string; loc
         router.push(`/${locale}/visa/${data.slug}`);
         router.refresh();
       } else {
-        setError(data.error || 'Xəta baş verdi');
+        setError(data.error || t('aiError'));
       }
     } catch {
-      setError('Xəta baş verdi. Yenidən cəhd edin.');
+      setError(t('aiError'));
     } finally {
       setIsGenerating(false);
     }

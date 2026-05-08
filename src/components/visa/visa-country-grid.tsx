@@ -77,7 +77,7 @@ export default function VisaCountryGrid({ countries }: VisaCountryGridProps) {
             <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
               <span className="text-[10px] text-txt-sec/50 flex items-center gap-1">
                 <ExternalLink className="w-2.5 h-2.5" />
-                Wikipedia
+                {t('sourceShort')}
               </span>
             </div>
           </Link>

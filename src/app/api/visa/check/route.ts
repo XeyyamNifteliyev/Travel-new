@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const passport = searchParams.get('passport');
   const destination = searchParams.get('destination');
+  const locale = searchParams.get('locale') === 'en' || searchParams.get('locale') === 'ru' ? searchParams.get('locale') : 'az';
 
   if (!passport || !destination) {
     return NextResponse.json({ error: 'passport and destination are required' }, { status: 400 });
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
 
         const { data: visaRow } = await supabase
           .from('visa_info')
-          .select('requirement_type, notes_az, notes_en, max_stay_days, countries!inner(slug)')
+          .select('requirement_type, notes_az, notes_en, notes_ru, max_stay_days, countries!inner(slug)')
           .eq('countries.slug', countrySlug)
           .maybeSingle();
 
@@ -56,7 +57,7 @@ export async function GET(req: NextRequest) {
             destination,
             STATUS_MAP[visaRow.requirement_type] || 'unknown',
             visaRow.max_stay_days ? `${visaRow.max_stay_days} gün` : '',
-            visaRow.notes_az || visaRow.notes_en || '',
+            visaRow[`notes_${locale}` as 'notes_az' | 'notes_en' | 'notes_ru'] || visaRow.notes_az || visaRow.notes_en || '',
             visaRow.requirement_type,
           );
         }

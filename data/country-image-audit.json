@@ -1,33 +1,20 @@
 {
-  "generated_at": "2026-05-07T20:42:38.441Z",
+  "generated_at": "2026-05-08T20:34:20.388Z",
   "totals": {
     "countries": 189,
-    "with_cover_photo": 83,
-    "missing_cover_photo": 106,
+    "with_cover_photo": 96,
+    "missing_cover_photo": 93,
     "invalid_or_short": 5,
     "duplicate_groups": 0,
-    "needs_attention": 111
+    "needs_attention": 98
   },
   "duplicate_groups": [],
   "featured_risk": [],
   "missing_sample": [
-    "zambia",
-    "comoros",
     "equatorial-guinea",
-    "jordan",
-    "latvia",
-    "mauritania",
-    "montenegro",
-    "north-macedonia",
-    "paraguay",
-    "samoa",
-    "senegal",
-    "somalia",
     "vietnam",
     "japan",
-    "trinidad-and-tobago",
     "vanuatu",
-    "uganda",
     "china",
     "iceland",
     "sri-lanka",
@@ -50,7 +37,20 @@
     "laos",
     "liberia",
     "madagascar",
-    "mali"
+    "mali",
+    "mauritius",
+    "micronesia",
+    "malta",
+    "mexico",
+    "moldova",
+    "togo",
+    "mozambique",
+    "namibia",
+    "niger",
+    "north-korea",
+    "nauru",
+    "nicaragua",
+    "nigeria"
   ],
   "invalid_sample": [
     {
@@ -76,118 +76,8 @@
   ],
   "needs_attention": [
     {
-      "slug": "zambia",
-      "name_en": "Zambia",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "comoros",
-      "name_en": "Comoros",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
       "slug": "equatorial-guinea",
       "name_en": "Equatorial Guinea",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "jordan",
-      "name_en": "Jordan",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "latvia",
-      "name_en": "Latvia",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "mauritania",
-      "name_en": "Mauritania",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "montenegro",
-      "name_en": "Montenegro",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "north-macedonia",
-      "name_en": "North Macedonia",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "paraguay",
-      "name_en": "Paraguay",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "samoa",
-      "name_en": "Samoa",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "senegal",
-      "name_en": "Senegal",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "somalia",
-      "name_en": "Somalia",
       "popular_rank": 99,
       "is_featured": false,
       "cover_photo_id": null,
@@ -216,28 +106,8 @@
       "reason": "missing"
     },
     {
-      "slug": "trinidad-and-tobago",
-      "name_en": "Trinidad and Tobago",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
       "slug": "vanuatu",
       "name_en": "Vanuatu",
-      "popular_rank": 99,
-      "is_featured": false,
-      "cover_photo_id": null,
-      "cover_photo_alt": null,
-      "normalized_photo": null,
-      "reason": "missing"
-    },
-    {
-      "slug": "uganda",
-      "name_en": "Uganda",
       "popular_rank": 99,
       "is_featured": false,
       "cover_photo_id": null,

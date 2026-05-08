@@ -2,7 +2,16 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Clock, DollarSign, Calendar, ExternalLink, Shield, AlertTriangle } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Calendar,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  Shield,
+  ShieldCheck,
+} from 'lucide-react';
 import VisaDocumentChecklist from './visa-document-checklist';
 import VisaAIChat from './visa-ai-chat';
 import type { VisaDocument } from '@/types/country';
@@ -21,7 +30,7 @@ interface VisaDetailClientProps {
   locale: string;
 }
 
-const TYPE_LABELS_AZ: Record<string, string> = {
+const TYPE_LABELS: Record<string, string> = {
   not_required: 'notRequired',
   on_arrival: 'onArrival',
   e_visa: 'eVisa',
@@ -35,13 +44,13 @@ const TYPE_COLORS: Record<string, string> = {
   required: 'text-red-400 bg-red-500/10 border-red-500/20',
 };
 
-function timeAgo(dateStr: string): string {
+function timeAgo(dateStr: string, t: ReturnType<typeof useTranslations<'visa'>>): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days === 0) return 'bugün';
-  if (days === 1) return '1 gün əvvəl';
-  if (days < 30) return `${days} gün əvvəl`;
-  return `${Math.floor(days / 30)} ay əvvəl`;
+  if (days <= 0) return t('today');
+  if (days === 1) return t('yesterday');
+  if (days < 30) return t('daysAgo', { count: days });
+  return t('monthsAgo', { count: Math.floor(days / 30) });
 }
 
 export default function VisaDetailClient({ country, visa, documents, locale }: VisaDetailClientProps) {
@@ -59,7 +68,7 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
   const officialUrl = visa.official_url as string | null;
   const appointmentUrl = visa.appointment_url as string | null;
   const lastVerified = visa.last_verified_at as string | null;
-  const notes = (visa[`notes_${locale}`] as string) || (visa.notes_az as string) || '';
+  const notes = (visa[`notes_${locale}`] as string) || (visa.notes_az as string) || (visa.notes_en as string) || '';
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
@@ -72,10 +81,10 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
         <span className="text-5xl">{country.flag_emoji}</span>
         <div className="flex-1">
           <h1 className="text-3xl font-bold">{name}</h1>
-          <p className="text-txt-sec text-sm mt-1">Azərbaycan Pasportu — Viza Tələbləri</p>
+          <p className="text-txt-sec text-sm mt-1">{t('detailSubtitle')}</p>
         </div>
         <div className={`px-3 py-1.5 rounded-full text-sm font-medium border ${TYPE_COLORS[requirementType] || ''}`}>
-          {t(TYPE_LABELS_AZ[requirementType] || 'required')}
+          {t(TYPE_LABELS[requirementType] || 'required')}
         </div>
       </div>
 
@@ -110,14 +119,16 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
           <Calendar className="w-5 h-5 text-accent mt-0.5 shrink-0" />
           <div>
             <p className="text-xs text-txt-sec">{maxStayDays ? t('maxStay') : t('validity')}</p>
-            <p className="font-semibold">{maxStayDays ? `${maxStayDays} ${t('days')}` : validityDays ? `${validityDays} ${t('days')}` : '—'}</p>
+            <p className="font-semibold">
+              {maxStayDays ? `${maxStayDays} ${t('days')}` : validityDays ? `${validityDays} ${t('days')}` : t('notAvailable')}
+            </p>
           </div>
         </div>
       </div>
 
       {isEvisa && evisaUrl && (
         <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 mb-6 flex items-center gap-3">
-          <span className="text-lg">✅</span>
+          <ShieldCheck className="w-5 h-5 text-green-400 shrink-0" />
           <div className="flex-1">
             <p className="text-green-400 font-medium text-sm">{t('evisaAvailable')}</p>
           </div>
@@ -163,7 +174,7 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
           {lastVerified && (
             <p className="mt-1 flex items-center gap-1 text-xs">
               <Shield className="w-3 h-3" />
-              {t('lastVerified')}: {timeAgo(lastVerified)}
+              {t('lastVerified')}: {timeAgo(lastVerified, t)}
             </p>
           )}
           <a
