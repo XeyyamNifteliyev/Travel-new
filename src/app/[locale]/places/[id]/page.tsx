@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { mapPlaceReview, mapPlaceToDetail } from '@/lib/open-travel-data';
 import PlaceHelpfulButton from '@/components/place/place-helpful-button';
 import PlaceReviewForm from '@/components/place/place-review-form';
+import { getUnsplashUrl } from '@/lib/unsplash';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { PlaceReviewWithAuthorRow, PlaceSourceRow, PlaceWithRelationsRow } from '@/types/place';
@@ -15,18 +16,86 @@ interface PageProps {
   params: Promise<{ locale: string; id: string }>;
 }
 
+interface AboutFact {
+  label: string;
+  value: string;
+  href?: string;
+}
+
+function getRawTags(rawData: Record<string, unknown> | undefined): Record<string, string> {
+  const tags = rawData?.tags;
+  if (!tags || typeof tags !== 'object' || Array.isArray(tags)) return {};
+  return Object.fromEntries(
+    Object.entries(tags as Record<string, unknown>)
+      .filter(([, value]) => typeof value === 'string' && value.trim().length > 0)
+      .map(([key, value]) => [key, String(value)])
+  );
+}
+
+function wikipediaUrl(value?: string) {
+  if (!value) return null;
+  const [lang, ...titleParts] = value.split(':');
+  const title = titleParts.join(':');
+  if (!lang || !title) return null;
+  return `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title.replaceAll(' ', '_'))}`;
+}
+
+function truncateMeta(text: string, maxLength = 155) {
+  const cleaned = text.replace(/\s+/g, ' ').trim();
+  if (cleaned.length <= maxLength) return cleaned;
+  return `${cleaned.slice(0, maxLength - 1).trim()}…`;
+}
+
+function schemaTypeForCategory(category: string) {
+  if (category === 'restaurant') return 'Restaurant';
+  if (category === 'cafe') return 'CafeOrCoffeeShop';
+  if (category === 'hotel') return 'Hotel';
+  return 'TouristAttraction';
+}
+
+function localizedText(row: {
+  description_az?: string | null;
+  description_en?: string | null;
+  description_ru?: string | null;
+}, locale: string) {
+  if (locale === 'en') return row.description_en || row.description_az || row.description_ru || '';
+  if (locale === 'ru') return row.description_ru || row.description_az || row.description_en || '';
+  return row.description_az || row.description_en || row.description_ru || '';
+}
+
+function firstRelation<T>(value: T | T[] | null | undefined): T | null {
+  if (Array.isArray(value)) return value[0] || null;
+  return value || null;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = await params;
+  const { id, locale } = await params;
   const supabase = await createClient();
   const { data } = await supabase
     .from('places')
-    .select('name, description_az, description_en')
+    .select('name, category, description_az, description_en, description_ru, cities(name_az, name_en, name_ru), countries(name_az, name_en, name_ru)')
     .eq('id', id)
     .maybeSingle();
+  const description = data ? localizedText(data, locale) : '';
+  const cityRelation = firstRelation(data?.cities);
+  const city = locale === 'en'
+    ? cityRelation?.name_en || cityRelation?.name_az
+    : locale === 'ru'
+      ? cityRelation?.name_ru || cityRelation?.name_az
+      : cityRelation?.name_az || cityRelation?.name_en;
+  const title = data?.name ? `${data.name}${city ? `, ${city}` : ''} - TravelAZ` : 'Place - TravelAZ';
+  const fallbackDescription = data?.name && city
+    ? `${data.name} ${city} səyahət bələdçisi: ünvan, xəritə, rəsmi link, rəylər və praktiki məlumatlar.`
+    : '';
 
   return {
-    title: data?.name ? `${data.name} - TravelAZ` : 'Place - TravelAZ',
-    description: data?.description_az || data?.description_en || '',
+    title,
+    description: truncateMeta(description || fallbackDescription),
+    openGraph: {
+      title,
+      description: truncateMeta(description || fallbackDescription),
+      type: 'article',
+    },
   };
 }
 
@@ -64,34 +133,76 @@ export default async function PlaceDetailPage({ params }: PageProps) {
 
   const reviews = ((reviewRows || []) as PlaceReviewWithAuthorRow[]).map(mapPlaceReview);
   const sources = (sourceRows || []) as PlaceSourceRow[];
+  const categoryLabel = t(`category${place.category.charAt(0).toUpperCase()}${place.category.slice(1)}`);
+  const heroImageUrl = place.coverPhotoUrl
+    || (place.coverPhotoId ? getUnsplashUrl(place.coverPhotoId, { w: 1200, h: 620 }) : null)
+    || getUnsplashUrl(`${place.slug}-${place.category}`, { w: 1200, h: 620 });
+  const subcategoryLabel = place.subcategory && place.subcategory !== place.category
+    ? place.subcategory.replaceAll(';', ', ').replaceAll('_', ' ')
+    : null;
+  const aboutText = place.description;
+  const rawTags = getRawTags(place.rawData);
+  const wikipediaHref = wikipediaUrl(rawTags.wikipedia);
+  const aboutFacts: AboutFact[] = [
+    { label: t('category'), value: categoryLabel },
+    { label: t('location'), value: place.city?.name || place.country?.name || '-' },
+    place.address ? { label: t('address'), value: place.address } : null,
+    subcategoryLabel ? { label: t('subcategory'), value: subcategoryLabel } : null,
+    place.openingHours ? { label: t('openingHours'), value: place.openingHours } : null,
+    place.phone ? { label: t('phone'), value: place.phone } : null,
+    place.website ? { label: t('officialWebsite'), value: t('website'), href: place.website } : null,
+    place.lat && place.lng ? { label: t('coordinates'), value: `${place.lat.toFixed(4)}, ${place.lng.toFixed(4)}` } : null,
+    wikipediaHref ? { label: 'Wikipedia', value: rawTags.wikipedia, href: wikipediaHref } : null,
+    rawTags.wikidata ? { label: 'Wikidata', value: rawTags.wikidata, href: `https://www.wikidata.org/wiki/${rawTags.wikidata}` } : null,
+    { label: t('dataSource'), value: place.source || 'open data' },
+  ].filter(Boolean) as AboutFact[];
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': schemaTypeForCategory(place.category),
+    name: place.name,
+    description: aboutText || undefined,
+    image: heroImageUrl,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://travelaz.az'}/${locale}/places/${place.id}`,
+    address: place.address || undefined,
+    telephone: place.phone || undefined,
+    sameAs: place.website ? [place.website] : undefined,
+    geo: place.lat && place.lng ? {
+      '@type': 'GeoCoordinates',
+      latitude: place.lat,
+      longitude: place.lng,
+    } : undefined,
+    aggregateRating: place.ratingSummary > 0 ? {
+      '@type': 'AggregateRating',
+      ratingValue: place.ratingSummary,
+      reviewCount: Math.max(place.reviewCount, 1),
+    } : undefined,
+  };
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       <Link href={place.city ? `/${locale}/cities/${place.city.slug}` : `/${locale}/countries/${place.country?.slug || ''}`} className="inline-flex items-center gap-2 text-txt-sec hover:text-primary mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         {place.city?.name || place.country?.name || t('back')}
       </Link>
 
       <section className="rounded-3xl border border-border bg-bg-surface overflow-hidden mb-8">
-        {place.coverPhotoUrl && (
-          place.website ? (
-            <a href={place.website} target="_blank" rel="noreferrer" className="block relative h-52 md:h-72 overflow-hidden group/img">
-              <Image src={place.coverPhotoUrl} alt={place.name} fill className="object-cover group-hover/img:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, 896px" priority />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-<span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 text-sm font-medium text-white bg-primary/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg hover:bg-primary transition-colors">
-                <ExternalLink className="w-4 h-4" />
-                {t('visitWebsite')}
-              </span>
+        <div className="relative h-56 md:h-80 overflow-hidden">
+          <Image src={heroImageUrl} alt={`${place.name}${place.city?.name ? `, ${place.city.name}` : ''}`} fill className="object-cover" sizes="(max-width: 768px) 100vw, 896px" priority />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+          {place.website && (
+            <a href={place.website} target="_blank" rel="noreferrer" className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-primary/90">
+              <ExternalLink className="w-4 h-4" />
+              {t('visitWebsite')}
             </a>
-          ) : (
-            <div className="relative h-52 md:h-72 overflow-hidden">
-              <Image src={place.coverPhotoUrl} alt={place.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 896px" priority />
-            </div>
-          )
-        )}
+          )}
+        </div>
         <div className="p-6 md:p-8">
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-[11px] px-2.5 py-1 rounded-full bg-primary/10 text-primary font-semibold uppercase">{place.category}</span>
+            <span className="text-[11px] px-2.5 py-1 rounded-full bg-primary/10 text-primary font-semibold uppercase">{categoryLabel}</span>
             {place.city?.name && (
               <span className="inline-flex items-center gap-1 text-xs text-txt-sec">
                 <MapPin className="w-3 h-3" />
@@ -100,7 +211,7 @@ export default async function PlaceDetailPage({ params }: PageProps) {
             )}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold">{place.name}</h1>
-          {place.description && <p className="text-txt-sec mt-4 max-w-3xl leading-7">{place.description}</p>}
+          {aboutText && <p className="text-txt-sec mt-4 max-w-3xl leading-7">{aboutText}</p>}
           <div className="mt-4 flex items-center gap-4">
             <div className="inline-flex items-center gap-2 text-lg font-bold">
               <Star className="w-4 h-4 text-amber-500 fill-current" />
@@ -113,6 +224,26 @@ export default async function PlaceDetailPage({ params }: PageProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
         <section className="space-y-6">
+          <div className="rounded-2xl border border-border bg-bg-surface p-5">
+            <h2 className="font-bold text-xl mb-3">{t('aboutPlace')}</h2>
+            {aboutText && <p className="text-sm leading-7 text-txt-sec">{aboutText}</p>}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+              {aboutFacts.map((fact) => (
+                <div key={`${fact.label}-${fact.value}`} className="rounded-xl border border-border bg-bg p-3">
+                  <div className="text-xs text-txt-sec">{fact.label}</div>
+                  {fact.href ? (
+                    <a href={fact.href} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                      {fact.value}
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  ) : (
+                    <div className="font-semibold mt-1 break-words">{fact.value}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
           <PlaceReviewForm placeId={place.id} locale={locale} />
 
           <div className="rounded-2xl border border-border bg-bg-surface p-5">
@@ -151,6 +282,7 @@ export default async function PlaceDetailPage({ params }: PageProps) {
               {place.address && <p className="flex gap-2"><MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" /> <span>{place.address}</span></p>}
               {place.phone && <p className="flex gap-2"><Phone className="w-4 h-4 text-primary shrink-0 mt-0.5" /> <span>{place.phone}</span></p>}
               {place.email && <p className="flex gap-2"><Mail className="w-4 h-4 text-primary shrink-0 mt-0.5" /> <span>{place.email}</span></p>}
+              {place.lat && place.lng && <p className="flex gap-2"><MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" /> <span>{place.lat.toFixed(4)}, {place.lng.toFixed(4)}</span></p>}
               {place.website && (
                 <a href={place.website} target="_blank" rel="noreferrer" className="flex gap-2 hover:text-primary">
                   <Globe className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -158,6 +290,18 @@ export default async function PlaceDetailPage({ params }: PageProps) {
                 </a>
               )}
               {place.openingHours && <p className="text-txt-sec">{t('openingHours')}: {place.openingHours}</p>}
+              {place.city && (
+                <Link href={`/${locale}/cities/${place.city.slug}`} className="flex gap-2 hover:text-primary">
+                  <MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{place.city.name}</span>
+                </Link>
+              )}
+              {place.country && (
+                <Link href={`/${locale}/countries/${place.country.slug}`} className="flex gap-2 hover:text-primary">
+                  <Globe className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{place.country.name}</span>
+                </Link>
+              )}
             </div>
           </div>
 

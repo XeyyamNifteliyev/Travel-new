@@ -234,7 +234,16 @@
     "emptyReviews": "Пока нет отзывов. Первые отзывы TravelAZ появятся здесь после подключения review-системы.",
     "details": "Подробности",
     "website": "Вебсайт",
+    "officialWebsite": "Официальный сайт",
     "visitWebsite": "Перейти на сайт →",
+    "aboutPlace": "О месте",
+    "category": "Категория",
+    "subcategory": "Подкатегория",
+    "location": "Локация",
+    "address": "Адрес",
+    "phone": "Телефон",
+    "coordinates": "Координаты",
+    "dataSource": "Источник данных",
     "openingHours": "Часы работы",
     "sources": "Источники и лицензия",
     "sourceFallback": "Информация об источнике пока не добавлена.",
@@ -279,7 +288,8 @@
     "categoryNightlife": "Ночная жизнь",
     "categoryTransport": "Транспорт",
     "categoryOther": "Другое",
-    "emptyCategory": "В этой категории пока нет мест"
+    "emptyCategory": "В этой категории пока нет мест",
+    "viewDetails": "Подробнее"
   },
   "auth": {
     "loginTitle": "Войдите в аккаунт",

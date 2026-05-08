@@ -11,12 +11,15 @@
     "enrich:images": "node scripts/enrich-images.js",
     "audit:country-images": "node scripts/audit-country-images.js",
     "audit:country-content": "node scripts/audit-country-content.js",
+    "audit:place-content": "node scripts/audit-place-content.js",
     "enrich:country-content": "node scripts/enrich-country-content.js",
     "audit:food-places": "node scripts/audit-food-places.js",
     "import:food-places": "node scripts/import-food-places.js",
     "seed:country-highlights": "node scripts/seed-country-highlights.js",
     "enrich:place-images": "node scripts/enrich-place-images.js",
-    "enrich:restaurant-images": "node scripts/enrich-restaurant-images.js"
+    "enrich:restaurant-images": "node scripts/enrich-restaurant-images.js",
+    "enrich:place-descriptions": "node scripts/enrich-place-descriptions.js",
+    "seed:curated-place-descriptions": "node scripts/seed-curated-place-descriptions.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",

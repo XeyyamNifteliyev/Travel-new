@@ -136,12 +136,18 @@ npm run enrich:images -- --type=cities --limit=20 --apply
 npm run enrich:images -- --type=countries --limit=50 --apply
 npm run audit:country-images
 npm run audit:country-content
+npm run audit:place-content
 npm run audit:food-places
 npm run enrich:country-content -- --limit=30 --dry-run
 npm run enrich:country-content -- --limit=30 --apply
 npm run import:food-places -- --city=istanbul --dry-run
 npm run import:food-places -- --city=istanbul --apply
 npm run import:food-places -- --limit=10 --city-limit=10 --apply
+npm run enrich:place-descriptions -- --city=paris --limit=30 --apply
+npm run enrich:place-descriptions -- --limit=300 --strategy=factual --apply --quiet
+npm run enrich:place-images -- --city=istanbul --limit=20 --category=attraction,museum,landmark,historic,viewpoint --overwrite --source=unsplash --apply
+npm run enrich:place-images -- --limit=80 --category=attraction,museum,landmark,historic,viewpoint --source=unsplash --apply
+npm run enrich:place-images -- --limit=80 --offset=60 --category=attraction,museum,landmark,historic,viewpoint --source=unsplash --apply
 npm run seed:country-highlights -- --apply
 ```
 
@@ -158,13 +164,18 @@ Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq ü�
 - `src/components/country/country-card.tsx` - ölkə kartları və image fallback
 - `src/lib/unsplash.ts` - Unsplash URL helper-ləri, fallback pool və known bad image refs
 - `scripts/enrich-images.js` - duplicate-safe Unsplash image enrichment
+- `scripts/enrich-place-images.js` - məkan adı ilə Wikimedia/Wikipedia/Unsplash şəkil enrichment; `--city`, `--category`, `--overwrite`, `--source` flag-larını dəstəkləyir
 - `scripts/audit-country-images.js` - ölkə şəkil audit report-u
 - `scripts/audit-country-content.js` - ölkə kart content audit report-u
+- `scripts/audit-place-content.js` - bütün active məkanlarda description/image/source coverage audit report-u
 - `scripts/enrich-country-content.js` - RestCountries və Wikipedia əsasında boş ölkə content field-lərini doldurur
+- `scripts/enrich-place-descriptions.js` - Wikipedia + factual OSM/DB əsaslı `az/en/ru` SEO place description enrichment
 - `scripts/audit-food-places.js` - restoran/kafe coverage audit report-u
 - `scripts/import-food-places.js` - Overpass əsaslı restoran/kafe import pipeline
 - `src/app/[locale]/restaurants/page.tsx` - restoran/kafe səhifəsi, yalnız food datası olan şəhərlər üzrə filter
 - `src/app/[locale]/restaurants/restaurant-grid-client.tsx` - restoran/kafe search, category və city filter UI
+- `src/components/place/category-tabs.tsx` - şəhər detalındakı place kartları; kartlar şəkilli olmalı, own detail səhifəsinə getməli və rəsmi sayt varsa ayrıca external link göstərməlidir
+- `src/app/[locale]/places/[id]/page.tsx` - place detail; generik fallback abzas göstərməməlidir. Description yalnız real/curated mənbədən gələndə görünməli, boş olanda isə mövcud metadata/source/fakt kartları göstərilməlidir.
 - `scripts/import-open-travel-data.js` - Overpass/Wikipedia/GeoNames import pipeline
 - `scripts/seed-country-highlights.js` - ölkə highlight seed script-i
 - `src/messages/*.json` - i18n mesajları
@@ -264,6 +275,16 @@ Hər import source/license metadata saxlamalıdır.
 3. `places` kurasiyası.
    - `is_featured` və `popular_rank` real travel dəyərinə görə düzülməlidir.
    - Ana səhifədə ən yaxşı məkanlar görünməlidir.
+   - Şəhər səhifəsindəki place kartları şəkilsiz və boş görünməməlidir.
+   - Eyni şəhər fallback şəkli bütün məkanlarda təkrarlanmamalıdır; əvvəl məkanın öz adı ilə şəkil axtarılmalıdır.
+   - 2026-05-08: İstanbul üçün `npm run enrich:place-images -- --city=istanbul --limit=8 --category=attraction,museum,landmark,historic,viewpoint --overwrite --source=unsplash --apply` işlədildi. Nəticə: 13 aktiv məkandan 11-də unikal `cover_photo_url` var.
+   - Place detail səhifəsində uydurma/generik fallback mətn göstərilməməlidir; description real data ilə doldurulana qədər metadata, source, koordinat, rəsmi sayt və Wikipedia/Wikidata faktları göstərilməlidir.
+   - Məşhur məkanlar üçün real description `npm run seed:curated-place-descriptions -- --city=istanbul --apply` və `npm run enrich:place-descriptions -- --limit=50 --apply` axını ilə mərhələli doldurulmalıdır.
+   - 2026-05-08 snapshot: `places=2076`, `description_az` dolu olan məkan sayı `10`-dur. İstanbul üçün 13 məkandan 10-u curated real description aldı; qalan şəhərlər/məkanlar növbəti batch-lərlə doldurulmalıdır.
+   - 2026-05-08 update: `npm run enrich:place-descriptions -- --limit=300 --strategy=factual --apply --quiet` batch-ləri ilə active məkan description coverage `2076/2076` səviyyəsinə çatdırıldı. `npm run audit:place-content` artıq bütün active `places`-i səhifələmə ilə sayır.
+   - Place description-lar generic “TravelAZ bazasında saxlanan” mətnləri deyil; Wikipedia tapılarsa mənbəli summary, tapılmazsa OSM/DB-dəki real faktlardan SEO uyğun praktik mətn yazılır.
+   - 2026-05-08 image update: place image coverage `401/2076`-dır. İstanbul və Parisdən əlavə global image batch başladıldı. `enrich-place-images` artıq `--offset` dəstəkləyir və Unsplash nəticəsini yalnız məkan/şəhər/kateqoriya uyğunluğu varsa qəbul edir; təsadüfi ilk nəticə yazılmamalıdır.
+   - Qalan image işi bütün şəhərlər üzrə davam etməlidir: əvvəl `npm run audit:place-content`, sonra 80-lik `--offset` batch-lər. Uyğun şəkil tapılmayan məkanlar manual/Wikimedia review tələb edir.
 
 4. Restoran və kafe datasını məşhur şəhərlərə yaymaq.
    - Mənbə yalnız OpenStreetMap/Overpass olmalıdır; Tripadvisor scraping edilməməlidir.

@@ -4,26 +4,13 @@ const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
-function loadEnvFile(filePath) {
-  if (!fs.existsSync(filePath)) return;
-  for (const line of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const match = trimmed.match(/^([^#=]+)=(.*)$/);
-    if (match) process.env[match[1].trim()] = match[2].trim();
-  }
-}
-
-loadEnvFile(path.join(__dirname, '..', '.env.local'));
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 const WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql';
+const WIKIDATA_API = 'https://www.wikidata.org/w/api.php';
 const COMMONS_THUMB = 'https://en.wikipedia.org/wiki/Special:FilePath';
-const RATE_DELAY = 1500;
+const WIKIPEDIA_API = (lang) => `https://${lang}.wikipedia.org/w/api.php`;
+const UNSPLASH_API = 'https://api.unsplash.com/search/photos';
+const RATE_DELAY = 1300;
+const REQUEST_TIMEOUT = 12000;
 
 const OSM_PROPERTIES = {
   node: 'P10689',
@@ -31,161 +18,471 @@ const OSM_PROPERTIES = {
   relation: 'P11693',
 };
 
+const DEFAULT_CATEGORIES = [
+  'attraction',
+  'museum',
+  'landmark',
+  'viewpoint',
+  'historic',
+  'park',
+  'beach',
+  'restaurant',
+  'cafe',
+  'hotel',
+  'shopping',
+  'nightlife',
+  'transport',
+  'other',
+];
+
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return;
+  for (const line of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const separator = trimmed.indexOf('=');
+    if (separator <= 0) continue;
+    const key = trimmed.slice(0, separator).trim();
+    let value = trimmed.slice(separator + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (!process.env[key]) process.env[key] = value;
+  }
+}
+
+loadEnvFile(path.join(__dirname, '..', '.env.local'));
+
+function readArgValue(args, index) {
+  const current = args[index];
+  const eqIndex = current.indexOf('=');
+  if (eqIndex >= 0) return { value: current.slice(eqIndex + 1), nextIndex: index };
+  return { value: args[index + 1], nextIndex: index + 1 };
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
-  const opts = { limit: 20, dryRun: true };
+  const opts = {
+    limit: 20,
+    dryRun: true,
+    city: null,
+    slug: null,
+    categories: DEFAULT_CATEGORIES,
+    overwrite: false,
+    source: 'all',
+    offset: 0,
+  };
+
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--limit' && args[i + 1]) opts.limit = parseInt(args[i + 1], 10);
-    if (args[i] === '--apply') opts.dryRun = false;
-    if (args[i] === '--dry-run') opts.dryRun = true;
+    const arg = args[i];
+    if (arg === '--limit' || arg.startsWith('--limit=')) {
+      const parsed = readArgValue(args, i);
+      opts.limit = Number.parseInt(parsed.value, 10);
+      i = parsed.nextIndex;
+    } else if (arg === '--city' || arg.startsWith('--city=')) {
+      const parsed = readArgValue(args, i);
+      opts.city = parsed.value;
+      i = parsed.nextIndex;
+    } else if (arg === '--slug' || arg.startsWith('--slug=')) {
+      const parsed = readArgValue(args, i);
+      opts.slug = parsed.value.split(',').map((value) => value.trim()).filter(Boolean);
+      i = parsed.nextIndex;
+    } else if (arg === '--category' || arg.startsWith('--category=')) {
+      const parsed = readArgValue(args, i);
+      opts.categories = parsed.value.split(',').map((value) => value.trim()).filter(Boolean);
+      i = parsed.nextIndex;
+    } else if (arg === '--source' || arg.startsWith('--source=')) {
+      const parsed = readArgValue(args, i);
+      opts.source = parsed.value;
+      i = parsed.nextIndex;
+    } else if (arg === '--offset' || arg.startsWith('--offset=')) {
+      const parsed = readArgValue(args, i);
+      opts.offset = Number.parseInt(parsed.value, 10);
+      i = parsed.nextIndex;
+    } else if (arg === '--overwrite') {
+      opts.overwrite = true;
+    } else if (arg === '--apply') {
+      opts.dryRun = false;
+    } else if (arg === '--dry-run') {
+      opts.dryRun = true;
+    }
   }
+
   return opts;
 }
 
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
+function createSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.');
+  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
-function commonsThumbnailUrl(filename, width = 800) {
-  const encoded = encodeURIComponent(filename);
-  return `${COMMONS_THUMB}/${encoded}?width=${width}`;
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function commonsThumbnailUrl(filename, width = 1000) {
+  return `${COMMONS_THUMB}/${encodeURIComponent(filename)}?width=${width}`;
+}
+
+function normalize(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[ıİ]/g, 'i')
+    .replace(/[ğĞ]/g, 'g')
+    .replace(/[üÜ]/g, 'u')
+    .replace(/[şŞ]/g, 's')
+    .replace(/[öÖ]/g, 'o')
+    .replace(/[çÇ]/g, 'c')
+    .replace(/[əƏ]/g, 'e')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
 }
 
 function escapeSparql(str) {
-  return str.replace(/"/g, '\\"').replace(/\\/g, '\\\\');
+  return String(str || '').replace(/"/g, '\\"').replace(/\\/g, '\\\\');
+}
+
+function rawTags(rawData) {
+  const tags = rawData?.tags;
+  return tags && typeof tags === 'object' && !Array.isArray(tags) ? tags : {};
+}
+
+function parseWikipediaTag(value) {
+  if (!value || !String(value).includes(':')) return null;
+  const [lang, ...titleParts] = String(value).split(':');
+  const title = titleParts.join(':');
+  if (!lang || !title) return null;
+  return { lang, title };
+}
+
+function parseOsmSourceId(value) {
+  const parts = String(value || '').split('/');
+  if (parts.length !== 2) return null;
+  return { osmType: parts[0], osmId: parts[1] };
+}
+
+async function fetchJson(url, headers = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'TravelAZ/1.0 place-image-enrichment (open data)',
+        ...headers,
+      },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchWikidataImageFilename(qid) {
+  if (!qid) return null;
+  const params = new URLSearchParams({
+    action: 'wbgetentities',
+    ids: qid,
+    props: 'claims',
+    format: 'json',
+    origin: '*',
+  });
+  const data = await fetchJson(`${WIKIDATA_API}?${params}`);
+  const claim = data?.entities?.[qid]?.claims?.P18?.[0]?.mainsnak?.datavalue?.value;
+  return claim || null;
+}
+
+async function fetchWikipediaPageImage(lang, title) {
+  if (!lang || !title) return null;
+  const params = new URLSearchParams({
+    action: 'query',
+    titles: title,
+    prop: 'pageimages',
+    piprop: 'original',
+    redirects: '1',
+    format: 'json',
+    origin: '*',
+  });
+  const data = await fetchJson(`${WIKIPEDIA_API(lang)}?${params}`);
+  const pages = Object.values(data?.query?.pages || {});
+  return pages[0]?.original?.source || null;
+}
+
+async function searchWikipediaPageImage(placeName, cityName) {
+  const languages = ['en', 'tr', 'az', 'ru'];
+  const searches = [
+    `${placeName} ${cityName || ''}`.trim(),
+    placeName,
+  ].filter(Boolean);
+
+  for (const lang of languages) {
+    for (const search of searches) {
+      const params = new URLSearchParams({
+        action: 'query',
+        generator: 'search',
+        gsrsearch: search,
+        gsrlimit: '5',
+        prop: 'pageimages',
+        piprop: 'original',
+        redirects: '1',
+        format: 'json',
+        origin: '*',
+      });
+      const data = await fetchJson(`${WIKIPEDIA_API(lang)}?${params}`);
+      const pages = Object.values(data?.query?.pages || {});
+      const place = normalize(placeName);
+      const city = normalize(cityName);
+      const match = pages.find((page) => {
+        const title = normalize(page.title);
+        return title.includes(place) || place.includes(title) || (city && title.includes(city));
+      }) || pages[0];
+      if (match?.original?.source) return { url: match.original.source, detail: `${lang}:${match.title}` };
+      await sleep(250);
+    }
+  }
+
+  return null;
 }
 
 async function fetchWikidataByOsmId(osmType, osmId) {
   const property = OSM_PROPERTIES[osmType];
-  if (!property) return null;
+  if (!property || !osmId) return null;
 
   const sparql = `
-    SELECT ?item ?image WHERE {
-      ?item wdt:${property} "${osmId}" .
+    SELECT ?image WHERE {
+      ?item wdt:${property} "${escapeSparql(osmId)}" .
       OPTIONAL { ?item wdt:P18 ?image . }
     }
     LIMIT 1
   `;
-
   const url = `${WIKIDATA_SPARQL}?query=${encodeURIComponent(sparql)}&format=json`;
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'TravelAZ/1.0 place-image-enrichment' },
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  const bindings = data.results?.bindings || [];
-  if (bindings.length === 0 || !bindings[0].image) return null;
-
-  const imageUri = bindings[0].image.value;
-  return decodeURIComponent(imageUri.split('/').pop());
+  const data = await fetchJson(url);
+  const imageUri = data?.results?.bindings?.[0]?.image?.value;
+  return imageUri ? decodeURIComponent(imageUri.split('/').pop()) : null;
 }
 
-async function fetchWikidataByName(placeName, cityName) {
-  const safeName = escapeSparql(placeName);
-  const cityClause = cityName ? `?item wdt:P131+ ?city . ?city rdfs:label "${escapeSparql(cityName)}"@en .` : '';
+async function searchWikidataImage(placeName, cityName) {
+  const searches = [
+    `${placeName} ${cityName || ''}`.trim(),
+    placeName,
+  ].filter(Boolean);
+  const languages = ['en', 'tr', 'az', 'ru'];
 
-  const sparql = `
-    SELECT ?item ?image WHERE {
-      ?item rdfs:label "${safeName}"@en .
-      ${cityClause}
-      OPTIONAL { ?item wdt:P18 ?image . }
+  for (const search of searches) {
+    for (const language of languages) {
+      const params = new URLSearchParams({
+        action: 'wbsearchentities',
+        search,
+        language,
+        format: 'json',
+        origin: '*',
+        limit: '5',
+      });
+      const data = await fetchJson(`${WIKIDATA_API}?${params}`);
+      const candidates = data?.search || [];
+      for (const candidate of candidates) {
+        const label = normalize(candidate.label);
+        const description = normalize(candidate.description);
+        const place = normalize(placeName);
+        const city = normalize(cityName);
+        const looksRelated = label.includes(place) || place.includes(label) || (city && description.includes(city));
+        if (!looksRelated) continue;
+        const filename = await fetchWikidataImageFilename(candidate.id);
+        if (filename) return filename;
+        await sleep(250);
+      }
     }
-    LIMIT 1
-  `;
+  }
 
-  const url = `${WIKIDATA_SPARQL}?query=${encodeURIComponent(sparql)}&format=json`;
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'TravelAZ/1.0 place-image-enrichment' },
+  return null;
+}
+
+function unsplashQuery(place) {
+  const cityName = place.cities?.name_en || place.cities?.name_az || '';
+  const base = `${place.name} ${cityName}`.trim();
+  if (['restaurant', 'cafe', 'hotel'].includes(place.category)) return base;
+  return `${base} landmark architecture`;
+}
+
+async function fetchUnsplashImage(place) {
+  const accessKey = process.env.UNSPLASH_ACCESS_KEY;
+  if (!accessKey) return null;
+  const params = new URLSearchParams({
+    query: unsplashQuery(place),
+    per_page: '8',
+    orientation: 'landscape',
+    content_filter: 'high',
   });
-  if (!res.ok) return null;
-  const data = await res.json();
-  const bindings = data.results?.bindings || [];
-  if (bindings.length === 0 || !bindings[0].image) return null;
+  const data = await fetchJson(`${UNSPLASH_API}?${params}`, {
+    Authorization: `Client-ID ${accessKey}`,
+  });
+  const results = data?.results || [];
+  const placeName = normalize(place.name);
+  const placeTokens = placeName.split(' ').filter((token) => token.length >= 4);
+  const cityName = normalize(place.cities?.name_en || place.cities?.name_az || '');
+  const category = normalize(place.category);
+  const best = results.find((photo) => {
+    const haystack = normalize([
+      photo.alt_description,
+      photo.description,
+      photo.user?.name,
+      ...(photo.tags || []).map((tag) => tag.title),
+    ].filter(Boolean).join(' '));
+    const tokenMatches = placeTokens.filter((token) => haystack.includes(token)).length;
+    const enoughPlaceMatch = placeTokens.length > 0 && tokenMatches / placeTokens.length >= 0.5;
+    const hasCityContext = cityName && haystack.includes(cityName);
+    const hasCategoryContext = category && haystack.includes(category);
+    return enoughPlaceMatch || (hasCityContext && hasCategoryContext);
+  });
+  return best?.urls?.raw ? `${best.urls.raw.split('?')[0]}?auto=format&fit=crop&w=1000&q=82` : null;
+}
 
-  const imageUri = bindings[0].image.value;
-  return decodeURIComponent(imageUri.split('/').pop());
+async function findImageForPlace(place) {
+  const tags = rawTags(place.raw_data);
+
+  if (tags.wikidata && ['all', 'wikimedia'].includes(place.sourceMode)) {
+    const filename = await fetchWikidataImageFilename(tags.wikidata);
+    if (filename) return { url: commonsThumbnailUrl(filename), provider: 'wikidata', detail: tags.wikidata };
+  }
+
+  const wiki = parseWikipediaTag(tags.wikipedia);
+  if (wiki && ['all', 'wikimedia'].includes(place.sourceMode)) {
+    const url = await fetchWikipediaPageImage(wiki.lang, wiki.title);
+    if (url) return { url, provider: 'wikipedia', detail: tags.wikipedia };
+  }
+
+  const osm = parseOsmSourceId(place.source_place_id);
+  if (osm && ['all', 'wikimedia'].includes(place.sourceMode)) {
+    const filename = await fetchWikidataByOsmId(osm.osmType, osm.osmId);
+    if (filename) return { url: commonsThumbnailUrl(filename), provider: 'wikidata-osm', detail: place.source_place_id };
+  }
+
+  if (['all', 'wikimedia'].includes(place.sourceMode)) {
+    const filename = await searchWikidataImage(place.name, place.cities?.name_en || place.cities?.name_az);
+    if (filename) return { url: commonsThumbnailUrl(filename), provider: 'wikidata-search', detail: filename };
+  }
+
+  if (['all', 'wikimedia'].includes(place.sourceMode)) {
+    const pageImage = await searchWikipediaPageImage(place.name, place.cities?.name_en || place.cities?.name_az);
+    if (pageImage?.url) return { url: pageImage.url, provider: 'wikipedia-search', detail: pageImage.detail };
+  }
+
+  if (['all', 'unsplash'].includes(place.sourceMode)) {
+    const url = await fetchUnsplashImage(place);
+    if (url) return { url, provider: 'unsplash', detail: unsplashQuery(place) };
+  }
+
+  return null;
+}
+
+async function getCityId(supabase, slug) {
+  if (!slug) return null;
+  const { data, error } = await supabase.from('cities').select('id, slug').eq('slug', slug).maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error(`City not found: ${slug}`);
+  return data.id;
 }
 
 async function main() {
   const opts = parseArgs();
-  console.log(`\nPlace Image Enrichment - ${opts.dryRun ? 'DRY-RUN' : 'APPLY'} mode`);
-  console.log(`  Limit: ${opts.limit}\n`);
+  const supabase = createSupabaseClient();
+  const cityId = await getCityId(supabase, opts.city);
 
-  const { data: places } = await supabase
+  console.log(`\nPlace Image Enrichment - ${opts.dryRun ? 'DRY-RUN' : 'APPLY'}`);
+  console.log(`  Limit: ${opts.limit}`);
+  console.log(`  City: ${opts.city || 'any'}`);
+  console.log(`  Categories: ${opts.categories.join(',')}`);
+  console.log(`  Overwrite: ${opts.overwrite ? 'yes' : 'no'}`);
+  console.log(`  Source: ${opts.source}\n`);
+  console.log(`  Offset: ${opts.offset}\n`);
+
+  let query = supabase
     .from('places')
-    .select('id, name, source_place_id, cover_photo_url, cities(name_en)')
-    .in('category', ['restaurant', 'cafe'])
-    .is('cover_photo_url', null)
-    .not('source_place_id', 'is', null)
-    .limit(opts.limit);
+    .select('id, slug, name, category, source_place_id, cover_photo_url, cover_photo_id, raw_data, cities(slug,name_az,name_en,name_ru), countries(slug,name_az,name_en)')
+    .eq('status', 'active')
+    .in('category', opts.categories)
+    .order('popular_rank', { ascending: true })
+    .range(opts.offset, opts.offset + opts.limit - 1);
 
+  if (cityId) query = query.eq('city_id', cityId);
+  if (opts.slug) query = query.in('slug', opts.slug);
+  if (!opts.overwrite) query = query.is('cover_photo_url', null).is('cover_photo_id', null);
+
+  const { data: places, error } = await query;
+  if (error) throw error;
   if (!places || places.length === 0) {
-    console.log('No places without images found.');
+    console.log('No matching places found.');
     return;
   }
 
-  console.log(`Found ${places.length} places without images.\n`);
+  const { data: existingRows } = await supabase
+    .from('places')
+    .select('id, cover_photo_url')
+    .not('cover_photo_url', 'is', null);
+  const usedUrls = new Set((existingRows || []).map((row) => row.cover_photo_url).filter(Boolean));
 
   let enriched = 0;
   let skipped = 0;
+  let duplicates = 0;
 
-  for (const place of places) {
-    const sourceId = place.source_place_id;
-    const parts = sourceId.split('/');
-    const osmType = parts[0];
-    const osmId = parts[1];
+  for (const place of places.map((item) => ({ ...item, sourceMode: opts.source }))) {
+    console.log(`  [${place.name}] ${place.cities?.slug || ''}...`);
 
-    console.log(`  [${place.name}] (OSM: ${sourceId})...`);
-
-    let imageFilename = null;
-
+    let result = null;
     try {
-      imageFilename = await fetchWikidataByOsmId(osmType, osmId);
-    } catch (e) {
-      console.log(`    SPARQL error (OSM): ${e.message}`);
+      result = await findImageForPlace(place);
+    } catch (error) {
+      console.log(`    error: ${error.message}`);
     }
 
-    if (!imageFilename && place.name) {
-      await sleep(RATE_DELAY);
-      const cityName = place.cities?.name_en || null;
-      try {
-        imageFilename = await fetchWikidataByName(place.name, cityName);
-      } catch (e) {
-        console.log(`    SPARQL error (name): ${e.message}`);
-      }
-    }
-
-    if (!imageFilename) {
-      console.log(`    No image found.`);
-      skipped++;
+    if (!result?.url) {
+      console.log('    no place-specific image found');
+      skipped += 1;
       await sleep(RATE_DELAY);
       continue;
     }
 
-    const imageUrl = commonsThumbnailUrl(imageFilename);
-    console.log(`    Found: ${imageFilename}`);
-
-    if (!opts.dryRun) {
-      const { error } = await supabase
-        .from('places')
-        .update({ cover_photo_url: imageUrl, updated_at: new Date().toISOString() })
-        .eq('id', place.id);
-      if (error) {
-        console.log(`    ERROR: ${error.message}`);
-      } else {
-        console.log(`    Updated.`);
-      }
+    if (usedUrls.has(result.url) && result.url !== place.cover_photo_url) {
+      console.log(`    duplicate skipped: ${result.provider}`);
+      duplicates += 1;
+      await sleep(RATE_DELAY);
+      continue;
     }
 
-    enriched++;
+    console.log(`    found via ${result.provider}: ${result.detail}`);
+    if (!opts.dryRun) {
+      const { error: updateError } = await supabase
+        .from('places')
+        .update({
+          cover_photo_url: result.url,
+          cover_photo_id: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', place.id);
+      if (updateError) throw updateError;
+      usedUrls.add(result.url);
+    }
+
+    enriched += 1;
     await sleep(RATE_DELAY);
   }
 
-  console.log(`\n=== Summary ===`);
+  console.log('\n=== Summary ===');
   console.log(`  Mode: ${opts.dryRun ? 'DRY-RUN' : 'APPLY'}`);
   console.log(`  Processed: ${places.length}`);
   console.log(`  Enriched: ${enriched}`);
   console.log(`  Skipped: ${skipped}`);
+  console.log(`  Duplicate skipped: ${duplicates}`);
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

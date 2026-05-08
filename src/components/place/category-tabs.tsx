@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import Link from 'next/link';
-import { Star, LayoutGrid, Compass, UtensilsCrossed, BedDouble, Music, ShoppingBag } from 'lucide-react';
+import { Star, LayoutGrid, Compass, UtensilsCrossed, BedDouble, Music, ShoppingBag, ExternalLink, MapPin } from 'lucide-react';
+import { getUnsplashUrl } from '@/lib/unsplash';
 import type { PlaceCategory } from '@/types/place';
 import type { PlaceSummary } from '@/types/place';
 
@@ -48,9 +50,10 @@ const CATEGORY_COLORS: Record<string, string> = {
 interface CategoryTabsProps {
   places: PlaceSummary[];
   locale: string;
+  fallbackImageUrl?: string;
 }
 
-export function CategoryTabs({ places, locale }: CategoryTabsProps) {
+export function CategoryTabs({ places, locale, fallbackImageUrl }: CategoryTabsProps) {
   const t = useTranslations('places');
   const [activeCategory, setActiveCategory] = useState<CategoryTabKey>('all');
 
@@ -74,6 +77,12 @@ export function CategoryTabs({ places, locale }: CategoryTabsProps) {
     if (category === 'transport') return t('categoryTransport');
     if (category === 'other') return t('categoryOther');
     return category;
+  };
+
+  const placeImageUrl = (place: PlaceSummary) => {
+    if (place.coverPhotoUrl) return place.coverPhotoUrl;
+    if (place.coverPhotoId) return getUnsplashUrl(place.coverPhotoId, { w: 720, h: 420 });
+    return getUnsplashUrl(`${place.slug}-${place.category || fallbackImageUrl || 'travel'}`, { w: 720, h: 420 });
   };
 
   return (
@@ -105,26 +114,58 @@ export function CategoryTabs({ places, locale }: CategoryTabsProps) {
       {filteredPlaces.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {filteredPlaces.map((place) => (
-            <Link
+            <article
               key={place.id}
-              href={`/${locale}/places/${place.id}`}
-              className="rounded-2xl border border-border bg-bg-surface p-4 hover:border-primary/30 hover:shadow-lg transition-all"
+              className="overflow-hidden rounded-2xl border border-border bg-bg-surface hover:border-primary/30 hover:shadow-lg transition-all"
             >
-              <div className="flex items-start justify-between gap-3">
-                <span className={`text-[10px] px-2 py-1 rounded-full font-semibold capitalize ${CATEGORY_COLORS[place.category] || CATEGORY_COLORS.other}`}>
-                  {categoryLabel(place.category)}
-                </span>
-                {place.ratingSummary > 0 && (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
-                    <Star className="w-3 h-3 fill-current" />
-                    {place.ratingSummary.toFixed(1)}
+              <Link href={`/${locale}/places/${place.id}`} className="group block">
+                <div className="relative h-44 overflow-hidden">
+                  <Image
+                    src={placeImageUrl(place)}
+                    alt={place.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <span className={`absolute left-3 top-3 text-[10px] px-2 py-1 rounded-full font-semibold capitalize shadow-sm ${CATEGORY_COLORS[place.category] || CATEGORY_COLORS.other}`}>
+                    {categoryLabel(place.category)}
                   </span>
+                  {place.ratingSummary > 0 && (
+                    <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/55 px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                      <Star className="w-3 h-3 fill-current text-amber-400" />
+                      {place.ratingSummary.toFixed(1)}
+                    </span>
+                  )}
+                  <h3 className="absolute bottom-3 left-3 right-3 text-white font-bold drop-shadow line-clamp-2">{place.name}</h3>
+                </div>
+                <div className="p-4">
+                  {place.address ? (
+                    <p className="flex items-start gap-1.5 text-xs text-txt-sec line-clamp-2">
+                      <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      {place.address}
+                    </p>
+                  ) : place.city?.name ? (
+                    <p className="flex items-center gap-1.5 text-xs text-txt-sec">
+                      <MapPin className="h-3.5 w-3.5 text-primary" />
+                      {place.city.name}
+                    </p>
+                  ) : null}
+                  {place.description && <p className="mt-3 text-sm text-txt-sec line-clamp-2">{place.description}</p>}
+                </div>
+              </Link>
+              <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs">
+                <Link href={`/${locale}/places/${place.id}`} className="font-semibold text-primary hover:underline">
+                  {t('viewDetails')}
+                </Link>
+                {place.website && (
+                  <a href={place.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-txt-sec hover:text-primary">
+                    {t('officialWebsite')} <ExternalLink className="h-3 w-3" />
+                  </a>
                 )}
               </div>
-              <h3 className="font-semibold mt-3 line-clamp-2">{place.name}</h3>
-              {place.address && <p className="text-xs text-txt-sec mt-2 line-clamp-2">{place.address}</p>}
-              <p className="text-xs text-txt-sec mt-4">{place.reviewCount} {t('reviews')}</p>
-            </Link>
+            </article>
           ))}
         </div>
       ) : (

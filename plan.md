@@ -21,6 +21,16 @@ Tripadvisor content-i icazəsiz scrape və ya copy edilməyəcək. Product value
 - Restoran/kafe üçün ayrıca Overpass import pipeline əlavə edildi və ilk batch-də 10 məşhur şəhər zənginləşdirildi.
 - `/restaurants` səhifəsində şəhər filter-i yalnız restoran/kafe datası olan şəhərləri göstərir və bütün yeni mətnlər `az/en/ru` JSON-larına bağlandı.
 - Ölkə detal səhifəsindəki “Populyar şəhərlər” kartları şəkilli edildi və hər kart öz şəhər detal səhifəsinə yönləndirir.
+- Şəhər detalındakı görməli yer/restoran kartları şəkilli edildi; kartlar TravelAZ place detail-ə, rəsmi sayt varsa ayrıca external linkə yönləndirir.
+- Place detail səhifələrində generik fallback abzasları çıxarıldı; description yalnız real/curated məlumat varsa göstərilir, boş olanda isə metadata/source/fakt kartları qalır.
+- İstanbul üçün 10 əsas məkanın real curated description-ları DB-yə yazıldı. Ümumi aktiv məkan sayı 2076-dır; description doluluğu növbəti mərhələdə şəhər-şəhər artırılmalıdır.
+- `scripts/enrich-place-images.js` məkan adı ilə şəkil axtaran pipeline-a çevrildi. İstanbulda 13 aktiv məkandan 11-i artıq unikal `cover_photo_url` aldı; növbəti şəhərlər eyni əmrlə batch-batch işlənməlidir.
+- `scripts/audit-place-content.js` əlavə edildi və bütün active `places` coverage-i səhifələmə ilə yoxlayır.
+- `scripts/enrich-place-descriptions.js` genişləndirildi: Wikipedia summary tapır, tapılmayanda OSM/DB faktlarından `az/en/ru` SEO uyğun praktik description qurur.
+- 2026-05-08: active məkan description coverage `2076/2076` oldu. Paris, Roma, Dubai, London, Barselona və Tbilisi ayrıca apply edildi; qalanlar factual batch-lərlə dolduruldu.
+- Paris üçün 20 görməli yer image batch-i işlədildi: 13 yeni place-specific şəkil yazıldı, 2 duplicate bloklandı, 5 məkan manual review üçün qaldı.
+- Image işi şəhər nümunələri ilə məhdud deyil: global `enrich-place-images` batch başladıldı və image coverage `401/2076` oldu. Script `--offset` dəstəkləyir və zəif Unsplash nəticələrini yazmır.
+- Növbəti image mərhələsi: bütün şəhərlər üçün 80-lik `--offset` batch-lər + tapılmayan məkanların manual/Wikimedia review-u.
 
 Cari DB snapshot:
 

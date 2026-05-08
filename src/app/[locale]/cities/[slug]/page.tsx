@@ -7,6 +7,7 @@ import { mapCityToSummary, mapPlaceToSummary } from '@/lib/open-travel-data';
 import { WeatherWidget } from '@/components/weather/weather-widget';
 import { VisaCheckWidget } from '@/components/visa/visa-check-widget';
 import { CategoryTabs } from '@/components/place/category-tabs';
+import { getCityCoverPhotoId, getUnsplashUrl } from '@/lib/unsplash';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { CityWithCountryRow, PlaceWithRelationsRow } from '@/types/place';
@@ -73,6 +74,7 @@ export default async function CityDetailPage({ params }: PageProps) {
   }
 
   const places = Array.from(uniquePlaceRows.values()).map((place) => mapPlaceToSummary(place, currentLocale));
+  const cityCoverUrl = city.coverPhotoUrl || getUnsplashUrl(getCityCoverPhotoId(city.slug, city.coverPhotoId), { w: 720, h: 420 });
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
@@ -130,7 +132,7 @@ export default async function CityDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        <CategoryTabs places={places} locale={locale} />
+        <CategoryTabs places={places} locale={locale} fallbackImageUrl={cityCoverUrl} />
       </section>
     </main>
   );
