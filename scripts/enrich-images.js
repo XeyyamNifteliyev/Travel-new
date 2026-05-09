@@ -424,11 +424,16 @@ async function searchPexels(query, accessKey) {
   }
 }
 
-function pickFromResults(results, usedPhotoRefs) {
+function pickFromResults(results, usedPhotoRefs, options = {}) {
   for (const result of results) {
     const rejectedReason = getRejectedResultReason(result);
     if (rejectedReason) {
       console.log(`  [skip] ${rejectedReason}`);
+      continue;
+    }
+
+    if (options.requireCitySignal && scoreCityResult(result) === 0) {
+      console.log('  [skip] no_city_signal');
       continue;
     }
 
@@ -458,12 +463,12 @@ async function pickPhotoForRow(row, table, accessKey, pexelsKey, usedPhotoRefs) 
       const results = await searchUnsplash(query, accessKey);
 
       const rankedResults = [...results].sort((a, b) => scoreCityResult(b) - scoreCityResult(a));
-      const picked = pickFromResults(rankedResults, usedPhotoRefs);
+      const picked = pickFromResults(rankedResults, usedPhotoRefs, { requireCitySignal: true });
       if (picked) return { ...picked, query: `unsplash:${query}` };
     }
 
     const pexelsResults = await searchPexels(query, pexelsKey);
-    const picked = pickFromResults(pexelsResults, usedPhotoRefs);
+    const picked = pickFromResults(pexelsResults, usedPhotoRefs, { requireCitySignal: true });
     if (picked) return { ...picked, query: `pexels:${query}` };
 
 
@@ -569,12 +574,18 @@ async function enrichTable(supabase, table, accessKey, pexelsKey, opts) {
     console.log(`OK ${picked.photoRef} (${picked.query})`);
 
     if (!opts.dryRun) {
-      const { error } = await supabase
-        .from(table)
-        .update({
+      const updatePayload = table === 'countries'
+        ? {
           cover_photo_id: picked.photoRef,
           cover_photo_alt: buildPhotoAlt(row, table, picked),
-        })
+        }
+        : {
+          cover_photo_id: picked.photoRef,
+        };
+
+      const { error } = await supabase
+        .from(table)
+        .update(updatePayload)
         .eq('id', row.id);
 
       if (error) {
