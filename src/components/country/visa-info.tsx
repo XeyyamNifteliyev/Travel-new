@@ -57,15 +57,15 @@ export function VisaInfo({ visa }: VisaInfoProps) {
         </div>
       )}
 
-      {visa.embassy_link && (
+      {(visa.official_visa_url || visa.embassy_link) && (
         <a
-          href={visa.embassy_link}
+          href={visa.official_visa_url || visa.embassy_link}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 mt-4 text-primary hover:underline text-sm"
         >
           <Globe className="w-4 h-4" />
-          {t('embassy')}
+          {visa.official_visa_url ? t('officialVisaPage') : t('embassy')}
         </a>
       )}
     </div>

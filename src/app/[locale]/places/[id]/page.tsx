@@ -12,6 +12,47 @@ import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { PlaceReviewWithAuthorRow, PlaceSourceRow, PlaceWithRelationsRow } from '@/types/place';
 
+const PLACE_DETAIL_FIELDS = [
+  'id',
+  'city_id',
+  'country_id',
+  'slug',
+  'name',
+  'name_az',
+  'name_en',
+  'name_ru',
+  'category',
+  'subcategory',
+  'lat',
+  'lng',
+  'address',
+  'website',
+  'phone',
+  'email',
+  'opening_hours',
+  'description_az',
+  'description_en',
+  'description_ru',
+  'cover_photo_id',
+  'cover_photo_url',
+  'source',
+  'source_place_id',
+  'source_url',
+  'license',
+  'attribution_text',
+  'rating_summary',
+  'review_count',
+  'is_featured',
+  'popular_rank',
+  'status',
+  'raw_data',
+  'last_synced_at',
+  'created_at',
+  'updated_at',
+  'cities(id, slug, name_az, name_en, name_ru)',
+  'countries(id, slug, name_az, name_en, name_ru, flag_emoji, cca2)',
+].join(', ');
+
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
 }
@@ -107,32 +148,32 @@ export default async function PlaceDetailPage({ params }: PageProps) {
 
   const { data: placeRow } = await supabase
     .from('places')
-    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
+    .select(PLACE_DETAIL_FIELDS)
     .eq('id', id)
     .eq('status', 'active')
     .maybeSingle();
 
   if (!placeRow) notFound();
 
-  const place = mapPlaceToDetail(placeRow as PlaceWithRelationsRow, currentLocale);
+  const place = mapPlaceToDetail(placeRow as unknown as PlaceWithRelationsRow, currentLocale);
 
   const [{ data: reviewRows }, { data: sourceRows }] = await Promise.all([
     supabase
       .from('place_reviews')
-      .select('*, profiles(id, name, display_name, avatar_url)')
+      .select('id, place_id, user_id, rating, title, content, visit_date, photos, helpful_count, status, created_at, updated_at, profiles(id, name, display_name, avatar_url)')
       .eq('place_id', place.id)
       .eq('status', 'published')
       .order('created_at', { ascending: false })
       .limit(12),
     supabase
       .from('place_sources')
-      .select('*')
+      .select('id, place_id, source, source_id, source_url, license, attribution_text, imported_at, raw_data')
       .eq('place_id', place.id)
       .order('imported_at', { ascending: false }),
   ]);
 
-  const reviews = ((reviewRows || []) as PlaceReviewWithAuthorRow[]).map(mapPlaceReview);
-  const sources = (sourceRows || []) as PlaceSourceRow[];
+  const reviews = ((reviewRows || []) as unknown as PlaceReviewWithAuthorRow[]).map(mapPlaceReview);
+  const sources = (sourceRows || []) as unknown as PlaceSourceRow[];
   const categoryLabel = t(`category${place.category.charAt(0).toUpperCase()}${place.category.slice(1)}`);
   const heroImageUrl = place.coverPhotoUrl
     || (place.coverPhotoId ? getUnsplashUrl(place.coverPhotoId, { w: 1200, h: 620 }) : null)

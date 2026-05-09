@@ -23,7 +23,9 @@
     "seed:professional-blogs": "node scripts/seed-professional-blogs.js",
     "seed:professional-news": "node scripts/seed-professional-news.js",
     "localize:visa-notes": "node scripts/localize-visa-notes.js",
-    "seed:professional-companions": "node scripts/seed-professional-companions.js"
+    "seed:professional-companions": "node scripts/seed-professional-companions.js",
+    "audit:visa-official-links": "node scripts/audit-visa-official-links.js",
+    "seed:visa-official-links": "node scripts/seed-visa-official-links.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",

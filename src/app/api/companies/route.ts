@@ -2,6 +2,28 @@ import { createServerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
+const COMPANY_FIELDS = 'id, user_id, company_name, logo_url, license_number, description, phone, whatsapp, telegram, email, website, plan_type, plan_expires_at, is_verified, rating, review_count, status, created_at, updated_at';
+const VALID_STATUSES = new Set(['pending', 'active', 'suspended']);
+const VALID_PLANS = new Set(['starter', 'pro', 'premium']);
+
+function cleanString(value: unknown, maxLength: number, required = false) {
+  if (value === undefined || value === null) return required ? null : undefined;
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > maxLength) return required ? null : undefined;
+  return trimmed;
+}
+
+function isValidUrl(value: string | null | undefined) {
+  if (!value) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const cookieStore = await cookies();
@@ -13,20 +35,17 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('tour_companies')
-      .select('*')
+      .select(COMPANY_FIELDS)
       .order('rating', { ascending: false });
 
-    if (userId) {
-      query = query.eq('user_id', userId);
-    }
-    if (status) {
-      query = query.eq('status', status);
-    }
+    if (userId) query = query.eq('user_id', userId);
+    if (status && VALID_STATUSES.has(status)) query = query.eq('status', status);
 
     const { data, error } = await query;
 
     if (error) {
-      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
+      console.error('Companies query error:', error);
+      return NextResponse.json({ error: 'Server xətası' }, { status: 500 });
     }
 
     return NextResponse.json({ companies: data });
@@ -58,24 +77,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    const {
-      companyName,
-      licenseNumber,
-      description,
-      phone,
-      whatsapp,
-      telegram,
-      email,
-      website,
-      planType,
-    } = body;
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Yanlış sorğu formatı' }, { status: 400 });
+    }
 
-    if (!companyName) {
-      return NextResponse.json(
-        { error: 'Company name is required' },
-        { status: 400 }
-      );
+    const record = body as Record<string, unknown>;
+    const companyName = cleanString(record.companyName, 160, true);
+    const licenseNumber = cleanString(record.licenseNumber, 100);
+    const description = cleanString(record.description, 2000);
+    const phone = cleanString(record.phone, 50);
+    const whatsapp = cleanString(record.whatsapp, 50);
+    const telegram = cleanString(record.telegram, 80);
+    const email = cleanString(record.email, 160);
+    const website = cleanString(record.website, 500);
+    const planType = typeof record.planType === 'string' && VALID_PLANS.has(record.planType) ? record.planType : 'starter';
+
+    if (
+      !companyName ||
+      [licenseNumber, description, phone, whatsapp, telegram, email, website].some((value) => value === null) ||
+      !isValidUrl(website)
+    ) {
+      return NextResponse.json({ error: 'Şirkət məlumatları yanlışdır' }, { status: 400 });
     }
 
     const { data, error } = await supabase
@@ -90,14 +113,15 @@ export async function POST(request: NextRequest) {
         telegram,
         email,
         website,
-        plan_type: planType || 'starter',
+        plan_type: planType,
         status: 'pending',
       })
-      .select()
+      .select(COMPANY_FIELDS)
       .single();
 
     if (error) {
-      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
+      console.error('Company create error:', error);
+      return NextResponse.json({ error: 'Server xətası' }, { status: 500 });
     }
 
     return NextResponse.json({ company: data }, { status: 201 });
@@ -116,31 +140,53 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { id, companyName, description, phone, whatsapp, telegram, email, website } = body;
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Yanlış sorğu formatı' }, { status: 400 });
+    }
 
+    const record = body as Record<string, unknown>;
+    const id = cleanString(record.id, 80, true);
     if (!id) {
       return NextResponse.json({ error: 'Company ID is required' }, { status: 400 });
     }
 
+    const website = cleanString(record.website, 500);
+    if (website === null || !isValidUrl(website)) {
+      return NextResponse.json({ error: 'Şirkət məlumatları yanlışdır' }, { status: 400 });
+    }
+
+    const updates: Record<string, unknown> = {};
+    const companyName = cleanString(record.companyName, 160);
+    const description = cleanString(record.description, 2000);
+    const phone = cleanString(record.phone, 50);
+    const whatsapp = cleanString(record.whatsapp, 50);
+    const telegram = cleanString(record.telegram, 80);
+    const email = cleanString(record.email, 160);
+
+    if ([companyName, description, phone, whatsapp, telegram, email].some((value) => value === null)) {
+      return NextResponse.json({ error: 'Şirkət məlumatları yanlışdır' }, { status: 400 });
+    }
+
+    if (companyName !== undefined) updates.company_name = companyName;
+    if (description !== undefined) updates.description = description;
+    if (phone !== undefined) updates.phone = phone;
+    if (whatsapp !== undefined) updates.whatsapp = whatsapp;
+    if (telegram !== undefined) updates.telegram = telegram;
+    if (email !== undefined) updates.email = email;
+    if (website !== undefined) updates.website = website;
+
     const { data, error } = await supabase
       .from('tour_companies')
-      .update({
-        company_name: companyName,
-        description,
-        phone,
-        whatsapp,
-        telegram,
-        email,
-        website,
-      })
+      .update(updates)
       .eq('id', id)
       .eq('user_id', user.id)
-      .select()
+      .select(COMPANY_FIELDS)
       .single();
 
     if (error) {
-      return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
+      console.error('Company update error:', error);
+      return NextResponse.json({ error: 'Server xətası' }, { status: 500 });
     }
 
     return NextResponse.json({ company: data });

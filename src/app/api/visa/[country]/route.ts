@@ -20,7 +20,9 @@ export async function GET(
       )
     `)
     .eq('countries.slug', slug)
-    .single();
+    .order('last_verified_at', { ascending: false, nullsFirst: false })
+    .limit(1)
+    .maybeSingle();
 
   if (error || !data) {
     return NextResponse.json({ error: 'Ölkə tapılmadı' }, { status: 404 });

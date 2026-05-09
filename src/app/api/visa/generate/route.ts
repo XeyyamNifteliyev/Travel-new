@@ -48,7 +48,7 @@ CAVADI JSON formatında ver, başqa heç nə yazmaq. Bu strukturu sıx şəkild�
   "notes_az": "qısa qeyd azərbaycanca",
   "notes_en": "short note english",
   "notes_ru": "короткая заметка",
-  "official_url": "rəsmi sayt",
+  "official_url": "ümumi rəsmi mənbə və ya konsulluq saytı. Əmin deyilsənsə boş string qaytar.",
   "documents": [
     {"name_az": "sənəd adı", "name_en": "doc name", "name_ru": "название", "category": "identity|financial|travel", "required": true}
   ]
@@ -78,7 +78,8 @@ Yalnız JSON qaytar, heç bir əlavə mətn yazma.`;
       .single();
 
     if (countryError || !country) {
-      return NextResponse.json({ error: 'Ölkə yaradıla bilmədi', details: countryError?.message }, { status: 500 });
+      console.error('Visa country create error:', countryError);
+      return NextResponse.json({ error: 'Ölkə yaradıla bilmədi' }, { status: 500 });
     }
 
     await supabase.from('visa_info').insert({

@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
   const errors: Array<{ table: string; id: string; error: string }> = [];
 
   async function enrichTable(table: 'countries' | 'cities') {
-    const nameField = table === 'countries' ? 'name_az' : 'name_az';
     const selectFields = table === 'countries'
       ? 'id, slug, name_az, cover_photo_id'
       : 'id, slug, name_az, cover_photo_id';
@@ -47,7 +46,8 @@ export async function POST(request: NextRequest) {
       .limit(limit);
 
     if (fetchError) {
-      errors.push({ table, id: '-', error: fetchError.message });
+      console.error('Image enrich fetch error:', { table, error: fetchError });
+      errors.push({ table, id: '-', error: 'Data oxuna bilmədi' });
       return;
     }
 
@@ -72,7 +72,8 @@ export async function POST(request: NextRequest) {
           .eq('id', row.id);
 
         if (updateError) {
-          errors.push({ table, id: row.id, error: updateError.message });
+          console.error('Image enrich update error:', { table, id: row.id, error: updateError });
+          errors.push({ table, id: row.id, error: 'Şəkil yenilənə bilmədi' });
         }
       }
 

@@ -157,6 +157,8 @@ npm run seed:professional-blogs -- --apply
 npm run seed:professional-news -- --apply
 npm run localize:visa-notes -- --apply
 npm run seed:professional-companions -- --apply
+npm run audit:visa-official-links
+npm run seed:visa-official-links -- --apply
 ```
 
 Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq üçün `--apply` və `.env.local` içində `SUPABASE_SERVICE_ROLE_KEY` lazımdır.
@@ -188,6 +190,8 @@ Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq ü�
 - `scripts/seed-country-highlights.js` - ölkə highlight seed script-i
 - `scripts/localize-visa-notes.js` - `visa_info.notes_az/ru` sahələrində ingiliscə və ya boş qalan viza qeydlərini idarəli şəkildə lokalizasiya edir
 - `scripts/seed-professional-companions.js` - Yoldaş Tap üçün 15 peşəkar demo elan yaradır və köhnə açıq test elanlarını gizlədir
+- `scripts/audit-visa-official-links.js` - `official_visa_url` coverage report-u yaradır
+- `scripts/seed-visa-official-links.js` - populyar ölkələr üçün curated rəsmi viza link seed-i
 - `src/messages/*.json` - i18n mesajları
 
 ## Database və Migration-lar
@@ -240,6 +244,17 @@ Dəstəklənən provider-lar:
 - İstifadəçinin və ya başqa agentin dəyişikliklərini geri çevirmə.
 - Tripadvisor-dan icazəsiz scraping etmə.
 
+## Təhlükəsizlik və Performans Qaydaları
+
+- Public API route-larında user body-ni birbaşa DB-yə yazma; mütləq allowlist, type validation və length limit istifadə et.
+- Normal user blog/post yaratdıqda `status`, `is_verified`, `views`, `rating`, `role` kimi həssas sahələri body-dən qəbul etmə.
+- Blog publish yalnız admin/moderation axını ilə açılmalıdır; `/api/blogs` POST default olaraq `draft` yaratmalıdır.
+- Clientə Supabase `error.message`, constraint, table, column və daxili stack detalları göndərmə. Detalı serverdə `console.error` ilə saxla, clientə generic error qaytar.
+- Server/page query-lərində `select('*')` istifadə etmə; lazım olan field-ləri açıq yaz.
+- Bir-birindən asılı olmayan Supabase query-lərini `Promise.all` ilə paralel işlət.
+- Search/filter UI-larında hər keypress üçün API çağırışı etmə; ən azı 300ms debounce istifadə et.
+- Böyük static lookup-ları, məsələn ölkə şəkilləri və filter siyahıları, hər filter dəyişikliyində yenidən fetch etmə.
+
 ## Açıq Data Strategiyası
 
 - Wikipedia/Wikivoyage: ölkə və şəhər travel guide istinadları
@@ -260,6 +275,7 @@ Hər import source/license metadata saxlamalıdır.
 - Review moderation workflow.
 - AI route auth və image enrich admin gate.
 - Viza widget `cca2` və Supabase fallback düzəlişi.
+- Viza üçün dəqiq rəsmi link modeli: `official_visa_url` əsas CTA, köhnə `official_url` ümumi mənbə/fallback kimi qalır.
 - i18n və type cleanup.
 - Image optimization.
 - Mobile menu və footer polish.
@@ -318,6 +334,13 @@ Hər import source/license metadata saxlamalıdır.
    - Sonra booking confirmation, payment flow, provider order API-ləri, cancellation/refund policy planlanmalıdır.
 
 7. Production visual QA və Core Web Vitals.
+
+8. Visa rəsmi link coverage.
+   - `official_visa_url` yalnız dəqiq rəsmi viza səhifəsi, e-viza portalı, səfirlik/konsulluq səhifəsi və ya səlahiyyətli provider linki olmalıdır.
+   - AI ilə link uydurmaq olmaz; linklər manual və ya rəsmi mənbə ilə yoxlanmalıdır.
+   - Əvvəl audit: `npm run audit:visa-official-links`.
+   - İlk batch seed: `npm run seed:visa-official-links -- --apply`.
+   - Qalan ölkələr `data/visa-official-links-audit.json` report-una görə mərhələli doldurulmalıdır.
 
 ## Yoxlama Bazası
 

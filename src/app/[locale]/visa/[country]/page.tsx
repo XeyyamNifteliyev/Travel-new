@@ -17,7 +17,9 @@ export default async function VisaDetailPage({
       countries!inner(id, name_az, name_en, name_ru, slug, flag_emoji)
     `)
     .eq('countries.slug', slug)
-    .single();
+    .order('last_verified_at', { ascending: false, nullsFirst: false })
+    .limit(1)
+    .maybeSingle();
 
   if (!data) {
     return <VisaNotFoundClient slug={slug} locale={locale} />;

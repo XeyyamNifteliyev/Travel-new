@@ -96,6 +96,8 @@ export interface VisaInfo {
   max_stay_days?: number;
   is_evisa?: boolean;
   evisa_url?: string;
+  official_visa_url?: string;
+  official_visa_url_verified_at?: string;
   official_url?: string;
   appointment_url?: string;
   last_verified_at?: string;
@@ -131,6 +133,7 @@ export interface VisaCountryData {
     name_ru: string;
     slug: string;
     flag_emoji: string;
+    cca2?: string;
   };
   documents: VisaDocument[];
 }

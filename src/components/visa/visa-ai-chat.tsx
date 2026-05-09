@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
-import { Loader2, MessageCircle, Send } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { Loader2, Lock, MessageCircle, Send } from 'lucide-react';
+import { createBrowserClient } from '@/lib/supabase/client';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -23,9 +25,21 @@ export default function VisaAIChat({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const [limit, setLimit] = useState<number | null>(null);
+
+  useEffect(() => {
+    const supabase = createBrowserClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setIsLoggedIn(!!data.user);
+      setIsAuthLoading(false);
+    });
+  }, []);
 
   const sendMessage = async (question: string) => {
-    if (!question.trim() || isLoading) return;
+    if (!question.trim() || isLoading || !isLoggedIn || remaining === 0) return;
 
     setMessages((prev) => [...prev, { role: 'user', content: question }]);
     setInput('');
@@ -38,6 +52,8 @@ export default function VisaAIChat({
         body: JSON.stringify({ question, country_slug: countrySlug, locale }),
       });
       const data = await res.json();
+      if (typeof data.remaining === 'number') setRemaining(data.remaining);
+      if (typeof data.limit === 'number') setLimit(data.limit);
       setMessages((prev) => [...prev, { role: 'assistant', content: data.answer || data.error || t('aiError') }]);
     } catch {
       setMessages((prev) => [...prev, { role: 'assistant', content: t('aiError') }]);
@@ -52,12 +68,15 @@ export default function VisaAIChat({
 
   return (
     <div className="bg-bg-surface rounded-xl border border-border p-5 mt-6">
-      <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+      <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
         <MessageCircle className="w-5 h-5 text-primary" />
-        {countryName} — {t('askAI')}
+        {countryName} - {t('askAI')}
       </h3>
+      {limit !== null && remaining !== null && (
+        <p className="text-xs text-txt-sec mb-3">{t('aiRemaining', { remaining, limit })}</p>
+      )}
 
-      {messages.length === 0 && (
+      {messages.length === 0 && isLoggedIn && (
         <div className="mb-4">
           <p className="text-xs text-txt-sec mb-2">{t('aiQuickQuestions')}</p>
           <div className="flex flex-wrap gap-2">
@@ -65,7 +84,8 @@ export default function VisaAIChat({
               <button
                 key={q}
                 onClick={() => sendMessage(q)}
-                className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                disabled={isLoading || remaining === 0}
+                className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors disabled:opacity-50"
               >
                 {q}
               </button>
@@ -98,24 +118,44 @@ export default function VisaAIChat({
         )}
       </div>
 
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
-          placeholder={t('aiPlaceholder')}
-          className="flex-1 border border-border rounded-lg px-3 py-2.5 text-sm bg-bg-base focus:outline-none focus:border-primary"
-          disabled={isLoading}
-        />
-        <button
-          onClick={() => sendMessage(input)}
-          disabled={!input.trim() || isLoading}
-          className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm disabled:opacity-50 flex items-center gap-1.5"
-        >
-          <Send className="w-4 h-4" />
-        </button>
-      </div>
+      {isAuthLoading ? (
+        <div className="flex items-center gap-2 text-sm text-txt-sec">
+          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+          {t('aiAuthChecking')}
+        </div>
+      ) : isLoggedIn ? (
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
+            placeholder={remaining === 0 ? t('aiLimitReached') : t('aiPlaceholder')}
+            className="flex-1 border border-border rounded-lg px-3 py-2.5 text-sm bg-bg-base focus:outline-none focus:border-primary"
+            disabled={isLoading || remaining === 0}
+          />
+          <button
+            onClick={() => sendMessage(input)}
+            disabled={!input.trim() || isLoading || remaining === 0}
+            className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm disabled:opacity-50 flex items-center gap-1.5"
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-border bg-bg-base p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <Lock className="w-5 h-5 text-primary mt-0.5" />
+            <div>
+              <p className="font-semibold text-sm">{t('aiLoginTitle')}</p>
+              <p className="text-xs text-txt-sec mt-1">{t('aiLoginDesc')}</p>
+            </div>
+          </div>
+          <Link href={`/${locale}/auth/login`} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground text-center">
+            {t('aiLoginCta')}
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

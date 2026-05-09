@@ -93,6 +93,7 @@ function normalizePhotoRef(photoRef) {
   if (KNOWN_BAD_UNSPLASH_REFS.has(photoRef)) return null;
   if (photoRef.startsWith('https://upload.wikimedia.org/')) return photoRef.split('?')[0];
   if (photoRef.startsWith('https://images.unsplash.com/photo-')) return photoRef.split('?')[0];
+  if (photoRef.startsWith('https://images.pexels.com/photos/')) return photoRef.split('?')[0];
   if (/^\d{8,}-[a-zA-Z0-9_-]+$/.test(photoRef)) return `https://images.unsplash.com/photo-${photoRef}`;
   return null;
 }
@@ -124,7 +125,8 @@ function getRiskReason(country, duplicates) {
   if (
     country.is_featured &&
     !country.cover_photo_id.startsWith('https://images.unsplash.com/photo-') &&
-    !country.cover_photo_id.startsWith('https://upload.wikimedia.org/')
+    !country.cover_photo_id.startsWith('https://upload.wikimedia.org/') &&
+    !country.cover_photo_id.startsWith('https://images.pexels.com/photos/')
   ) {
     return 'featured_not_trusted_full_url';
   }

@@ -53,6 +53,29 @@ function timeAgo(dateStr: string, t: ReturnType<typeof useTranslations<'visa'>>)
   return t('monthsAgo', { count: Math.floor(days / 30) });
 }
 
+function formatProcessingTime(
+  requirementType: string,
+  min: number | null,
+  max: number | null,
+  t: ReturnType<typeof useTranslations<'visa'>>
+) {
+  if (max && min !== null) return `${min}-${max} ${t('workDays')}`;
+  if (max) return `${max} ${t('workDays')}`;
+  if (requirementType === 'not_required') return t('notRequiredProcessing');
+  return t('notAvailable');
+}
+
+function formatVisaFee(requirementType: string, feeUsd: number | null, t: ReturnType<typeof useTranslations<'visa'>>) {
+  if (typeof feeUsd === 'number' && feeUsd > 0) return `$${feeUsd}`;
+  if (requirementType === 'not_required' || feeUsd === 0) return t('feeFree');
+  return t('notAvailable');
+}
+
+function isSameUrl(left?: string | null, right?: string | null) {
+  if (!left || !right) return false;
+  return left.replace(/\/$/, '') === right.replace(/\/$/, '');
+}
+
 export default function VisaDetailClient({ country, visa, documents, locale }: VisaDetailClientProps) {
   const t = useTranslations('visa');
   const name = country[`name_${locale}` as 'name_az' | 'name_en' | 'name_ru'] || country.name_az;
@@ -65,10 +88,14 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
   const validityDays = visa.validity_days as number | null;
   const isEvisa = visa.is_evisa as boolean;
   const evisaUrl = visa.evisa_url as string | null;
+  const officialVisaUrl = visa.official_visa_url as string | null;
   const officialUrl = visa.official_url as string | null;
   const appointmentUrl = visa.appointment_url as string | null;
   const lastVerified = visa.last_verified_at as string | null;
   const notes = (visa[`notes_${locale}`] as string) || (visa.notes_az as string) || (visa.notes_en as string) || '';
+  const primaryOfficialUrl = officialVisaUrl || officialUrl;
+  const showOfficialSourceUrl = Boolean(officialVisaUrl && officialUrl && !isSameUrl(officialVisaUrl, officialUrl));
+  const showEvisaButton = Boolean(isEvisa && evisaUrl && !isSameUrl(evisaUrl, primaryOfficialUrl));
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
@@ -89,29 +116,19 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        {processingMax ? (
-          <div className="bg-bg-surface rounded-xl p-4 border border-border flex items-start gap-3">
-            <Clock className="w-5 h-5 text-primary mt-0.5 shrink-0" />
-            <div>
-              <p className="text-xs text-txt-sec">{t('processingTime')}</p>
-              <p className="font-semibold">{processingMin}-{processingMax} {t('workDays')}</p>
-            </div>
+        <div className="bg-bg-surface rounded-xl p-4 border border-border flex items-start gap-3">
+          <Clock className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs text-txt-sec">{t('processingTime')}</p>
+            <p className="font-semibold">{formatProcessingTime(requirementType, processingMin, processingMax, t)}</p>
           </div>
-        ) : (
-          <div className="bg-bg-surface rounded-xl p-4 border border-border flex items-start gap-3">
-            <Clock className="w-5 h-5 text-green-400 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-xs text-txt-sec">{t('processingTime')}</p>
-              <p className="font-semibold text-green-400">{t('notRequired')}</p>
-            </div>
-          </div>
-        )}
+        </div>
 
         <div className="bg-bg-surface rounded-xl p-4 border border-border flex items-start gap-3">
           <DollarSign className="w-5 h-5 text-secondary mt-0.5 shrink-0" />
           <div>
             <p className="text-xs text-txt-sec">{t('fee')}</p>
-            <p className="font-semibold">{feeUsd ? `$${feeUsd}` : t('feeFree')}</p>
+            <p className="font-semibold">{formatVisaFee(requirementType, feeUsd, t)}</p>
           </div>
         </div>
 
@@ -132,9 +149,11 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
           <div className="flex-1">
             <p className="text-green-400 font-medium text-sm">{t('evisaAvailable')}</p>
           </div>
-          <a href={evisaUrl} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg flex items-center gap-1 hover:bg-green-500/30 transition-colors">
-            {t('applyOnline')} <ExternalLink className="w-3 h-3" />
-          </a>
+          {showEvisaButton && (
+            <a href={evisaUrl} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg flex items-center gap-1 hover:bg-green-500/30 transition-colors">
+              {t('evisaPortal')} <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
         </div>
       )}
 
@@ -148,12 +167,18 @@ export default function VisaDetailClient({ country, visa, documents, locale }: V
         <VisaDocumentChecklist documents={documents} countrySlug={country.slug} />
       )}
 
-      {(officialUrl || appointmentUrl) && (
+      {(primaryOfficialUrl || showOfficialSourceUrl || appointmentUrl) && (
         <div className="flex flex-wrap gap-3 mb-6">
-          {officialUrl && (
+          {primaryOfficialUrl && (
+            <a href={primaryOfficialUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm px-4 py-2.5 bg-bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors">
+              <ExternalLink className="w-4 h-4" />
+              {officialVisaUrl ? t('officialVisaPage') : t('officialSource')}
+            </a>
+          )}
+          {showOfficialSourceUrl && officialUrl && (
             <a href={officialUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm px-4 py-2.5 bg-bg-surface border border-border rounded-lg hover:border-primary/50 transition-colors">
               <ExternalLink className="w-4 h-4" />
-              {t('officialSite')}
+              {t('officialSource')}
             </a>
           )}
           {appointmentUrl && (

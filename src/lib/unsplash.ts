@@ -21,6 +21,15 @@ export function getUnsplashUrl(
     return safePhotoId;
   }
 
+  if (safePhotoId.startsWith('https://images.pexels.com/')) {
+    const url = new URL(safePhotoId);
+    url.searchParams.set('auto', 'compress');
+    url.searchParams.set('cs', 'tinysrgb');
+    url.searchParams.set('w', String(w));
+    if (h) url.searchParams.set('h', String(h));
+    return url.toString();
+  }
+
   if (safePhotoId.startsWith('https://images.unsplash.com/')) {
     const url = new URL(safePhotoId);
     for (const [key, value] of params.entries()) {
@@ -111,6 +120,7 @@ function isUsableUnsplashPhotoRef(photoId?: string | null): photoId is string {
   if (KNOWN_BAD_UNSPLASH_REFS.has(photoId)) return false;
   if (photoId.startsWith('https://upload.wikimedia.org/')) return true;
   if (photoId.startsWith('https://images.unsplash.com/photo-')) return true;
+  if (photoId.startsWith('https://images.pexels.com/photos/')) return true;
   // Standard Unsplash IDs: photo-TIMESTAMP-PHOTOID (e.g. photo-1502602898657-3e91760cbb34)
   return /^\d{8,}-[a-zA-Z0-9_-]+$/.test(photoId);
 }

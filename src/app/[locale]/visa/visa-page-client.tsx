@@ -28,7 +28,7 @@ export function VisaPageClient({ countries }: { countries: VisaCountryData[] }) 
       <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
       <p className="text-txt-sec mb-8">{t('subtitle')}</p>
       <div className="mb-8">
-        <VisaCheckWidget />
+        <VisaCheckWidget countries={countries} />
       </div>
       <VisaSearchBar value={search} onChange={setSearch} />
       <VisaCountryGrid countries={filtered} />

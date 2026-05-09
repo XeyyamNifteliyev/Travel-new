@@ -127,7 +127,7 @@ export default function LoginPage() {
         <div className="mt-4">
           <button
             onClick={handleGoogleLogin}
-            className="w-full bg-white text-dark font-medium py-2.5 rounded-lg hover:bg-gray-100 transition-colors text-sm"
+            className="w-full bg-white text-black font-medium py-2.5 rounded-lg hover:bg-gray-100 transition-colors text-sm"
           >
             {t('loginWithGoogle')}
           </button>

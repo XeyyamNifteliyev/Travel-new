@@ -5,6 +5,7 @@ const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 const UNSPLASH_API = 'https://api.unsplash.com/search/photos';
+const PEXELS_API = 'https://api.pexels.com/v1/search';
 const RATE_LIMIT_DELAY = 1200;
 let stopDueToRateLimit = false;
 
@@ -252,6 +253,10 @@ function normalizePhotoRef(photoRef) {
     return photoRef.split('?')[0];
   }
 
+  if (photoRef.startsWith('https://images.pexels.com/photos/')) {
+    return photoRef.split('?')[0];
+  }
+
   if (photoRef.startsWith('https://images.unsplash.com/photo-')) {
     return photoRef.split('?')[0];
   }
@@ -296,6 +301,17 @@ function buildSearchQueries(row, table) {
 }
 
 function getResultSearchText(result) {
+  if (result.photographer || result.alt) {
+    return [
+      result.alt,
+      result.photographer,
+      result.url,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+  }
+
   const tags = Array.isArray(result.tags)
     ? result.tags.map((tag) => tag?.title || tag?.source?.title).filter(Boolean)
     : [];
@@ -327,7 +343,7 @@ function getRejectedResultReason(result) {
   return null;
 }
 
-function scoreCityResult(result, query) {
+function scoreCityResult(result) {
   const text = getResultSearchText(result);
   return CITY_IMAGE_TERMS.reduce((score, term) => (
     includesSearchTerm(text, term) ? score + 1 : score
@@ -381,32 +397,75 @@ async function searchUnsplash(query, accessKey) {
   }
 }
 
-async function pickPhotoForRow(row, table, accessKey, usedPhotoRefs) {
+async function searchPexels(query, accessKey) {
+  if (!accessKey) return [];
+
+  const params = new URLSearchParams({
+    query,
+    per_page: '8',
+    orientation: 'landscape',
+  });
+
+  try {
+    const res = await fetch(`${PEXELS_API}?${params}`, {
+      headers: { Authorization: accessKey },
+    });
+
+    if (!res.ok) {
+      console.error(`  [pexels] HTTP ${res.status}: ${res.statusText}`);
+      return [];
+    }
+
+    const data = await res.json();
+    return data.photos || [];
+  } catch (error) {
+    console.error(`  [pexels] fetch error: ${error.message}`);
+    return [];
+  }
+}
+
+function pickFromResults(results, usedPhotoRefs) {
+  for (const result of results) {
+    const rejectedReason = getRejectedResultReason(result);
+    if (rejectedReason) {
+      console.log(`  [skip] ${rejectedReason}`);
+      continue;
+    }
+
+    const photoRef = normalizePhotoRef(
+      result.urls?.raw ||
+      result.urls?.regular ||
+      result.src?.original ||
+      result.src?.large2x ||
+      result.src?.large ||
+      result.id
+    );
+    if (!photoRef || usedPhotoRefs.has(photoRef)) continue;
+
+    return {
+      photoRef,
+      alt: result.alt_description || result.alt || null,
+    };
+  }
+  return null;
+}
+
+async function pickPhotoForRow(row, table, accessKey, pexelsKey, usedPhotoRefs) {
   const queries = buildSearchQueries(row, table);
 
   for (const query of queries) {
-    if (stopDueToRateLimit) return null;
+    if (!stopDueToRateLimit) {
+      const results = await searchUnsplash(query, accessKey);
 
-    const results = await searchUnsplash(query, accessKey);
-
-    const rankedResults = [...results].sort((a, b) => scoreCityResult(b, query) - scoreCityResult(a, query));
-
-    for (const result of rankedResults) {
-      const rejectedReason = getRejectedResultReason(result);
-      if (rejectedReason) {
-        console.log(`  [skip] ${rejectedReason}`);
-        continue;
-      }
-
-      const photoRef = normalizePhotoRef(result.urls?.raw || result.urls?.regular || result.id);
-      if (!photoRef || usedPhotoRefs.has(photoRef)) continue;
-
-      return {
-        photoRef,
-        query,
-        alt: result.alt_description || null,
-      };
+      const rankedResults = [...results].sort((a, b) => scoreCityResult(b) - scoreCityResult(a));
+      const picked = pickFromResults(rankedResults, usedPhotoRefs);
+      if (picked) return { ...picked, query: `unsplash:${query}` };
     }
+
+    const pexelsResults = await searchPexels(query, pexelsKey);
+    const picked = pickFromResults(pexelsResults, usedPhotoRefs);
+    if (picked) return { ...picked, query: `pexels:${query}` };
+
 
     await sleep(RATE_LIMIT_DELAY);
   }
@@ -470,7 +529,7 @@ async function getRows(supabase, table, opts) {
     .slice(0, opts.limit);
 }
 
-async function enrichTable(supabase, table, accessKey, opts) {
+async function enrichTable(supabase, table, accessKey, pexelsKey, opts) {
   console.log(`\n=== Enriching ${table} (limit: ${opts.limit}) ===\n`);
 
   const rows = await getRows(supabase, table, opts);
@@ -489,7 +548,7 @@ async function enrichTable(supabase, table, accessKey, opts) {
   console.log(`  Found ${rows.length} ${table} rows to enrich\n`);
 
   for (const row of rows) {
-    if (stopDueToRateLimit) {
+    if (stopDueToRateLimit && !pexelsKey) {
       console.log('  Stopping early because Unsplash rate limit was reached.');
       break;
     }
@@ -499,7 +558,7 @@ async function enrichTable(supabase, table, accessKey, opts) {
 
     process.stdout.write(`  [${row.slug}] `);
 
-    const picked = await pickPhotoForRow(row, table, accessKey, usedRefs);
+    const picked = await pickPhotoForRow(row, table, accessKey, pexelsKey, usedRefs);
     if (!picked) {
       console.log('no unique country-specific photo found');
       skipped++;
@@ -550,6 +609,7 @@ async function main() {
   if (!accessKey) {
     throw new Error('UNSPLASH_ACCESS_KEY is required.');
   }
+  const pexelsKey = process.env.PEXELS_API_KEY;
 
   const supabase = createSupabaseClient(opts.apply);
   const mode = opts.dryRun ? 'DRY-RUN' : 'APPLY';
@@ -560,6 +620,7 @@ async function main() {
   console.log(`  Priority countries: ${opts.priorityCountries ? 'yes' : 'no'}`);
   console.log(`  Repair invalid: ${opts.repairInvalid ? 'yes' : 'no'}`);
   console.log(`  Target slugs: ${opts.slug?.join(', ') || 'auto'}`);
+  console.log(`  Pexels fallback: ${pexelsKey ? 'yes' : 'no'}`);
   console.log(`  Duplicate-safe: yes\n`);
 
   let totalEnriched = 0;
@@ -567,14 +628,14 @@ async function main() {
   let totalSkipped = 0;
 
   if (opts.type === 'countries' || opts.type === 'all') {
-    const result = await enrichTable(supabase, 'countries', accessKey, opts);
+    const result = await enrichTable(supabase, 'countries', accessKey, pexelsKey, opts);
     totalEnriched += result.enriched;
     totalErrors += result.errors;
     totalSkipped += result.skipped;
   }
 
   if (opts.type === 'cities' || opts.type === 'all') {
-    const result = await enrichTable(supabase, 'cities', accessKey, opts);
+    const result = await enrichTable(supabase, 'cities', accessKey, pexelsKey, opts);
     totalEnriched += result.enriched;
     totalErrors += result.errors;
     totalSkipped += result.skipped;

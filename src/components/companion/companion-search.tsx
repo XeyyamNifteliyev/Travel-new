@@ -63,6 +63,7 @@ export default function CompanionSearch() {
     interests: [],
     languages: [],
   });
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
 
   const [formData, setFormData] = useState<CompanionFormData>({
     destinationCountry: '',
@@ -79,8 +80,17 @@ export default function CompanionSearch() {
   });
 
   useEffect(() => {
-    fetchCompanions();
+    const timer = window.setTimeout(() => setDebouncedFilters(filters), 300);
+    return () => window.clearTimeout(timer);
   }, [filters]);
+
+  useEffect(() => {
+    fetchCountryImages();
+  }, []);
+
+  useEffect(() => {
+    fetchCompanions(debouncedFilters);
+  }, [debouncedFilters]);
 
   useEffect(() => {
     checkAuth();
@@ -97,18 +107,36 @@ export default function CompanionSearch() {
     setUser(user);
   }
 
-  async function fetchCompanions() {
+  async function fetchCountryImages() {
+    const { data: countriesData } = await supabase
+      .from('countries')
+      .select('slug, name_az, name_en, name_ru, cover_photo_id');
+
+    if (!countriesData) return;
+
+    const imgMap: Record<string, string> = {};
+    for (const c of countriesData) {
+      const photoId = getCountryCoverPhotoId(c.slug, c.cover_photo_id);
+      const url = getUnsplashUrl(photoId, { w: 800, q: 80 });
+      if (c.name_az) imgMap[c.name_az] = url;
+      if (c.name_en) imgMap[c.name_en] = url;
+      if (c.name_ru) imgMap[c.name_ru] = url;
+    }
+    setCountryImages(imgMap);
+  }
+
+  async function fetchCompanions(activeFilters = filters) {
     setLoading(true);
-    const isFirstLoad = availableCountries.length === 0 && !filters.country;
+    const isFirstLoad = availableCountries.length === 0 && !activeFilters.country;
     const params = new URLSearchParams();
-    if (filters.country) params.set('country', filters.country);
-    if (filters.city) params.set('city', filters.city);
-    if (filters.departureDate) params.set('departureDate', filters.departureDate);
-    if (filters.genderPreference !== 'any') params.set('genderPreference', filters.genderPreference);
-    if (filters.ageMin) params.set('ageMin', filters.ageMin.toString());
-    if (filters.ageMax) params.set('ageMax', filters.ageMax.toString());
-    if (filters.interests.length) params.set('interests', filters.interests.join(','));
-    if (filters.languages.length) params.set('languages', filters.languages.join(','));
+    if (activeFilters.country) params.set('country', activeFilters.country);
+    if (activeFilters.city) params.set('city', activeFilters.city);
+    if (activeFilters.departureDate) params.set('departureDate', activeFilters.departureDate);
+    if (activeFilters.genderPreference !== 'any') params.set('genderPreference', activeFilters.genderPreference);
+    if (activeFilters.ageMin) params.set('ageMin', activeFilters.ageMin.toString());
+    if (activeFilters.ageMax) params.set('ageMax', activeFilters.ageMax.toString());
+    if (activeFilters.interests.length) params.set('interests', activeFilters.interests.join(','));
+    if (activeFilters.languages.length) params.set('languages', activeFilters.languages.join(','));
 
     const res = await fetch(`/api/companions?${params}`);
     const data = await res.json();
@@ -156,25 +184,6 @@ export default function CompanionSearch() {
       setAvailableCountries(countries);
     }
 
-    const countryNames = [...new Set(mapped.map((c: Companion) => c.destinationCountry))];
-    if (countryNames.length > 0) {
-      const { data: countriesData } = await supabase
-        .from('countries')
-        .select('slug, name_az, name_en, name_ru, cover_photo_id');
-
-      if (countriesData) {
-        const imgMap: Record<string, string> = {};
-        for (const c of countriesData) {
-          const photoId = getCountryCoverPhotoId(c.slug, c.cover_photo_id);
-          const url = getUnsplashUrl(photoId, { w: 800, q: 80 });
-          if (c.name_az) imgMap[c.name_az] = url;
-          if (c.name_en) imgMap[c.name_en] = url;
-          if (c.name_ru) imgMap[c.name_ru] = url;
-        }
-        setCountryImages(imgMap);
-      }
-    }
-
     setLoading(false);
   }
 
@@ -193,7 +202,7 @@ export default function CompanionSearch() {
 
     if (res.ok) {
       setShowForm(false);
-      fetchCompanions();
+      fetchCompanions(filters);
       setFormData({
         destinationCountry: '',
         destinationCity: '',

@@ -5,7 +5,119 @@ import { mapCityToSummary, mapPlaceToSummary } from '@/lib/open-travel-data';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { CitySummary, CityWithCountryRow, PlaceSummary, PlaceWithRelationsRow } from '@/types/place';
-import type { CountryHighlight } from '@/types/country';
+import type { CountryHighlight, ExpandedCountry } from '@/types/country';
+
+const COUNTRY_DETAIL_FIELDS = [
+  'id',
+  'slug',
+  'name_az',
+  'name_en',
+  'name_ru',
+  'flag_emoji',
+  'continent',
+  'capital',
+  'currency',
+  'currency_name',
+  'language',
+  'population',
+  'timezone',
+  'calling_code',
+  'best_months',
+  'climate_type',
+  'avg_flight_azn',
+  'avg_hotel_azn',
+  'avg_daily_azn',
+  'cover_photo_id',
+  'cover_photo_alt',
+  'gallery_ids',
+  'youtube_ids',
+  'youtube_titles',
+  'top_places',
+  'short_desc',
+  'short_desc_en',
+  'short_desc_ru',
+  'safety_level',
+  'visa_required',
+  'popular_rank',
+  'is_featured',
+  'cca2',
+  'lat',
+  'lng',
+].join(', ');
+
+const CITY_WITH_COUNTRY_FIELDS = [
+  'id',
+  'country_id',
+  'slug',
+  'name_az',
+  'name_en',
+  'name_ru',
+  'region',
+  'admin_region',
+  'lat',
+  'lng',
+  'population',
+  'short_desc_az',
+  'short_desc_en',
+  'short_desc_ru',
+  'description_az',
+  'description_en',
+  'description_ru',
+  'cover_photo_id',
+  'cover_photo_url',
+  'source',
+  'source_id',
+  'source_url',
+  'license',
+  'attribution_text',
+  'is_featured',
+  'popular_rank',
+  'last_synced_at',
+  'created_at',
+  'updated_at',
+  'countries(id, slug, name_az, name_en, name_ru, flag_emoji, cca2)',
+].join(', ');
+
+const PLACE_WITH_RELATIONS_FIELDS = [
+  'id',
+  'city_id',
+  'country_id',
+  'slug',
+  'name',
+  'name_az',
+  'name_en',
+  'name_ru',
+  'category',
+  'subcategory',
+  'lat',
+  'lng',
+  'address',
+  'website',
+  'phone',
+  'email',
+  'opening_hours',
+  'description_az',
+  'description_en',
+  'description_ru',
+  'cover_photo_id',
+  'cover_photo_url',
+  'source',
+  'source_place_id',
+  'source_url',
+  'license',
+  'attribution_text',
+  'rating_summary',
+  'review_count',
+  'is_featured',
+  'popular_rank',
+  'status',
+  'raw_data',
+  'last_synced_at',
+  'created_at',
+  'updated_at',
+  'cities(id, slug, name_az, name_en, name_ru)',
+  'countries(id, slug, name_az, name_en, name_ru, flag_emoji, cca2)',
+].join(', ');
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -27,79 +139,80 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
   const currentLocale = locale as Locale;
   const supabase = await createClient();
 
-  const { data: country } = await supabase
+  const { data: countryRow } = await supabase
     .from('countries')
-    .select('*')
+    .select(COUNTRY_DETAIL_FIELDS)
     .eq('slug', slug)
     .single();
 
-  if (!country) notFound();
+  if (!countryRow) notFound();
+  const country = countryRow as unknown as ExpandedCountry;
 
-  const { data: highlights } = await supabase
-    .from('country_highlights')
-    .select('*')
-    .eq('country_id', country.id)
-    .order('rank');
+  const [
+    { data: highlights },
+    { data: blogs },
+    { data: visaCheck },
+    { data: cityRows, error: cityError },
+    { data: placeRows, error: placeError },
+    { data: foodPlaceRows, error: foodPlaceError },
+  ] = await Promise.all([
+    supabase
+      .from('country_highlights')
+      .select('id, country_id, slug, name, name_en, name_ru, description, photo_id, lat, lng, category, rank')
+      .eq('country_id', country.id)
+      .order('rank'),
+    supabase
+      .from('blogs')
+      .select('id, title, cover_image, created_at, views, profiles(display_name)')
+      .eq('status', 'published')
+      .ilike('content', `%${country.name_az}%`)
+      .order('created_at', { ascending: false })
+      .limit(6),
+    supabase
+      .from('visa_info')
+      .select('id')
+      .eq('country_id', country.id)
+      .maybeSingle(),
+    supabase
+      .from('cities')
+      .select(CITY_WITH_COUNTRY_FIELDS)
+      .eq('country_id', country.id)
+      .order('is_featured', { ascending: false })
+      .order('popular_rank', { ascending: true })
+      .limit(6),
+    supabase
+      .from('places')
+      .select(PLACE_WITH_RELATIONS_FIELDS)
+      .eq('country_id', country.id)
+      .not('category', 'in', '("restaurant","cafe")')
+      .eq('status', 'active')
+      .not('cover_photo_url', 'is', null)
+      .order('is_featured', { ascending: false })
+      .order('popular_rank', { ascending: true })
+      .order('rating_summary', { ascending: false })
+      .limit(8),
+    supabase
+      .from('places')
+      .select(PLACE_WITH_RELATIONS_FIELDS)
+      .eq('country_id', country.id)
+      .in('category', ['restaurant', 'cafe'])
+      .eq('status', 'active')
+      .not('cover_photo_url', 'is', null)
+      .order('is_featured', { ascending: false })
+      .order('popular_rank', { ascending: true })
+      .order('rating_summary', { ascending: false })
+      .limit(8),
+  ]);
 
-  const { data: blogs } = await supabase
-    .from('blogs')
-    .select('id, title, cover_image, created_at, views, profiles(display_name)')
-    .ilike('content', `%${country.name_az}%`)
-    .order('created_at', { ascending: false })
-    .limit(6);
-
-  const { data: visaCheck } = await supabase
-    .from('visa_info')
-    .select('id')
-    .eq('country_id', country.id)
-    .maybeSingle();
-
-  let cities: CitySummary[] = [];
-  const { data: cityRows, error: cityError } = await supabase
-    .from('cities')
-    .select('*, countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
-    .eq('country_id', country.id)
-    .order('is_featured', { ascending: false })
-    .order('popular_rank', { ascending: true })
-    .limit(6);
-
-  if (!cityError && cityRows) {
-    cities = (cityRows as CityWithCountryRow[]).map((city) => mapCityToSummary(city, currentLocale));
-  }
-
-  let places: PlaceSummary[] = [];
-  const { data: placeRows, error: placeError } = await supabase
-    .from('places')
-    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
-    .eq('country_id', country.id)
-    .not('category', 'in', '("restaurant","cafe")')
-    .eq('status', 'active')
-    .not('cover_photo_url', 'is', null)
-    .order('is_featured', { ascending: false })
-    .order('popular_rank', { ascending: true })
-    .order('rating_summary', { ascending: false })
-    .limit(8);
-
-  if (!placeError && placeRows) {
-    places = (placeRows as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale));
-  }
-
-  let foodPlaces: PlaceSummary[] = [];
-  const { data: foodPlaceRows, error: foodPlaceError } = await supabase
-    .from('places')
-    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
-    .eq('country_id', country.id)
-    .in('category', ['restaurant', 'cafe'])
-    .eq('status', 'active')
-    .not('cover_photo_url', 'is', null)
-    .order('is_featured', { ascending: false })
-    .order('popular_rank', { ascending: true })
-    .order('rating_summary', { ascending: false })
-    .limit(8);
-
-  if (!foodPlaceError && foodPlaceRows) {
-    foodPlaces = (foodPlaceRows as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale));
-  }
+  const cities: CitySummary[] = !cityError && cityRows
+    ? (cityRows as unknown as CityWithCountryRow[]).map((city) => mapCityToSummary(city, currentLocale))
+    : [];
+  const places: PlaceSummary[] = !placeError && placeRows
+    ? (placeRows as unknown as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale))
+    : [];
+  const foodPlaces: PlaceSummary[] = !foodPlaceError && foodPlaceRows
+    ? (foodPlaceRows as unknown as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale))
+    : [];
 
   return (
     <CountryDetailClient
