@@ -29,6 +29,15 @@ function formatDate(dateStr: string, locale: string) {
   return `${d.getDate()} ${getMonths(locale)[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+function sanitizeBlogContent(content: string) {
+  return DOMPurify.sanitize(content, {
+    ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img', 'hr', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'class'],
+    ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto):|\/(?!\/)|#)/i,
+    FORBID_ATTR: ['style', 'srcset'],
+  });
+}
+
 export default function BlogDetailPage() {
   const params = useParams();
   const locale = params?.locale as string;
@@ -43,6 +52,7 @@ export default function BlogDetailPage() {
   const [copied, setCopied] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
   const supabase = useMemo(() => createClient(), []);
+  const sanitizedContent = useMemo(() => blog ? sanitizeBlogContent(blog.content) : '', [blog]);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -276,7 +286,7 @@ export default function BlogDetailPage() {
 
         <div
           className="prose prose-invert max-w-none text-txt-sec leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog.content, { ALLOWED_TAGS: ['h1','h2','h3','h4','h5','h6','p','br','strong','em','ul','ol','li','a','blockquote','code','pre','img','hr','table','thead','tbody','tr','th','td'], ALLOWED_ATTR: ['href','target','src','alt','class'] }) }}
+          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
         />
 
         <BlogComments blogId={blog.id} />

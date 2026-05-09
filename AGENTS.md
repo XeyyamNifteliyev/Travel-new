@@ -290,6 +290,13 @@ Hər import source/license metadata saxlamalıdır.
 
 ## Natamam Qalanlar
 
+0. Production security hardening aktiv prioritetdir.
+   - Əsas sənəd: `production-hardening.md`.
+   - Yeni migration: `032_ai_usage_and_rls_hardening.sql`.
+   - RLS-də public yazma policy-ləri bağlanmalıdır: `visa_qa_cache`, `visa_updates`, `scraper_logs`, `leaderboard_stats`, `notifications`.
+   - AI endpoint-lər günlük limitlə işləməlidir: visa 3, planner 3, cheap dates 5.
+   - `npm audit --audit-level=moderate` hələ `next-intl` və Next/PostCSS üçün breaking update tələb edir; bunu ayrıca migration kimi et.
+
 1. Qalan ölkə şəkillərini batch-batch doldurmaq.
    - Əsas problem budur.
    - `npm run audit:country-images` ilə vəziyyəti yoxla.

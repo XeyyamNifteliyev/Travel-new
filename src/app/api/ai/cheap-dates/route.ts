@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { assertAiLimit, incrementAiUsage, AI_DAILY_LIMITS } from '@/lib/ai/usage';
 import { getProvider } from '@/lib/ai/provider';
 import { buildCheapDatesPrompt } from '@/lib/ai/prompts';
 import { CheapDatesRequest, CheapDatesResponse } from '@/types/ai-planner';
@@ -9,7 +10,7 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Giriş tələb olunur' }, { status: 401 });
+      return NextResponse.json({ error: 'Giriş tələb olunur', limit: AI_DAILY_LIMITS.cheap_dates, remaining: 0, from_cache: false }, { status: 401 });
     }
 
     const body: CheapDatesRequest = await request.json();
@@ -19,6 +20,16 @@ export async function POST(request: Request) {
         { error: 'Destinasiya, müddət və səyahətçi sayı mütləqdir' },
         { status: 400 }
       );
+    }
+
+    const usage = await assertAiLimit(user.id, 'cheap_dates');
+    if (!usage.allowed) {
+      return NextResponse.json({
+        error: 'Gündəlik ucuz tarix AI limitiniz bitib. Sabah yenidən cəhd edin.',
+        limit: usage.limit,
+        remaining: 0,
+        from_cache: false,
+      }, { status: 429 });
     }
 
     const provider = getProvider();
@@ -56,7 +67,14 @@ export async function POST(request: Request) {
       tip: (parsed.tip as string) || '',
     };
 
-    return NextResponse.json(result);
+    await incrementAiUsage(user.id, 'cheap_dates', usage);
+
+    return NextResponse.json({
+      ...result,
+      limit: usage.limit,
+      remaining: Math.max(usage.limit - usage.count - 1, 0),
+      from_cache: false,
+    });
   } catch (error: unknown) {
     console.error('Cheap Dates error:', error);
     return NextResponse.json(

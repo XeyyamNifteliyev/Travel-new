@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { assertAiLimit, getAiUsage, incrementAiUsage, AI_DAILY_LIMITS } from '@/lib/ai/usage';
 import { getProvider } from '@/lib/ai/provider';
 import { NextRequest, NextResponse } from 'next/server';
 
-const DAILY_AI_LIMIT = 3;
+const DAILY_AI_LIMIT = AI_DAILY_LIMITS.visa;
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
@@ -17,10 +19,11 @@ export async function POST(request: NextRequest) {
 
   const safeLocale = locale === 'en' || locale === 'ru' ? locale : 'az';
   const supabase = await createClient();
+  const adminSupabase = createAdminClient();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: 'Giriş tələb olunur', limit: DAILY_AI_LIMIT, remaining: 0 }, { status: 401 });
+    return NextResponse.json({ error: 'Giriş tələb olunur', limit: DAILY_AI_LIMIT, remaining: 0, from_cache: false }, { status: 401 });
   }
 
   const questionHash = await hashQuestion(question);
@@ -44,30 +47,23 @@ export async function POST(request: NextRequest) {
     if (cached) {
       const answer = cached[`answer_${safeLocale}` as 'answer_az' | 'answer_en' | 'answer_ru'] || cached.answer_az;
       if (answer) {
-        await supabase
+        await adminSupabase
           .from('visa_qa_cache')
           .update({ hit_count: ((cached as { hit_count?: number }).hit_count ?? 0) + 1 })
           .eq('id', (cached as { id: string }).id);
-        const remaining = await getRemainingQuestions(supabase, user.id);
+        const remaining = (await getAiUsage(user.id, 'visa')).remaining;
         return NextResponse.json({ answer, from_cache: true, limit: DAILY_AI_LIMIT, remaining });
       }
     }
   }
 
-  const usageDate = getBakuDate();
-  const { data: usageRow } = await supabase
-    .from('visa_ai_daily_usage')
-    .select('id, question_count')
-    .eq('user_id', user.id)
-    .eq('usage_date', usageDate)
-    .maybeSingle();
-  const currentCount = (usageRow?.question_count as number | undefined) ?? 0;
-
-  if (currentCount >= DAILY_AI_LIMIT) {
+  const usage = await assertAiLimit(user.id, 'visa');
+  if (!usage.allowed) {
     return NextResponse.json({
       error: 'Gündəlik AI sual limitiniz bitib. Sabah yenidən cəhd edin.',
-      limit: DAILY_AI_LIMIT,
+      limit: usage.limit,
       remaining: 0,
+      from_cache: false,
     }, { status: 429 });
   }
 
@@ -106,22 +102,23 @@ export async function POST(request: NextRequest) {
       };
       cacheEntry[`answer_${safeLocale}`] = answer;
 
-      await supabase.from('visa_qa_cache').upsert(cacheEntry, { onConflict: 'country_id,question_hash' });
+      await adminSupabase.from('visa_qa_cache').upsert(cacheEntry, { onConflict: 'country_id,question_hash' });
     }
 
-    await incrementDailyUsage(supabase, user.id, usageDate, usageRow?.id as string | undefined, currentCount);
+    await incrementAiUsage(user.id, 'visa', usage);
     return NextResponse.json({
       answer,
       from_cache: false,
-      limit: DAILY_AI_LIMIT,
-      remaining: Math.max(DAILY_AI_LIMIT - currentCount - 1, 0),
+      limit: usage.limit,
+      remaining: Math.max(usage.limit - usage.count - 1, 0),
     });
   } catch (error) {
     console.error('Visa AI answer error:', error);
     return NextResponse.json({
       error: 'AI cavab verə bilmədi',
-      limit: DAILY_AI_LIMIT,
-      remaining: Math.max(DAILY_AI_LIMIT - currentCount, 0),
+      limit: usage.limit,
+      remaining: Math.max(usage.limit - usage.count, 0),
+      from_cache: false,
     }, { status: 500 });
   }
 }
@@ -131,46 +128,6 @@ async function hashQuestion(question: string): Promise<string> {
   const data = new TextEncoder().encode(normalized);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
-}
-
-function getBakuDate(): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Baku',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
-}
-
-async function getRemainingQuestions(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<number> {
-  const { data } = await supabase
-    .from('visa_ai_daily_usage')
-    .select('question_count')
-    .eq('user_id', userId)
-    .eq('usage_date', getBakuDate())
-    .maybeSingle();
-  const count = (data?.question_count as number | undefined) ?? 0;
-  return Math.max(DAILY_AI_LIMIT - count, 0);
-}
-
-async function incrementDailyUsage(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
-  usageDate: string,
-  usageId: string | undefined,
-  currentCount: number
-) {
-  if (usageId) {
-    await supabase
-      .from('visa_ai_daily_usage')
-      .update({ question_count: currentCount + 1, updated_at: new Date().toISOString() })
-      .eq('id', usageId);
-    return;
-  }
-
-  await supabase
-    .from('visa_ai_daily_usage')
-    .insert({ user_id: userId, usage_date: usageDate, question_count: 1 });
 }
 
 function pickLocalized(row: Record<string, unknown>, field: string, locale: string): string {

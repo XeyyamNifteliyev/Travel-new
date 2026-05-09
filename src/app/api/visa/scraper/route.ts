@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { NextRequest, NextResponse } from 'next/server';
 
 const VISA_SOURCES: Record<string, { urls: string[]; embassy_az?: string }> = {
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
   const batchParam = searchParams.get('batch');
   const batch = batchParam ? parseInt(batchParam, 10) : 1;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const allEntries = Object.entries(VISA_SOURCES);
   const totalBatches = Math.ceil(allEntries.length / BATCH_SIZE);
 
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function scrapeCountry(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   slug: string,
   sources: { urls: string[]; embassy_az?: string }
 ): Promise<string> {

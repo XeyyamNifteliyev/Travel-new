@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@/types/supabase-helpers';
@@ -10,13 +11,15 @@ import {
   BarChart3, CheckCircle2, FileText, LayoutDashboard, LogOut, Map, Menu,
   MessageSquareText, Settings, Shield, Users, Video, X
 } from 'lucide-react';
-import { ReviewModerationPanel } from '@/components/place/review-moderation-panel';
-import { DashboardOverview } from '@/components/profile/dashboard-overview';
-import { MyBlogs } from '@/components/profile/my-blogs';
-import { MyCompanions } from '@/components/profile/my-companions';
-import { MyVideos } from '@/components/profile/my-videos';
-import { MyMap } from '@/components/profile/my-map';
-import { ProfileSettings } from '@/components/profile/profile-settings';
+
+const PanelLoading = () => <div className="h-72 rounded-2xl border border-border bg-bg-surface animate-pulse" />;
+const ReviewModerationPanel = dynamic(() => import('@/components/place/review-moderation-panel').then((mod) => mod.ReviewModerationPanel), { ssr: false, loading: PanelLoading });
+const DashboardOverview = dynamic(() => import('@/components/profile/dashboard-overview').then((mod) => mod.DashboardOverview), { ssr: false, loading: PanelLoading });
+const MyBlogs = dynamic(() => import('@/components/profile/my-blogs').then((mod) => mod.MyBlogs), { ssr: false, loading: PanelLoading });
+const MyCompanions = dynamic(() => import('@/components/profile/my-companions').then((mod) => mod.MyCompanions), { ssr: false, loading: PanelLoading });
+const MyVideos = dynamic(() => import('@/components/profile/my-videos').then((mod) => mod.MyVideos), { ssr: false, loading: PanelLoading });
+const MyMap = dynamic(() => import('@/components/profile/my-map').then((mod) => mod.MyMap), { ssr: false, loading: PanelLoading });
+const ProfileSettings = dynamic(() => import('@/components/profile/profile-settings').then((mod) => mod.ProfileSettings), { ssr: false, loading: PanelLoading });
 
 type AdminTab = 'dashboard' | 'blogs' | 'companions' | 'videos' | 'map' | 'settings' | 'reviews';
 

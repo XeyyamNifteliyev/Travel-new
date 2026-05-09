@@ -7,6 +7,16 @@ import type { PlaceWithRelationsRow, PlaceCategory } from '@/types/place';
 
 export const revalidate = 86400;
 
+const RESTAURANT_SELECT = `
+  id, city_id, country_id, slug, name, name_az, name_en, name_ru, category, subcategory,
+  lat, lng, address, website, phone, email, opening_hours,
+  description_az, description_en, description_ru, cover_photo_id, cover_photo_url,
+  source, source_place_id, source_url, license, attribution_text, rating_summary, review_count,
+  is_featured, popular_rank, status, raw_data, last_synced_at, created_at, updated_at,
+  cities(id, slug, name_az, name_en, name_ru),
+  countries(id, slug, name_az, name_en, name_ru, flag_emoji, continent)
+`;
+
 export default async function RestaurantsPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ country?: string }> }) {
   const { locale } = await params;
   const { country: countrySlug } = await searchParams;
@@ -16,7 +26,7 @@ export default async function RestaurantsPage({ params, searchParams }: { params
 
   let query = supabase
     .from('places')
-    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji, continent)')
+    .select(RESTAURANT_SELECT)
     .in('category', ['restaurant', 'cafe'] as PlaceCategory[])
     .eq('status', 'active');
 
@@ -37,7 +47,7 @@ export default async function RestaurantsPage({ params, searchParams }: { params
     .order('rating_summary', { ascending: false })
     .limit(1000);
 
-  const restaurants = ((placeRows || []) as PlaceWithRelationsRow[])
+  const restaurants = ((placeRows || []) as unknown as PlaceWithRelationsRow[])
     .map((place) => mapPlaceToSummary(place, currentLocale))
     .filter((r) => !!r.coverPhotoUrl);
 

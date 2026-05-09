@@ -2,6 +2,46 @@ import { createServerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
+const TOUR_SELECT = 'id, company_id, title, slug, description, region, tour_type, price, currency, duration_days, duration_nights, group_min, group_max, transportation_included, hotel_included, hotel_stars, meals_included, languages, dates, itinerary, images, status, created_at, updated_at';
+const VALID_TOUR_TYPES = new Set(['active', 'cultural', 'nature', 'city', 'adventure', 'food', 'wellness']);
+const VALID_CURRENCIES = new Set(['AZN', 'USD', 'EUR', 'TRY', 'GEL']);
+
+function cleanString(value: unknown, maxLength: number, required = false) {
+  if (value === undefined || value === null) return required ? null : undefined;
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > maxLength) return required ? null : undefined;
+  return trimmed;
+}
+
+function cleanNumber(value: unknown, min: number, max: number, fallback?: number) {
+  if (value === undefined || value === null || value === '') return fallback;
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < min || number > max) return null;
+  return number;
+}
+
+function cleanStringArray(value: unknown, maxItems: number, maxLength: number) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is string => typeof item === 'string')
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, maxItems)
+    .map((item) => item.slice(0, maxLength));
+}
+
+function cleanImages(value: unknown) {
+  return cleanStringArray(value, 8, 600).filter((url) => {
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  });
+}
+
 export async function GET(request: NextRequest) {
   try {
     const cookieStore = await cookies();
@@ -131,32 +171,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    const {
-      title,
-      slug,
-      description,
-      region,
-      tourType,
-      price,
-      currency,
-      durationDays,
-      durationNights,
-      groupMin,
-      groupMax,
-      transportationIncluded,
-      hotelIncluded,
-      hotelStars,
-      mealsIncluded,
-      languages,
-      dates,
-      itinerary,
-      images,
-    } = body;
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+    const record = body as Record<string, unknown>;
+    const title = cleanString(record.title, 180, true);
+    const slug = cleanString(record.slug, 220, true);
+    const description = cleanString(record.description, 5000, true);
+    const region = cleanString(record.region, 120, true);
+    const tourType = typeof record.tourType === 'string' && VALID_TOUR_TYPES.has(record.tourType) ? record.tourType : 'active';
+    const price = cleanNumber(record.price, 1, 100000);
+    const currency = typeof record.currency === 'string' && VALID_CURRENCIES.has(record.currency) ? record.currency : 'AZN';
+    const durationDays = cleanNumber(record.durationDays, 1, 90);
+    const durationNights = cleanNumber(record.durationNights, 0, 90, 0);
+    const groupMin = cleanNumber(record.groupMin, 1, 500, 1);
+    const groupMax = cleanNumber(record.groupMax, 1, 500, 20);
+    const hotelStars = cleanNumber(record.hotelStars, 1, 5);
+    const mealsIncluded = cleanStringArray(record.mealsIncluded, 8, 40);
+    const languages = cleanStringArray(record.languages, 8, 12);
+    const dates = cleanStringArray(record.dates, 60, 20).filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(date));
+    const itinerary = Array.isArray(record.itinerary) ? record.itinerary.slice(0, 30) : record.itinerary ?? null;
+    const images = cleanImages(record.images);
 
-    if (!title || !slug || !description || !region || !price || !durationDays) {
+    if (!title || !slug || !/^[a-z0-9-]+$/.test(slug) || !description || !region || !price || !durationDays || durationNights === null || groupMin === null || groupMax === null || (hotelStars === null)) {
       return NextResponse.json(
-        { error: 'Title, slug, description, region, price, and duration are required' },
+        { error: 'Tour məlumatları yanlışdır' },
         { status: 400 }
       );
     }
@@ -169,23 +209,23 @@ export async function POST(request: NextRequest) {
         slug,
         description,
         region,
-        tour_type: tourType || 'active',
+        tour_type: tourType,
         price,
-        currency: currency || 'AZN',
+        currency,
         duration_days: durationDays,
-        duration_nights: durationNights || 0,
-        group_min: groupMin || 1,
-        group_max: groupMax || 20,
-        transportation_included: transportationIncluded || false,
-        hotel_included: hotelIncluded || false,
+        duration_nights: durationNights,
+        group_min: groupMin,
+        group_max: groupMax,
+        transportation_included: record.transportationIncluded === true,
+        hotel_included: record.hotelIncluded === true,
         hotel_stars: hotelStars,
-        meals_included: mealsIncluded || [],
-        languages: languages || ['az'],
-        dates: dates || [],
+        meals_included: mealsIncluded,
+        languages: languages.length ? languages : ['az'],
+        dates,
         itinerary,
-        images: images || [],
+        images,
       })
-      .select()
+      .select(TOUR_SELECT)
       .single();
 
     if (error) {

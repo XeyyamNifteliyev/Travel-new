@@ -12,6 +12,24 @@ import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { CityWithCountryRow, PlaceWithRelationsRow } from '@/types/place';
 
+const CITY_DETAIL_SELECT = `
+  id, country_id, slug, name_az, name_en, name_ru, region, admin_region, lat, lng, population,
+  short_desc_az, short_desc_en, short_desc_ru, description_az, description_en, description_ru,
+  cover_photo_id, cover_photo_url, source, source_id, source_url, license, attribution_text,
+  is_featured, popular_rank, last_synced_at, created_at, updated_at,
+  countries(id, slug, name_az, name_en, name_ru, flag_emoji, cca2)
+`;
+
+const PLACE_CARD_SELECT = `
+  id, city_id, country_id, slug, name, name_az, name_en, name_ru, category, subcategory,
+  lat, lng, address, website, phone, email, opening_hours,
+  description_az, description_en, description_ru, cover_photo_id, cover_photo_url,
+  source, source_place_id, source_url, license, attribution_text, rating_summary, review_count,
+  is_featured, popular_rank, status, raw_data, last_synced_at, created_at, updated_at,
+  cities(id, slug, name_az, name_en, name_ru),
+  countries(id, slug, name_az, name_en, name_ru, flag_emoji)
+`;
+
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
@@ -39,37 +57,41 @@ export default async function CityDetailPage({ params }: PageProps) {
 
   const { data: cityRow } = await supabase
     .from('cities')
-    .select('*, countries(id, slug, name_az, name_en, name_ru, flag_emoji, cca2)')
+    .select(CITY_DETAIL_SELECT)
     .eq('slug', slug)
     .maybeSingle();
 
   if (!cityRow) notFound();
 
-  const city = mapCityToSummary(cityRow as CityWithCountryRow, currentLocale);
+  const city = mapCityToSummary(cityRow as unknown as CityWithCountryRow, currentLocale);
 
-  const { data: placeRows } = await supabase
-    .from('places')
-    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
-    .eq('city_id', city.id)
-    .eq('status', 'active')
-    .order('is_featured', { ascending: false })
-    .order('popular_rank', { ascending: true })
-    .order('rating_summary', { ascending: false })
-    .limit(24);
+  const [placeResult, foodPlaceResult] = await Promise.all([
+    supabase
+      .from('places')
+      .select(PLACE_CARD_SELECT)
+      .eq('city_id', city.id)
+      .eq('status', 'active')
+      .order('is_featured', { ascending: false })
+      .order('popular_rank', { ascending: true })
+      .order('rating_summary', { ascending: false })
+      .limit(24),
+    supabase
+      .from('places')
+      .select(PLACE_CARD_SELECT)
+      .eq('city_id', city.id)
+      .eq('status', 'active')
+      .in('category', ['restaurant', 'cafe'])
+      .order('is_featured', { ascending: false })
+      .order('popular_rank', { ascending: true })
+      .order('rating_summary', { ascending: false })
+      .limit(24),
+  ]);
 
-  const { data: foodPlaceRows } = await supabase
-    .from('places')
-    .select('*, cities(id, slug, name_az, name_en, name_ru), countries(id, slug, name_az, name_en, name_ru, flag_emoji)')
-    .eq('city_id', city.id)
-    .eq('status', 'active')
-    .in('category', ['restaurant', 'cafe'])
-    .order('is_featured', { ascending: false })
-    .order('popular_rank', { ascending: true })
-    .order('rating_summary', { ascending: false })
-    .limit(24);
+  const placeRows = placeResult.data;
+  const foodPlaceRows = foodPlaceResult.data;
 
   const uniquePlaceRows = new Map<string, PlaceWithRelationsRow>();
-  for (const place of [...((placeRows || []) as PlaceWithRelationsRow[]), ...((foodPlaceRows || []) as PlaceWithRelationsRow[])]) {
+  for (const place of [...((placeRows || []) as unknown as PlaceWithRelationsRow[]), ...((foodPlaceRows || []) as unknown as PlaceWithRelationsRow[])]) {
     uniquePlaceRows.set(place.id, place);
   }
 

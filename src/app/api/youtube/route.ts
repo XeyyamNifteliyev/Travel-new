@@ -2,6 +2,16 @@ import { createServerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
+const YOUTUBE_SELECT = 'id, user_id, youtube_url, title, description, thumbnail_url, destination_country, destination_city, language, status, created_at, updated_at';
+
+function cleanString(value: unknown, maxLength: number, required = false) {
+  if (value === undefined || value === null) return required ? null : undefined;
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > maxLength) return required ? null : undefined;
+  return trimmed;
+}
+
 function extractYouTubeId(url: string): string | null {
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/,
@@ -65,8 +75,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { youtubeUrl, title, description, destinationCountry, destinationCity, language } = body;
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+
+    const record = body as Record<string, unknown>;
+    const youtubeUrl = cleanString(record.youtubeUrl, 500, true);
+    const title = cleanString(record.title, 180, true);
+    const description = cleanString(record.description, 2000);
+    const destinationCountry = cleanString(record.destinationCountry, 120);
+    const destinationCity = cleanString(record.destinationCity, 120);
+    const language = ['az', 'en', 'ru'].includes(String(record.language)) ? String(record.language) : 'az';
 
     if (!youtubeUrl || !title) {
       return NextResponse.json(
@@ -95,9 +115,9 @@ export async function POST(request: NextRequest) {
         thumbnail_url: thumbnailUrl,
         destination_country: destinationCountry,
         destination_city: destinationCity,
-        language: language || 'az',
+        language,
       })
-      .select()
+      .select(YOUTUBE_SELECT)
       .single();
 
     if (error) {

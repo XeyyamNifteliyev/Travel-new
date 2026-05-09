@@ -1,9 +1,14 @@
 'use client';
 
 import { useRouter, useParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/client';
-import { BlogEditor } from '@/components/blog/blog-editor';
 import type { BlogFormData } from '@/types/blog';
+
+const BlogEditor = dynamic(() => import('@/components/blog/blog-editor').then((mod) => mod.BlogEditor), {
+  ssr: false,
+  loading: () => <div className="h-96 rounded-2xl border border-border bg-bg-surface animate-pulse" />,
+});
 
 export default function NewBlogPage() {
   const router = useRouter();
