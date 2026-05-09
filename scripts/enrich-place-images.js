@@ -36,6 +36,32 @@ const DEFAULT_CATEGORIES = [
   'other',
 ];
 
+const BLOCKED_VISUAL_TERMS = [
+  'animal',
+  'wildlife',
+  'zoo',
+  'flamingo',
+  'panda',
+  'jaguar',
+  'otter',
+  'cassowary',
+  'beach',
+  'coast',
+  'ocean',
+  'sea',
+  'mountain',
+  'forest',
+  'desert',
+  'lake',
+  'river',
+  'waterfall',
+  'farm',
+  'field',
+  'rice',
+  'rural',
+  'landscape',
+];
+
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
   for (const line of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
@@ -149,7 +175,9 @@ function escapeSparql(str) {
 
 function rawTags(rawData) {
   const tags = rawData?.tags;
-  return tags && typeof tags === 'object' && !Array.isArray(tags) ? tags : {};
+  if (tags && typeof tags === 'object' && !Array.isArray(tags)) return tags;
+  const osmTags = rawData?.osm?.tags;
+  return osmTags && typeof osmTags === 'object' && !Array.isArray(osmTags) ? osmTags : {};
 }
 
 function parseWikipediaTag(value) {
@@ -319,6 +347,66 @@ function pexelsQuery(place) {
   return `${base} travel landmark`;
 }
 
+function isAnimalAttraction(place) {
+  const tags = rawTags(place.raw_data);
+  return normalize(tags.attraction) === 'animal' || normalize(tags.tourism) === 'zoo';
+}
+
+function containsBlockedVisualTerms(text) {
+  const haystack = normalize(text);
+  return BLOCKED_VISUAL_TERMS.some((term) => haystack.includes(term));
+}
+
+function buildPlaceMatchSignals(place, haystack) {
+  const placeName = normalize(place.name);
+  const placeTokens = placeName.split(' ').filter((token) => token.length >= 4);
+  const cityName = normalize(place.cities?.name_en || place.cities?.name_az || '');
+  const category = normalize(place.category);
+  const tokenMatches = placeTokens.filter((token) => haystack.includes(token)).length;
+  const enoughPlaceMatch = placeTokens.length > 0 && tokenMatches / placeTokens.length >= 0.5;
+  const hasExactPhrase = placeName.length >= 4 && haystack.includes(placeName);
+  const hasCityContext = cityName && haystack.includes(cityName);
+  const hasCategoryContext = category && haystack.includes(category);
+
+  return {
+    enoughPlaceMatch,
+    hasExactPhrase,
+    hasCityContext,
+    hasCategoryContext,
+  };
+}
+
+function selectUnsplashPhoto(place, results) {
+  if (isAnimalAttraction(place)) return null;
+
+  return results.find((photo) => {
+    const haystack = normalize([
+      photo.alt_description,
+      photo.description,
+      photo.user?.name,
+      ...(photo.tags || []).map((tag) => tag.title),
+    ].filter(Boolean).join(' '));
+    if (!haystack || containsBlockedVisualTerms(haystack)) return false;
+    const { enoughPlaceMatch, hasExactPhrase, hasCityContext, hasCategoryContext } = buildPlaceMatchSignals(place, haystack);
+    return enoughPlaceMatch || (hasExactPhrase && hasCityContext) || (hasExactPhrase && hasCategoryContext);
+  }) || null;
+}
+
+function selectPexelsPhoto(place, photos) {
+  if (isAnimalAttraction(place)) return null;
+
+  return photos.find((photo) => {
+    const haystack = normalize([
+      photo.alt,
+      photo.photographer,
+      photo.url,
+    ].filter(Boolean).join(' '));
+    if (!haystack || containsBlockedVisualTerms(haystack)) return false;
+    const { enoughPlaceMatch, hasExactPhrase, hasCityContext, hasCategoryContext } = buildPlaceMatchSignals(place, haystack);
+    return enoughPlaceMatch || (hasExactPhrase && hasCityContext) || (hasExactPhrase && hasCategoryContext);
+  }) || null;
+}
+
 async function fetchUnsplashImage(place) {
   const accessKey = process.env.UNSPLASH_ACCESS_KEY;
   if (!accessKey) return null;
@@ -332,23 +420,7 @@ async function fetchUnsplashImage(place) {
     Authorization: `Client-ID ${accessKey}`,
   });
   const results = data?.results || [];
-  const placeName = normalize(place.name);
-  const placeTokens = placeName.split(' ').filter((token) => token.length >= 4);
-  const cityName = normalize(place.cities?.name_en || place.cities?.name_az || '');
-  const category = normalize(place.category);
-  const best = results.find((photo) => {
-    const haystack = normalize([
-      photo.alt_description,
-      photo.description,
-      photo.user?.name,
-      ...(photo.tags || []).map((tag) => tag.title),
-    ].filter(Boolean).join(' '));
-    const tokenMatches = placeTokens.filter((token) => haystack.includes(token)).length;
-    const enoughPlaceMatch = placeTokens.length > 0 && tokenMatches / placeTokens.length >= 0.5;
-    const hasCityContext = cityName && haystack.includes(cityName);
-    const hasCategoryContext = category && haystack.includes(category);
-    return enoughPlaceMatch || (hasCityContext && hasCategoryContext);
-  });
+  const best = selectUnsplashPhoto(place, results);
   return best?.urls?.raw ? `${best.urls.raw.split('?')[0]}?auto=format&fit=crop&w=1000&q=82` : null;
 }
 
@@ -364,22 +436,7 @@ async function fetchPexelsImage(place) {
     Authorization: accessKey,
   });
   const photos = data?.photos || [];
-  const placeName = normalize(place.name);
-  const placeTokens = placeName.split(' ').filter((token) => token.length >= 4);
-  const cityName = normalize(place.cities?.name_en || place.cities?.name_az || '');
-  const category = normalize(place.category);
-  const best = photos.find((photo) => {
-    const haystack = normalize([
-      photo.alt,
-      photo.photographer,
-      photo.url,
-    ].filter(Boolean).join(' '));
-    const tokenMatches = placeTokens.filter((token) => haystack.includes(token)).length;
-    const enoughPlaceMatch = placeTokens.length > 0 && tokenMatches / placeTokens.length >= 0.5;
-    const hasCityContext = cityName && haystack.includes(cityName);
-    const hasCategoryContext = category && haystack.includes(category);
-    return enoughPlaceMatch || hasCityContext || hasCategoryContext;
-  }) || photos[0];
+  const best = selectPexelsPhoto(place, photos);
 
   if (!best?.src) return null;
   return best.src.large2x || best.src.large || best.src.landscape || best.src.original || null;
@@ -528,7 +585,18 @@ async function main() {
   console.log(`  Duplicate skipped: ${duplicates}`);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  buildPlaceMatchSignals,
+  containsBlockedVisualTerms,
+  isAnimalAttraction,
+  rawTags,
+  selectPexelsPhoto,
+  selectUnsplashPhoto,
+};
