@@ -41,8 +41,6 @@ const COUNTRY_DETAIL_FIELDS = [
   'popular_rank',
   'is_featured',
   'cca2',
-  'lat',
-  'lng',
 ].join(', ');
 
 const CITY_WITH_COUNTRY_FIELDS = [
@@ -213,10 +211,16 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
   const foodPlaces: PlaceSummary[] = !foodPlaceError && foodPlaceRows
     ? (foodPlaceRows as unknown as PlaceWithRelationsRow[]).map((place) => mapPlaceToSummary(place, currentLocale))
     : [];
+  const primaryCityWithCoordinates = cities.find((city) => city.lat && city.lng);
+  const countryWithCoordinates: ExpandedCountry = {
+    ...country,
+    lat: primaryCityWithCoordinates?.lat,
+    lng: primaryCityWithCoordinates?.lng,
+  };
 
   return (
     <CountryDetailClient
-      country={country}
+      country={countryWithCoordinates}
       highlights={(highlights as CountryHighlight[]) || []}
       blogs={(blogs as unknown as { id: string; title: string; cover_image?: string; created_at: string; views: number; profiles?: { display_name: string } | null }[]) || []}
       cities={cities}
