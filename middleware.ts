@@ -23,9 +23,22 @@ const PUBLIC_PATHS = [
   '/news',
 ];
 
+const ADMIN_ONLY_PATHS = ['/admin'];
+
+function stripLocale(pathname: string): string {
+  return pathname.replace(/^\/(az|ru|en)/, '') || '/';
+}
+
 function isPublicPath(pathname: string): boolean {
-  const withoutLocale = pathname.replace(/^\/(az|ru|en)/, '') || '/';
+  const withoutLocale = stripLocale(pathname);
   return PUBLIC_PATHS.some(
+    (p) => withoutLocale === p || withoutLocale.startsWith(p + '/')
+  );
+}
+
+function isAdminPath(pathname: string): boolean {
+  const withoutLocale = stripLocale(pathname);
+  return ADMIN_ONLY_PATHS.some(
     (p) => withoutLocale === p || withoutLocale.startsWith(p + '/')
   );
 }
@@ -68,6 +81,19 @@ export async function middleware(request: NextRequest) {
   if (!user) {
     const locale = request.nextUrl.pathname.match(/^\/(az|ru|en)/)?.[1] || 'az';
     return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url));
+  }
+
+  if (isAdminPath(request.nextUrl.pathname)) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profile?.role !== 'admin') {
+      const locale = request.nextUrl.pathname.match(/^\/(az|ru|en)/)?.[1] || 'az';
+      return NextResponse.redirect(new URL(`/${locale}/profile`, request.url));
+    }
   }
 
   return intlResponse;

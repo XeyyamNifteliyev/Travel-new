@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { Conversation, Message } from '@/types/chat';
 
 export function useChat(userId: string | null) {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
@@ -21,13 +21,13 @@ export function useChat(userId: string | null) {
       .select('blocked_id')
       .eq('blocker_id', userId);
     setBlockedUsers((data || []).map(b => b.blocked_id));
-  }, [userId]);
+  }, [supabase, userId]);
 
   const fetchConversations = useCallback(async () => {
     if (!userId) return;
     const { data, error } = await supabase
       .from('conversations')
-      .select('*')
+      .select('id, ad_id, ad_owner_id, user_id, created_at')
       .or(`ad_owner_id.eq.${userId},user_id.eq.${userId}`)
       .order('created_at', { ascending: false });
 
@@ -53,13 +53,13 @@ export function useChat(userId: string | null) {
 
     setConversations(enriched);
     setLoading(false);
-  }, [userId]);
+  }, [supabase, userId]);
 
   const fetchMessages = useCallback(async (convId: string) => {
     setActiveConversation(convId);
     const { data, error } = await supabase
       .from('messages')
-      .select('*')
+      .select('id, conversation_id, sender_id, message_text, created_at, is_edited')
       .eq('conversation_id', convId)
       .order('created_at', { ascending: true });
 
@@ -71,7 +71,7 @@ export function useChat(userId: string | null) {
     }));
 
     setMessages(enriched);
-  }, []);
+  }, [supabase]);
 
   const sendMessage = useCallback(async (convId: string, text: string) => {
     if (!userId || !text.trim()) return;
@@ -84,7 +84,7 @@ export function useChat(userId: string | null) {
     if (error) { setError(error.message); setSending(false); return; }
     setSending(false);
     await fetchMessages(convId);
-  }, [userId, fetchMessages]);
+  }, [fetchMessages, supabase, userId]);
 
   const deleteMessage = useCallback(async (msgId: string) => {
     const { error } = await supabase
@@ -94,7 +94,7 @@ export function useChat(userId: string | null) {
     if (error) { setError(error.message); return false; }
     setMessages(prev => prev.filter(m => m.id !== msgId));
     return true;
-  }, []);
+  }, [supabase]);
 
   const editMessage = useCallback(async (msgId: string, newText: string) => {
     if (!newText.trim()) return false;
@@ -105,7 +105,7 @@ export function useChat(userId: string | null) {
     if (error) { setError(error.message); return false; }
     setMessages(prev => prev.map(m => m.id === msgId ? { ...m, message_text: newText.trim(), is_edited: true } : m));
     return true;
-  }, []);
+  }, [supabase]);
 
   const deleteConversation = useCallback(async (convId: string) => {
     await supabase.from('messages').delete().eq('conversation_id', convId);
@@ -115,7 +115,7 @@ export function useChat(userId: string | null) {
     setMessages([]);
     await fetchConversations();
     return true;
-  }, [fetchConversations]);
+  }, [fetchConversations, supabase]);
 
   const blockUser = useCallback(async (blockedId: string) => {
     if (!userId) return false;
@@ -125,7 +125,7 @@ export function useChat(userId: string | null) {
     if (error) { setError(error.message); return false; }
     setBlockedUsers(prev => [...prev, blockedId]);
     return true;
-  }, [userId]);
+  }, [supabase, userId]);
 
   const unblockUser = useCallback(async (blockedId: string) => {
     if (!userId) return false;
@@ -137,7 +137,7 @@ export function useChat(userId: string | null) {
     if (error) { setError(error.message); return false; }
     setBlockedUsers(prev => prev.filter(id => id !== blockedId));
     return true;
-  }, [userId]);
+  }, [supabase, userId]);
 
   const isUserBlocked = useCallback((otherUserId: string) => {
     return blockedUsers.includes(otherUserId);
@@ -165,7 +165,7 @@ export function useChat(userId: string | null) {
 
     if (error) { setError(error.message); return null; }
     return data?.id;
-  }, [userId]);
+  }, [supabase, userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -187,14 +187,14 @@ export function useChat(userId: string | null) {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [userId, activeConversation]);
+  }, [activeConversation, fetchConversations, supabase, userId]);
 
   useEffect(() => {
     if (userId) {
       fetchConversations();
       fetchBlockedUsers();
     }
-  }, [userId]);
+  }, [fetchBlockedUsers, fetchConversations, userId]);
 
   return {
     conversations,

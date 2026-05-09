@@ -14,24 +14,42 @@ const CITY_LIST_SELECT = `
 
 interface PageProps {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
-export default async function CitiesPage({ params }: PageProps) {
+const PAGE_SIZE = 50;
+
+export default async function CitiesPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
+  const { page: pageParam } = await searchParams;
+  const currentPage = Math.max(1, Number.parseInt(pageParam || '1', 10) || 1);
+  const from = (currentPage - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
   const currentLocale = locale as Locale;
   const supabase = await createClient();
 
-  const { data: cityRows } = await supabase
+  const { data: cityRows, count } = await supabase
     .from('cities')
-    .select(CITY_LIST_SELECT)
+    .select(CITY_LIST_SELECT, { count: 'exact' })
     .order('popular_rank', { ascending: true })
-    .order('population', { ascending: false });
+    .order('population', { ascending: false })
+    .range(from, to);
 
   const cities = ((cityRows || []) as unknown as CityWithCountryRow[]).map((city) =>
     mapCityToSummary(city, currentLocale)
   );
+  const totalCount = count || 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
-  return <CityGrid cities={cities} locale={locale} />;
+  return (
+    <CityGrid
+      cities={cities}
+      locale={locale}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalCount={totalCount}
+    />
+  );
 }
 
 export const revalidate = 86400;

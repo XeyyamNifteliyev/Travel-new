@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
@@ -54,7 +54,7 @@ const COUNTRY_NAMES: Record<string, Record<string, string>> = {
 export function MyMap() {
   const params = useParams();
   const locale = (params?.locale as string) || 'az';
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const t = useTranslations('profile');
   const tc = useTranslations('common');
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -73,7 +73,7 @@ export function MyMap() {
 
       const { data } = await supabase
         .from('user_countries')
-        .select('*')
+        .select('id, country_slug, visited_at')
         .eq('user_id', user.id)
         .order('visited_at', { ascending: false });
 
@@ -81,7 +81,7 @@ export function MyMap() {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [supabase]);
 
   const handleAdd = async () => {
     if (!selectedCountry || !user) return;
@@ -93,7 +93,7 @@ export function MyMap() {
     });
     const { data } = await supabase
       .from('user_countries')
-      .select('*')
+      .select('id, country_slug, visited_at')
       .eq('user_id', user.id)
       .order('visited_at', { ascending: false });
     if (data) setCountries(data as UserCountryItem[]);

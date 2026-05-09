@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, useMemo } from 'react';
+import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import type { CompanionItem } from '@/types/supabase-helpers';
@@ -12,9 +12,8 @@ import { confirmDialog } from '@/components/ui/confirm-dialog';
 
 export function MyCompanions() {
   const params = useParams();
-  const router = useRouter();
   const locale = params?.locale as string;
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const t = useTranslations('profile');
   const tc = useTranslations('common');
   const [companions, setCompanions] = useState<CompanionItem[]>([]);
@@ -28,7 +27,7 @@ export function MyCompanions() {
 
       const { data } = await supabase
         .from('companions')
-        .select('*')
+        .select('id, destination_country, destination_city, departure_date, return_date, status, gender_preference, interests')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -36,7 +35,7 @@ export function MyCompanions() {
       setLoading(false);
     };
     fetchCompanions();
-  }, []);
+  }, [supabase]);
 
   const handleDelete = async (id: string) => {
     const confirmed = await confirmDialog({

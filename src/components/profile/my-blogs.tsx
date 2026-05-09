@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, useMemo } from 'react';
+import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import type { User, BlogListItem } from '@/types/supabase-helpers';
@@ -12,9 +12,8 @@ import { confirmDialog } from '@/components/ui/confirm-dialog';
 
 export function MyBlogs() {
   const params = useParams();
-  const router = useRouter();
   const locale = params?.locale as string;
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const t = useTranslations('profile');
   const tc = useTranslations('common');
   const [blogs, setBlogs] = useState<BlogListItem[]>([]);
@@ -30,7 +29,7 @@ export function MyBlogs() {
 
       const { data } = await supabase
         .from('blogs')
-        .select('*')
+        .select('id, title, status, language, created_at, views, likes')
         .eq('author_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -38,7 +37,7 @@ export function MyBlogs() {
       setLoading(false);
     };
     fetchBlogs();
-  }, []);
+  }, [supabase]);
 
   const handleDelete = async (id: string) => {
     const confirmed = await confirmDialog({

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -13,7 +13,7 @@ import { confirmDialog } from '@/components/ui/confirm-dialog';
 export function MyVideos() {
   const params = useParams();
   const locale = params?.locale as string;
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const t = useTranslations('profile');
   const tc = useTranslations('common');
   const [videos, setVideos] = useState<VideoItem[]>([]);
@@ -30,7 +30,7 @@ export function MyVideos() {
 
       const { data } = await supabase
         .from('youtube_links')
-        .select('*')
+        .select('id, title, youtube_url, description, thumbnail_url, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -38,7 +38,7 @@ export function MyVideos() {
       setLoading(false);
     };
     fetchVideos();
-  }, []);
+  }, [supabase]);
 
   const extractVideoId = (url: string) => {
     const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -68,7 +68,11 @@ export function MyVideos() {
     });
 
     if (!error) {
-      const { data } = await supabase.from('youtube_links').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+      const { data } = await supabase
+        .from('youtube_links')
+        .select('id, title, youtube_url, description, thumbnail_url, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
       if (data) setVideos(data as VideoItem[]);
       setShowForm(false);
       setFormData({ title: '', youtubeUrl: '', description: '' });

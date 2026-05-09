@@ -30,12 +30,32 @@ function formatDate(dateStr: string, locale: string) {
 }
 
 function sanitizeBlogContent(content: string) {
-  return DOMPurify.sanitize(content, {
+  const sanitized = DOMPurify.sanitize(content, {
     ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img', 'hr', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
     ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'class'],
     ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto):|\/(?!\/)|#)/i,
     FORBID_ATTR: ['style', 'srcset'],
   });
+  if (typeof window === 'undefined') return sanitized;
+
+  const allowedImageHosts = ['images.unsplash.com', 'upload.wikimedia.org', 'images.pexels.com'];
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(sanitized, 'text/html');
+  doc.querySelectorAll('img[src]').forEach((img) => {
+    const src = img.getAttribute('src') || '';
+    try {
+      const url = new URL(src, window.location.origin);
+      const isLocal = url.origin === window.location.origin;
+      const isSupabaseStorage = url.hostname.endsWith('.supabase.co');
+      if (!isLocal && !isSupabaseStorage && !allowedImageHosts.includes(url.hostname)) {
+        img.remove();
+      }
+    } catch {
+      img.remove();
+    }
+  });
+
+  return doc.body.innerHTML;
 }
 
 export default function BlogDetailPage() {

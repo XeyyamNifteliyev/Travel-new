@@ -3,18 +3,25 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Search, MapPin, Users, Building2 } from 'lucide-react';
+import { Search, MapPin, Users, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getUnsplashUrl, getCityCoverPhotoId } from '@/lib/unsplash';
 import type { CitySummary } from '@/types/place';
 
 interface CityGridProps {
   cities: CitySummary[];
   locale: string;
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
 }
 
-export default function CityGrid({ cities, locale }: CityGridProps) {
+export default function CityGrid({ cities, locale, currentPage, totalPages, totalCount }: CityGridProps) {
   const [search, setSearch] = useState('');
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('cities');
 
   const filtered = cities.filter((city) => {
@@ -24,6 +31,21 @@ export default function CityGrid({ cities, locale }: CityGridProps) {
     const q = search.toLowerCase();
     return name.includes(q) || country.includes(q) || region.includes(q);
   });
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    const params = new URLSearchParams(searchParams.toString());
+    if (page > 1) {
+      params.set('page', String(page));
+    } else {
+      params.delete('page');
+    }
+    router.push(`${pathname}${params.toString() ? `?${params.toString()}` : ''}`, { scroll: false });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+    .filter((page) => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
@@ -40,7 +62,10 @@ export default function CityGrid({ cities, locale }: CityGridProps) {
         />
       </div>
 
-      <p className="text-sm text-txt-sec mb-6">{filtered.length} {t('resultsCount')}</p>
+      <p className="text-sm text-txt-sec mb-6">
+        {search ? filtered.length : totalCount} {t('resultsCount')}
+        {!search && totalPages > 1 ? ` · ${currentPage} / ${totalPages}` : ''}
+      </p>
 
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -107,6 +132,43 @@ export default function CityGrid({ cities, locale }: CityGridProps) {
         <div className="text-center py-20">
           <Building2 className="w-12 h-12 text-txt-muted mx-auto mb-4" />
           <p className="text-txt-sec text-lg">{t('noResults')}</p>
+        </div>
+      )}
+
+      {!search && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-10">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex items-center gap-1 px-3 py-2 rounded-lg border border-border bg-bg-surface text-sm font-medium transition-all hover:border-primary/50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          {pageNumbers.map((page, index) => {
+            const previous = pageNumbers[index - 1];
+            return (
+              <span key={page} className="inline-flex items-center gap-1">
+                {previous && page - previous > 1 ? <span className="px-2 text-sm text-txt-sec">...</span> : null}
+                <button
+                  onClick={() => handlePageChange(page)}
+                  className={`min-w-[40px] px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    currentPage === page
+                      ? 'bg-primary text-white'
+                      : 'border border-border bg-bg-surface hover:border-primary/50'
+                  }`}
+                >
+                  {page}
+                </button>
+              </span>
+            );
+          })}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex items-center gap-1 px-3 py-2 rounded-lg border border-border bg-bg-surface text-sm font-medium transition-all hover:border-primary/50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       )}
     </div>

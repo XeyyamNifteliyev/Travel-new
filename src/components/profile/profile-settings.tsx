@@ -33,7 +33,11 @@ export function ProfileSettings() {
       if (!user) return;
       setUser(user);
 
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, name, bio, avatar_url, instagram, youtube, tiktok, facebook, updated_at')
+        .eq('id', user.id)
+        .single();
       if (data) {
         setProfile(data);
         setFormData({
@@ -49,7 +53,7 @@ export function ProfileSettings() {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [supabase]);
 
   const handleSave = async () => {
     if (!user) return;

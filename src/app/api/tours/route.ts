@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('tours')
       .select(`
-        *,
+        ${TOUR_SELECT}, rating, review_count, views, bookings_count,
         company:tour_companies(company_name, logo_url, is_verified, rating, review_count)
       `)
       .eq('status', 'active')

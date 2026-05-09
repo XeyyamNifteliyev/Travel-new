@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
@@ -22,7 +22,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const params = useParams();
   const locale = params?.locale as string;
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const t = useTranslations('profile');
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ export default function ProfilePage() {
       setLoading(false);
     };
     getUser();
-  }, []);
+  }, [locale, router, supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
