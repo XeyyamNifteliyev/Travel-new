@@ -4,6 +4,7 @@ import { routing } from '@/i18n/routing';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from 'sonner';
+import { ScrollProgress } from '@/components/layout/scroll-progress';
 
 export default async function LocaleLayout({
   children,
@@ -21,6 +22,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div className="min-h-screen flex flex-col overflow-x-hidden">
+        <ScrollProgress />
         <Header />
         <main className="flex-1 overflow-x-hidden">{children}</main>
         <Footer />
