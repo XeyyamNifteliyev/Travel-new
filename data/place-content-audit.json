@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-05-09T21:35:12.145Z",
+  "generatedAt": "2026-05-09T22:34:25.010Z",
   "totals": {
     "cities": 99,
     "places": 2076,
     "descriptionAz": 2076,
     "descriptionAny": 2076,
-    "image": 998,
+    "image": 1001,
     "missingAz": 0
   },
   "priority": [],
@@ -35,7 +35,7 @@
       "total": 84,
       "descriptionAz": 84,
       "descriptionAny": 84,
-      "image": 31,
+      "image": 33,
       "sourceUrl": 84,
       "website": 39,
       "address": 29,
@@ -46,7 +46,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 37
+      "imagePercent": 39
     },
     {
       "slug": "new-york",
@@ -73,7 +73,7 @@
       "total": 84,
       "descriptionAz": 84,
       "descriptionAny": 84,
-      "image": 24,
+      "image": 25,
       "sourceUrl": 84,
       "website": 25,
       "address": 54,
@@ -84,7 +84,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 29
+      "imagePercent": 30
     },
     {
       "slug": "baku",
