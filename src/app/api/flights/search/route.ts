@@ -64,9 +64,9 @@ if (!res.ok) {
       headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=600' },
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Flights search error:', err);
     return NextResponse.json(
-      { error: message, flights: [] as FlightOffer[] },
+      { error: 'Uçuşlar yüklənə bilmədi', flights: [] as FlightOffer[] },
       { status: 500 }
     );
   }

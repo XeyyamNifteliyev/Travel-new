@@ -54,12 +54,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const trimmedContent = typeof content === 'string' ? content.trim() : '';
+    if (trimmedContent.length < 2 || trimmedContent.length > 2000) {
+      return NextResponse.json(
+        { error: 'Şərh 2-2000 simvol arası olmalıdır' },
+        { status: 400 }
+      );
+    }
+
+    const { data: blog } = await supabase
+      .from('blogs')
+      .select('id')
+      .eq('id', blogId)
+      .single();
+    if (!blog) {
+      return NextResponse.json({ error: 'Blog tapılmadı' }, { status: 404 });
+    }
+
     const { data, error } = await supabase
       .from('blog_comments')
       .insert({
         blog_id: blogId,
         user_id: user.id,
-        content,
+        content: trimmedContent,
       })
       .select()
       .single();

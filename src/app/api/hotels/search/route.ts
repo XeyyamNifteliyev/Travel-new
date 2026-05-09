@@ -85,9 +85,9 @@ if (!res.ok) {
       headers: { 'Cache-Control': 's-maxage=600, stale-while-revalidate=1200' },
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Hotels search error:', err);
     return NextResponse.json(
-      { error: message, hotels: [] as HotelOffer[] },
+      { error: 'Otellər yüklənə bilmədi', hotels: [] as HotelOffer[] },
       { status: 500 }
     );
   }

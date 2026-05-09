@@ -9,8 +9,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Ölkə adı tələb olunur' }, { status: 400 });
   }
 
+  const safeName = String(country_name).replace(/['"\\`]/g, '').slice(0, 100);
+  if (!/^[\p{L}\p{N}\s\-\.]+$/u.test(safeName)) {
+    return NextResponse.json({ error: 'Yanlış ölkə adı formatı' }, { status: 400 });
+  }
+
   const blocked = ['armenia', 'ermənistan', 'ermenistan', 'армения', 'armanistan'];
-  if (blocked.some(b => country_name.toLowerCase().includes(b))) {
+  if (blocked.some(b => safeName.toLowerCase().includes(b))) {
     return NextResponse.json({ error: 'Bu ölkə dəstəklənmir' }, { status: 403 });
   }
 
@@ -29,7 +34,7 @@ export async function POST(request: NextRequest) {
   const provider = getProvider();
   const prompt = `Sən TravelAZ saytının viza məlumat assistentisən. Azərbaycan vətəndaşlarına kömək edirsən.
 
-"${country_name}" ölkəsi üçün Azərbaycan pasportu ilə səyahət üçün viza məlumatlarını ver.
+"${safeName}" ölkəsi üçün Azərbaycan pasportu ilə səyahət üçün viza məlumatlarını ver.
 
 CAVADI JSON formatında ver, başqa heç nə yazmaq. Bu strukturu sıx şəkildə saxla:
 {

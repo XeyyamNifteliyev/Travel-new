@@ -27,29 +27,35 @@ export function useChat(userId: string | null) {
     if (!userId) return;
     const { data, error } = await supabase
       .from('conversations')
-      .select('id, ad_id, ad_owner_id, user_id, created_at')
+      .select(`
+        id, ad_id, ad_owner_id, user_id, created_at,
+        owner:profiles!conversations_ad_owner_id_fkey(name, avatar_url),
+        participant:profiles!conversations_user_id_fkey(name, avatar_url),
+        messages(id, message_text, created_at, sender_id)
+      `)
       .or(`ad_owner_id.eq.${userId},user_id.eq.${userId}`)
       .order('created_at', { ascending: false });
 
     if (error) { setError(error.message); return; }
 
-    const enriched = await Promise.all((data || []).map(async (conv) => {
+    const enriched = (data || []).map((conv) => {
       const otherUserId = conv.ad_owner_id === userId ? conv.user_id : conv.ad_owner_id;
-      const { data: profile } = await supabase.from('profiles').select('name, avatar_url').eq('id', otherUserId).single();
-      const { data: lastMsg } = await supabase
-        .from('messages')
-        .select('message_text, created_at, sender_id')
-        .eq('conversation_id', conv.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+      const rawOwner = Array.isArray(conv.owner) ? conv.owner[0] : conv.owner;
+      const rawParticipant = Array.isArray(conv.participant) ? conv.participant[0] : conv.participant;
+      const otherProfile = conv.ad_owner_id === userId ? rawParticipant : rawOwner;
+      const msgs = (conv.messages as Array<{ message_text: string; created_at: string; sender_id: string }>) || [];
+      const lastMsg = msgs[msgs.length - 1];
 
       return {
-        ...conv,
-        other_user: { id: otherUserId, name: profile?.name || 'İstifadəçi', avatar_url: profile?.avatar_url },
+        id: conv.id,
+        ad_id: conv.ad_id,
+        ad_owner_id: conv.ad_owner_id,
+        user_id: conv.user_id,
+        created_at: conv.created_at,
+        other_user: { id: otherUserId, name: String((otherProfile as Record<string, unknown> | null)?.name || 'İstifadəçi'), avatar_url: ((otherProfile as Record<string, unknown> | null)?.avatar_url as string | null) ?? undefined },
         last_message: lastMsg ? { text: lastMsg.message_text, created_at: lastMsg.created_at, sender_id: lastMsg.sender_id } : undefined,
       };
-    }));
+    });
 
     setConversations(enriched);
     setLoading(false);
@@ -59,16 +65,21 @@ export function useChat(userId: string | null) {
     setActiveConversation(convId);
     const { data, error } = await supabase
       .from('messages')
-      .select('id, conversation_id, sender_id, message_text, created_at, is_edited')
+      .select('id, conversation_id, sender_id, message_text, created_at, is_edited, sender_profile:profiles!messages_sender_id_fkey(name, avatar_url)')
       .eq('conversation_id', convId)
       .order('created_at', { ascending: true });
 
     if (error) { setError(error.message); return; }
 
-    const enriched = await Promise.all((data || []).map(async (msg) => {
-      const { data: profile } = await supabase.from('profiles').select('name, avatar_url').eq('id', msg.sender_id).single();
-      return { ...msg, sender: { name: profile?.name || 'İstifadəçi', avatar_url: profile?.avatar_url } };
-    }));
+    const enriched = (data || []).map((msg) => {
+      const rawSender = Array.isArray(msg.sender_profile) ? msg.sender_profile[0] : msg.sender_profile;
+      const sender = rawSender as Record<string, unknown> | null;
+      return {
+        ...msg,
+        sender_profile: undefined,
+        sender: { name: String(sender?.name || 'İstifadəçi'), avatar_url: (sender?.avatar_url as string | null) ?? undefined },
+      };
+    });
 
     setMessages(enriched);
   }, [supabase]);

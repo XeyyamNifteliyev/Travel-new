@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 const MAX_TITLE_LENGTH = 180;
@@ -13,20 +13,26 @@ function optionalString(value: unknown, maxLength: number) {
   return trimmed;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { searchParams } = new URL(request.url);
+  const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
+  const limit = Math.min(20, parseInt(searchParams.get('limit') || '10', 10) || 10);
+  const offset = (page - 1) * limit;
+
+  const { data, error, count } = await supabase
     .from('blogs')
-    .select('id, author_id, title, content, cover_image, language, tags, views, likes, status, created_at, updated_at')
+    .select('id, author_id, title, cover_image, language, tags, views, likes, status, created_at, updated_at', { count: 'exact' })
     .eq('status', 'published')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) {
     console.error('Blogs query error:', error);
     return NextResponse.json({ error: 'Server xətası' }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  return NextResponse.json({ blogs: data, page, limit, total: count || 0 });
 }
 
 export async function POST(request: Request) {
