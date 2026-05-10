@@ -12,10 +12,10 @@ export default async function NewsDetailPage({
 
   const { data } = await supabase
     .from('news')
-    .select('id, title_az, title_en, title_ru, summary_az, summary_en, summary_ru, content_az, content_en, content_ru, category, source_name, source_url, image_url, published_at, is_published, created_at, updated_at')
+    .select('id, title_az, title_en, title_ru, content_az, content_en, content_ru, category, image_url, is_published, created_at, updated_at')
     .eq('id', id)
     .eq('is_published', true)
-    .single();
+    .maybeSingle();
 
   if (!data) notFound();
 
