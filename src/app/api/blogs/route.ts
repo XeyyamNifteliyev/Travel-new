@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   const ip = getIpFromHeaders(request);
-  const rl = checkRateLimit(ip, 'blog-create', 3, 3_600_000);
+  const rl = await checkRateLimit(ip, 'blog-create', 3, 3_600_000);
   if (!rl.allowed) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
   }

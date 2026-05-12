@@ -14,7 +14,7 @@ const FALLBACK_FLIGHTS: FlightOffer[] = [
 
 export async function GET(req: NextRequest) {
   const ip = getIpFromHeaders(req);
-  const rl = checkRateLimit(ip, 'flights-search', 10, 60_000);
+  const rl = await checkRateLimit(ip, 'flights-search', 10, 60_000);
   if (!rl.allowed) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
   }

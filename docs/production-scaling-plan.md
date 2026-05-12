@@ -30,11 +30,11 @@
 
 ### 2.1 Docker + Standalone Output
 - [x] `next.config.ts` → `output: 'standalone'` əlavə edildi
-- [ ] `Dockerfile` yarad (multi-stage, Node 20 Alpine)
-- [ ] `.dockerignore` yarad
+- [x] `Dockerfile` yaradıldı (multi-stage, Node 20 Alpine)
+- [x] `.dockerignore` yaradıldı
 
 ### 2.2 PM2 Cluster Config
-- [ ] `ecosystem.config.js` yarad (cluster mode, max memory restart, log management)
+- [x] `ecosystem.config.js` yaradıldı (cluster mode, max memory restart, log management)
 
 ### 2.3 New DB Indexes
 - [x] `idx_countries_slug` (countries.slug)
@@ -48,17 +48,17 @@
 ## Phase 3: Redis Rate Limiting
 
 ### 3.1 Upstash Redis
-- [ ] `@upstash/redis` + `@upstash/ratelimit` paketlərini əlavə et
-- [ ] `src/lib/rate-limit.ts`-i Redis-ə köçür (fallback: in-memory dev üçün)
-- [ ] Environment variables: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
-- [ ] Bütün rate-limited API route-ları yeni funksiya ilə uyğunlaşdır
+- [x] `@upstash/redis` + `@upstash/ratelimit` paketləri əlavə edildi
+- [x] `src/lib/rate-limit.ts` → Redis-backed rate limiter (fallback: in-memory dev üçün)
+- [x] Environment variables: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (env-dən oxunur, yoxdursa in-memory fallback)
+- [x] Bütün rate-limited API route-ları `await checkRateLimit()` ilə uyğunlaşdırıldı
 
 ---
 
 ## Phase 4: Kiçik Optimizasiyalar
 
 ### 4.1 React cache() ilə Deduplikasiya
-- [ ] `src/lib/data.ts` yarad: `getCountries`, `getCities` və s. funksiyaları `cache()` ilə wrap et
+- [x] `src/lib/data.ts` yaradıldı: `getCountries`, `getCountryBySlug`, `getFeaturedCities` funksiyaları `cache()` ilə
 
 ### 4.2 Select * Qalıqlarını Təmizlə
 - [x] `youtube/route.ts` → explicit columns

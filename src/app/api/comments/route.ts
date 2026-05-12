@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const ip = getIpFromHeaders(request);
-    const rl = checkRateLimit(ip, 'comment-create', 5, 60_000);
+    const rl = await checkRateLimit(ip, 'comment-create', 5, 60_000);
     if (!rl.allowed) {
       return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
     }
