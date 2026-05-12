@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { checkRateLimit, getIpFromHeaders } from '@/lib/rate-limit';
 
 const MAX_TITLE_LENGTH = 180;
 const MAX_CONTENT_LENGTH = 50000;
@@ -36,6 +37,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: Request) {
+  const ip = getIpFromHeaders(request);
+  const rl = checkRateLimit(ip, 'blog-create', 3, 3_600_000);
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

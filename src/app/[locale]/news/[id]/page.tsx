@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import NewsDetailClient from './news-detail-client';
 
+export const revalidate = 3600;
+
 export default async function NewsDetailPage({
   params,
 }: {

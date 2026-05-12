@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -19,27 +19,36 @@ export default function BlogListPage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filterTag, setFilterTag] = useState('');
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const supabase = createClient();
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
+  }, [search]);
+
+  const supabase = useMemo(() => createClient(), []);
+
+  useEffect(() => {
     const fetchBlogs = async () => {
       let query = supabase
         .from('blogs')
         .select(`
-          *,
+          id, author_id, title, content, cover_image, language, tags, views, likes, status, created_at, updated_at,
           author:profiles!blogs_author_id_fkey(name, avatar_url)
         `)
         .eq('status', 'published')
         .order('created_at', { ascending: false });
 
-      if (search) {
-        query = query.ilike('title', `%${search}%`);
+      if (debouncedSearch) {
+        query = query.ilike('title', `%${debouncedSearch}%`);
       }
 
       const { data } = await query;
       if (data) {
-        let filtered = data as Blog[];
+        let filtered = data as unknown as Blog[];
         if (filterTag) {
           filtered = filtered.filter(blog =>
             blog.tags?.some(tag => tag.toLowerCase() === filterTag.toLowerCase())
@@ -55,7 +64,7 @@ export default function BlogListPage() {
     };
     fetchBlogs();
     getUser();
-  }, [locale, search, filterTag]);
+  }, [locale, debouncedSearch, filterTag, supabase]);
 
   const allTags = Array.from(
     new Set(blogs.flatMap(blog => blog.tags || []))
@@ -91,7 +100,7 @@ export default function BlogListPage() {
         </div>
 
         {/* Featured Article */}
-        {featuredBlog && !search && !filterTag && (
+        {featuredBlog && !debouncedSearch && !filterTag && (
           <Link href={`/${locale}/blog/${featuredBlog.id}`} className="block mb-12">
             <div className="group relative rounded-2xl overflow-hidden border border-border hover:border-primary/50 hover:shadow-[0_0_30px_rgba(14,165,233,0.2)] transition-all duration-500">
               <div className="h-64 md:h-96 relative overflow-hidden">
@@ -215,7 +224,7 @@ export default function BlogListPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {(search || filterTag ? blogs : restBlogs).map((blog, i) => (
+                {(debouncedSearch || filterTag ? blogs : restBlogs).map((blog, i) => (
                   <BlogCard key={blog.id} blog={blog} index={i} />
                 ))}
               </div>

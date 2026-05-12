@@ -8,6 +8,7 @@ import { WeatherWidget } from '@/components/weather/weather-widget';
 import { VisaCheckWidget } from '@/components/visa/visa-check-widget';
 import { CategoryTabs } from '@/components/place/category-tabs';
 import { getCityCoverPhotoId, getUnsplashUrl } from '@/lib/unsplash';
+import { cityJsonLd } from '@/lib/jsonld';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { CityWithCountryRow, PlaceWithRelationsRow } from '@/types/place';
@@ -121,6 +122,10 @@ export default async function CityDetailPage({ params }: PageProps) {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityJsonLd({ name: city.name, slug, countryName: city.country?.name, description: city.description, locale })) }}
+      />
       <Link href={`/${locale}/countries/${city.country?.slug || ''}`} className="inline-flex items-center gap-2 text-txt-sec hover:text-primary mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         {city.country?.name || t('back')}

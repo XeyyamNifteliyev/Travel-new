@@ -19,6 +19,7 @@ export function createClaudeProvider(apiKey: string): AIProvider {
           max_tokens: 4096,
           messages: [{ role: 'user', content: prompt }],
         }),
+        signal: AbortSignal.timeout(30000),
       });
 
       if (!response.ok) {

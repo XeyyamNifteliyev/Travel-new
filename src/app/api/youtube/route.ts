@@ -30,6 +30,9 @@ export async function GET(request: NextRequest) {
     const supabase = createServerClient(cookieStore);
 
     const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20', 10) || 20));
+    const offset = (page - 1) * limit;
     const userId = searchParams.get('userId');
     const country = searchParams.get('country');
     const language = searchParams.get('language');
@@ -39,7 +42,7 @@ export async function GET(request: NextRequest) {
       .select(`
         *,
         author:profiles!youtube_links_user_id_fkey(name, avatar_url)
-      `)
+      `, { count: 'exact' })
       .eq('status', 'active')
       .order('created_at', { ascending: false });
 
@@ -53,13 +56,13 @@ export async function GET(request: NextRequest) {
       query = query.eq('language', language);
     }
 
-    const { data, error } = await query;
+    const { data, error, count } = await query.range(offset, offset + limit - 1);
 
     if (error) {
       return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
-    return NextResponse.json({ videos: data });
+    return NextResponse.json({ videos: data, page, limit, total: count || 0, totalPages: count ? Math.ceil(count / limit) : 0 });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

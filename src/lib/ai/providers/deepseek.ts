@@ -18,6 +18,7 @@ export function createDeepSeekProvider(apiKey: string): AIProvider {
           temperature: 0.7,
           max_tokens: 4096,
         }),
+        signal: AbortSignal.timeout(30000),
       });
 
       if (!response.ok) {

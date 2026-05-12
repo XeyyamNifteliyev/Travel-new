@@ -19,6 +19,7 @@ export function createGeminiProvider(apiKey: string): AIProvider {
               contents: [{ parts: [{ text: prompt }] }],
               generationConfig: { temperature: 0.7, maxOutputTokens: 16384 },
             }),
+            signal: AbortSignal.timeout(30000),
           });
 
           if (response.status === 503) {

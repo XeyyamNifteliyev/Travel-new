@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -40,7 +40,7 @@ export function MobileMenu({ navGroups, chatLink, unreadCount = 0, isAdmin = fal
   const t = useTranslations('common');
   const locale = useLocale();
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const isMounted = useRef(false);
 
   useEffect(() => {

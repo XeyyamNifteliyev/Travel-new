@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit, getIpFromHeaders } from '@/lib/rate-limit';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,26 +10,29 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const blogId = searchParams.get('blogId');
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50', 10) || 50));
+    const offset = (page - 1) * limit;
 
     let query = supabase
       .from('blog_comments')
       .select(`
         *,
         author:profiles!blog_comments_user_id_fkey(name, avatar_url)
-      `)
+      `, { count: 'exact' })
       .order('created_at', { ascending: true });
 
     if (blogId) {
       query = query.eq('blog_id', blogId);
     }
 
-    const { data, error } = await query;
+    const { data, error, count } = await query.range(offset, offset + limit - 1);
 
     if (error) {
       return NextResponse.json({ error: 'Server xetası ' }, { status: 500 });
     }
 
-    return NextResponse.json({ comments: data });
+    return NextResponse.json({ comments: data, page, limit, total: count || 0 });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -36,6 +40,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getIpFromHeaders(request);
+    const rl = checkRateLimit(ip, 'comment-create', 5, 60_000);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+    }
+
     const cookieStore = await cookies();
     const supabase = createServerClient(cookieStore);
 

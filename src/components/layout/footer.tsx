@@ -1,8 +1,5 @@
-'use client';
-
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import {
   BookOpen,
   Building2,
@@ -28,11 +25,9 @@ interface FooterLink {
   icon: LucideIcon;
 }
 
-export function Footer() {
-  const t = useTranslations('common');
-  const tc = useTranslations('community');
-  const params = useParams();
-  const locale = params?.locale as string;
+export async function Footer({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'common' });
+  const tc = await getTranslations({ locale, namespace: 'community' });
   const linkClass = 'hover:text-primary transition-colors flex items-center gap-2';
 
   const reservationLinks: FooterLink[] = [

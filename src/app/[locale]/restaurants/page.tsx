@@ -45,7 +45,7 @@ export default async function RestaurantsPage({ params, searchParams }: { params
     .order('is_featured', { ascending: false })
     .order('popular_rank', { ascending: true })
     .order('rating_summary', { ascending: false })
-    .limit(1000);
+    .limit(200);
 
   const restaurants = ((placeRows || []) as unknown as PlaceWithRelationsRow[])
     .map((place) => mapPlaceToSummary(place, currentLocale))

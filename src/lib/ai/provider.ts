@@ -20,8 +20,13 @@ const PROVIDERS: Record<ProviderName, { envKey: string; label: string }> = {
   glm: { envKey: 'GLM_API_KEY', label: 'GLM' },
 };
 
+const providerCache = new Map<string, AIProvider>();
+
 export function getProvider(name?: string): AIProvider {
   const providerName = (name || process.env.AI_PROVIDER || 'gemini') as ProviderName;
+
+  const cached = providerCache.get(providerName);
+  if (cached) return cached;
 
   const config = PROVIDERS[providerName];
   if (!config) {
@@ -33,20 +38,30 @@ export function getProvider(name?: string): AIProvider {
     throw new Error(`${config.label} API açarı tapılmadı. .env.local faylına ${config.envKey}=... əlavə edin.`);
   }
 
+  let provider: AIProvider;
   switch (providerName) {
     case 'gemini':
-      return createGeminiProvider(apiKey);
+      provider = createGeminiProvider(apiKey);
+      break;
     case 'openai':
-      return createOpenAIProvider(apiKey);
+      provider = createOpenAIProvider(apiKey);
+      break;
     case 'claude':
-      return createClaudeProvider(apiKey);
+      provider = createClaudeProvider(apiKey);
+      break;
     case 'deepseek':
-      return createDeepSeekProvider(apiKey);
+      provider = createDeepSeekProvider(apiKey);
+      break;
     case 'groq':
-      return createGroqProvider(apiKey);
+      provider = createGroqProvider(apiKey);
+      break;
     case 'glm':
-      return createGLMProvider(apiKey);
+      provider = createGLMProvider(apiKey);
+      break;
     default:
-      return createGeminiProvider(apiKey);
+      provider = createGeminiProvider(apiKey);
   }
+
+  providerCache.set(providerName, provider);
+  return provider;
 }

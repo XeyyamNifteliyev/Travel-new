@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import CountryDetailClient from './country-detail-client';
 import { mapCityToSummary, mapPlaceToSummary } from '@/lib/open-travel-data';
+import { countryJsonLd } from '@/lib/jsonld';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { CitySummary, CityWithCountryRow, PlaceSummary, PlaceWithRelationsRow } from '@/types/place';
@@ -235,16 +236,22 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
   };
 
   return (
-    <CountryDetailClient
-      country={countryWithCoordinates}
-      highlights={(highlights as CountryHighlight[]) || []}
-      blogs={(blogs as unknown as { id: string; title: string; cover_image?: string; created_at: string; views: number; profiles?: { display_name: string } | null }[]) || []}
-      cities={cities}
-      places={places}
-      foodPlaces={foodPlaces}
-      locale={locale}
-      hasVisaInfo={!!visaCheck}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(countryJsonLd({ name: country.name_az, nameEn: country.name_en, slug, capital: country.capital, description: country.short_desc, cca2: country.cca2, locale })) }}
+      />
+      <CountryDetailClient
+        country={countryWithCoordinates}
+        highlights={(highlights as CountryHighlight[]) || []}
+        blogs={(blogs as unknown as { id: string; title: string; cover_image?: string; created_at: string; views: number; profiles?: { display_name: string } | null }[]) || []}
+        cities={cities}
+        places={places}
+        foodPlaces={foodPlaces}
+        locale={locale}
+        hasVisaInfo={!!visaCheck}
+      />
+    </>
   );
 }
 

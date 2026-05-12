@@ -1,8 +1,10 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { PlannerWizard } from '@/components/ai-planner/PlannerWizard';
+import dynamic from 'next/dynamic';
 import { Sparkles } from 'lucide-react';
+
+const PlannerWizard = dynamic(() => import('@/components/ai-planner/PlannerWizard').then(mod => ({ default: mod.PlannerWizard })), { loading: () => <div className="animate-pulse h-96 rounded-2xl bg-bg-surface/50" /> });
 
 export default function AIPlannerPage() {
   const t = useTranslations('aiPlanner');

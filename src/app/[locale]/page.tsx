@@ -22,10 +22,12 @@ import {
   Utensils,
   Users,
 } from 'lucide-react';
-import { GlobeHero } from '@/components/home/globe-hero';
+
 import { HomeSearchPanel } from '@/components/home/home-search-panel';
+import { GlobeHeroLazy } from '@/components/home/globe-hero-lazy';
 import { createClient } from '@/lib/supabase/server';
 import { getUnsplashUrl, getCountryCoverPhotoId, getCityCoverPhotoId } from '@/lib/unsplash';
+import { organizationJsonLd, webSiteJsonLd } from '@/lib/jsonld';
 import type { ExpandedCountry } from '@/types/country';
 import type { PlaceCategory } from '@/types/place';
 
@@ -290,6 +292,10 @@ export default async function HomePage({
 
   return (
     <div className="overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({ ...organizationJsonLd(), ...webSiteJsonLd(locale) }) }}
+      />
       <section className="relative px-4 pt-28 pb-14 md:pt-36 md:pb-20 min-h-screen overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <Image
@@ -346,7 +352,7 @@ export default async function HomePage({
 
             <div className="relative min-h-[300px] md:min-h-[460px] max-w-full">
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <GlobeHero />
+                <GlobeHeroLazy />
               </div>
               
 

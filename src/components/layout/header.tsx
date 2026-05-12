@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from './language-switcher';
@@ -36,7 +36,7 @@ export function Header() {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const { unreadCount } = useUnreadMessages(userId);
 
   useEffect(() => {
@@ -209,7 +209,7 @@ export function Header() {
           <div className="flex items-center gap-3">
             <ThemeToggle />
             {isLoggedIn && (
-              <Link href={`/${locale}/chat`} className="relative p-2 text-txt-sec hover:text-primary transition-colors">
+              <Link href={`/${locale}/chat`} className="relative p-2 text-txt-sec hover:text-primary transition-colors" aria-label={t('chat')}>
                 <MessageSquareText className="w-5 h-5" />
                 {unreadCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1 leading-none">

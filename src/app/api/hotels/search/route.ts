@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isDuffelConfigured, duffelHeaders, getDuffelBaseUrl } from '@/lib/duffel/auth';
 import { mapDuffelStayResults } from '@/lib/duffel/stays';
+import { checkRateLimit, getIpFromHeaders } from '@/lib/rate-limit';
 import type { HotelOffer } from '@/types/hotel';
 
 const FALLBACK_HOTELS: HotelOffer[] = [
@@ -11,6 +12,12 @@ const FALLBACK_HOTELS: HotelOffer[] = [
 ];
 
 export async function GET(req: NextRequest) {
+  const ip = getIpFromHeaders(req);
+  const rl = checkRateLimit(ip, 'hotels-search', 10, 60_000);
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+
   const { searchParams } = new URL(req.url);
   const latitude = parseFloat(searchParams.get('latitude') || '0');
   const longitude = parseFloat(searchParams.get('longitude') || '0');

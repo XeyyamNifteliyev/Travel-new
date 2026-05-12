@@ -59,6 +59,9 @@ export async function GET(request: NextRequest) {
     const supabase = createServerClient(cookieStore);
 
     const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20', 10) || 20));
+    const offset = (page - 1) * limit;
     const country = cleanString(searchParams.get('country'), 120);
     const city = cleanString(searchParams.get('city'), 120);
     const departureDate = cleanString(searchParams.get('departureDate'), 20);
@@ -70,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('companions')
-      .select(COMPANION_SELECT)
+      .select(COMPANION_SELECT, { count: 'exact' })
       .eq('status', 'open')
       .order('created_at', { ascending: false });
 
@@ -89,14 +92,14 @@ export async function GET(request: NextRequest) {
     if (interests) query = query.overlaps('interests', interests.split(',').filter(Boolean).slice(0, 10));
     if (languages) query = query.overlaps('languages', languages.split(',').filter(Boolean).slice(0, 10));
 
-    const { data, error } = await query;
+    const { data, error, count } = await query.range(offset, offset + limit - 1);
 
     if (error) {
       console.error('Companions query error:', error);
       return NextResponse.json({ error: 'Sorğu xətası' }, { status: 500 });
     }
 
-    return NextResponse.json({ companions: data || [] });
+    return NextResponse.json({ companions: data || [], page, limit, total: count || 0, totalPages: count ? Math.ceil(count / limit) : 0 });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
