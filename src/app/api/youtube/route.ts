@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('youtube_links')
       .select(`
-        *,
+        ${YOUTUBE_SELECT},
         author:profiles!youtube_links_user_id_fkey(name, avatar_url)
       `, { count: 'exact' })
       .eq('status', 'active')

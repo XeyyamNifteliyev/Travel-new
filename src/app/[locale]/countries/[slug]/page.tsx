@@ -256,3 +256,12 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
 }
 
 export const revalidate = 86400;
+
+export async function generateStaticParams() {
+  const supabase = await createClient();
+  const { data } = await supabase.from('countries').select('slug').limit(189);
+  const locales = ['az', 'en', 'ru'];
+  return (data || []).flatMap((c) =>
+    locales.map((locale) => ({ locale, slug: c.slug }))
+  );
+}

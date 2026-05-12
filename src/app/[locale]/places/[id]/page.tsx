@@ -57,6 +57,8 @@ interface PageProps {
   params: Promise<{ locale: string; id: string }>;
 }
 
+export const revalidate = 3600;
+
 interface AboutFact {
   label: string;
   value: string;

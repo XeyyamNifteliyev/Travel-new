@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit, getIpFromHeaders } from '@/lib/rate-limit';
 
+const COMMENT_SELECT = 'id, blog_id, user_id, content, created_at, author:profiles!blog_comments_user_id_fkey(name, avatar_url)';
+
 export async function GET(request: NextRequest) {
   try {
     const cookieStore = await cookies();
@@ -16,10 +18,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('blog_comments')
-      .select(`
-        *,
-        author:profiles!blog_comments_user_id_fkey(name, avatar_url)
-      `, { count: 'exact' })
+      .select(COMMENT_SELECT, { count: 'exact' })
       .order('created_at', { ascending: true });
 
     if (blogId) {

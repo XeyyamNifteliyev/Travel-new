@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-05-09T22:34:25.010Z",
+  "generatedAt": "2026-05-12T20:58:31.925Z",
   "totals": {
     "cities": 99,
     "places": 2076,
     "descriptionAz": 2076,
     "descriptionAny": 2076,
-    "image": 1001,
+    "image": 1004,
     "missingAz": 0
   },
   "priority": [],
@@ -16,7 +16,7 @@
       "total": 84,
       "descriptionAz": 84,
       "descriptionAny": 84,
-      "image": 28,
+      "image": 29,
       "sourceUrl": 84,
       "website": 59,
       "address": 54,
@@ -27,7 +27,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 33
+      "imagePercent": 35
     },
     {
       "slug": "vienna",
@@ -301,7 +301,7 @@
       "total": 74,
       "descriptionAz": 74,
       "descriptionAny": 74,
-      "image": 20,
+      "image": 21,
       "sourceUrl": 74,
       "website": 11,
       "address": 11,
@@ -312,7 +312,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 27
+      "imagePercent": 28
     },
     {
       "slug": "amsterdam",
@@ -320,7 +320,7 @@
       "total": 74,
       "descriptionAz": 74,
       "descriptionAny": 74,
-      "image": 45,
+      "image": 46,
       "sourceUrl": 74,
       "website": 26,
       "address": 26,
@@ -331,7 +331,7 @@
       "foodDescriptionAz": 5,
       "missingAz": 0,
       "descriptionAzPercent": 100,
-      "imagePercent": 61
+      "imagePercent": 62
     },
     {
       "slug": "cairo",

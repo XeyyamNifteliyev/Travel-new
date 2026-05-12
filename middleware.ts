@@ -83,14 +83,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url));
   }
 
-  if (isAdminPath(request.nextUrl.pathname)) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (profile?.role !== 'admin') {
+if (isAdminPath(request.nextUrl.pathname)) {
+    const appMetadata = user.app_metadata;
+    const role = appMetadata?.role;
+    if (role !== 'admin') {
       const locale = request.nextUrl.pathname.match(/^\/(az|ru|en)/)?.[1] || 'az';
       return NextResponse.redirect(new URL(`/${locale}/profile`, request.url));
     }

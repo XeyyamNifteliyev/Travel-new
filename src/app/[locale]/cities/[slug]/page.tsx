@@ -38,6 +38,17 @@ interface PageProps {
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://travelaz.az';
 
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const supabase = await createClient();
+  const { data } = await supabase.from('cities').select('slug').eq('is_featured', true).limit(60);
+  const locales = ['az', 'en', 'ru'];
+  return (data || []).flatMap((c) =>
+    locales.map((locale) => ({ locale, slug: c.slug }))
+  );
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug, locale } = await params;
   const supabase = await createClient();
