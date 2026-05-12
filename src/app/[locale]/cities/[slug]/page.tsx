@@ -11,6 +11,7 @@ import { getCityCoverPhotoId, getUnsplashUrl } from '@/lib/unsplash';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 import type { CityWithCountryRow, PlaceWithRelationsRow } from '@/types/place';
+import type { VisaInfo } from '@/types/country';
 
 const CITY_DETAIL_SELECT = `
   id, country_id, slug, name_az, name_en, name_ru, region, admin_region, lat, lng, population,
@@ -65,7 +66,7 @@ export default async function CityDetailPage({ params }: PageProps) {
 
   const city = mapCityToSummary(cityRow as unknown as CityWithCountryRow, currentLocale);
 
-  const [placeResult, foodPlaceResult] = await Promise.all([
+  const [placeResult, foodPlaceResult, countryResult] = await Promise.all([
     supabase
       .from('places')
       .select(PLACE_CARD_SELECT)
@@ -85,6 +86,10 @@ export default async function CityDetailPage({ params }: PageProps) {
       .order('popular_rank', { ascending: true })
       .order('rating_summary', { ascending: false })
       .limit(24),
+    supabase
+      .from('countries')
+      .select('id, slug, name_az, name_en, name_ru, flag_emoji, cca2')
+      .order('name_az', { ascending: true }),
   ]);
 
   const placeRows = placeResult.data;
@@ -143,7 +148,7 @@ export default async function CityDetailPage({ params }: PageProps) {
         {city.lat && city.lng && (
           <WeatherWidget lat={city.lat} lon={city.lng} />
         )}
-        <VisaCheckWidget compact defaultDestination={city.country?.cca2 ?? ''} />
+        <VisaCheckWidget compact defaultDestination={city.country?.cca2 ?? ''} countries={(countryResult.data || []).map((c) => ({ country: c, visa: null as unknown as VisaInfo, documents: [] }))} />
       </div>
 
       <section>

@@ -109,6 +109,17 @@ export function VisaCheckWidget({ defaultPassport = 'AZ', defaultDestination, co
     [countries]
   );
 
+  const compactCountryOptions = useMemo(() => {
+    if (sortedCountries.length > 0) {
+      const nameKey = locale === 'en' ? 'name_en' : locale === 'ru' ? 'name_ru' : 'name_az';
+      return sortedCountries.map(({ country }) => ({
+        code: country.cca2 || '',
+        label: `${country.flag_emoji || ''} ${country[nameKey] || country.name_az}`,
+      }));
+    }
+    return FALLBACK_COUNTRY_OPTIONS;
+  }, [sortedCountries, locale]);
+
   const selectedVisaData = useMemo(() => {
     if (!destination || compact) return null;
     return sortedCountries.find(({ country }) => country.slug === destination || country.cca2 === destination) || null;
@@ -156,7 +167,7 @@ export function VisaCheckWidget({ defaultPassport = 'AZ', defaultDestination, co
             className="bg-white/5 border border-border rounded-lg px-3 py-2 text-sm text-txt focus:ring-2 focus:ring-primary"
           >
             <option value="" className={SELECT_OPTION_CLASS}>{tCheck('selectDestination')}</option>
-            {FALLBACK_COUNTRY_OPTIONS.filter((c) => c.code !== passport).map((c) => (
+            {compactCountryOptions.filter((c) => c.code !== passport).map((c) => (
               <option key={c.code} value={c.code} className={SELECT_OPTION_CLASS}>{c.label}</option>
             ))}
           </select>
