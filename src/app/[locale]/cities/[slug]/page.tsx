@@ -35,18 +35,34 @@ interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://travelaz.az';
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const supabase = await createClient();
   const { data } = await supabase
     .from('cities')
-    .select('name_az, description_az, description_en')
+    .select('name_az, name_en, name_ru, description_az, description_en, description_ru')
     .eq('slug', slug)
     .maybeSingle();
 
+  const nameField = locale === 'en' ? 'name_en' : locale === 'ru' ? 'name_ru' : 'name_az';
+  const descField = locale === 'en' ? 'description_en' : locale === 'ru' ? 'description_ru' : 'description_az';
+  const cityName = data?.[nameField] || data?.name_az;
+
   return {
-    title: data?.name_az ? `${data.name_az} - TravelAZ` : 'City - TravelAZ',
-    description: data?.description_az || data?.description_en || '',
+    title: cityName ? `${cityName} - TravelAZ` : 'City - TravelAZ',
+    description: data?.[descField] || data?.description_az || '',
+    alternates: {
+      canonical: `${BASE_URL}/${locale}/cities/${slug}`,
+      languages: { az: `${BASE_URL}/az/cities/${slug}`, en: `${BASE_URL}/en/cities/${slug}`, ru: `${BASE_URL}/ru/cities/${slug}` },
+    },
+    openGraph: {
+      title: cityName ? `${cityName} - TravelAZ` : 'City - TravelAZ',
+      description: data?.[descField] || data?.description_az || '',
+      locale: locale === 'az' ? 'az_AZ' : locale === 'ru' ? 'ru_RU' : 'en_US',
+      type: 'website',
+    },
   };
 }
 

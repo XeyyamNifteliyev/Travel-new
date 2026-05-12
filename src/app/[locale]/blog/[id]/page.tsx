@@ -79,12 +79,12 @@ export default function BlogDetailPage() {
       const { data } = await supabase
         .from('blogs')
         .select(`
-          *,
+          id, author_id, title, content, cover_image, language, tags, views, likes, status, created_at, updated_at,
           author:profiles!blogs_author_id_fkey(name, avatar_url, bio)
         `)
         .eq('id', blogId)
         .single();
-      if (data) setBlog(data as Blog);
+      if (data) setBlog(data as unknown as Blog);
       setLoading(false);
     };
     fetchBlog();

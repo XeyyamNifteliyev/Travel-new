@@ -30,7 +30,7 @@ export default function RegisterPage() {
       options: { data: { name } },
     });
     if (error) {
-      setError(error.message);
+      setError(t('registerError'));
       setLoading(false);
     } else {
       setSuccess(true);

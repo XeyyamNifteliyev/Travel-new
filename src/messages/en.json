@@ -304,7 +304,9 @@
     "hasAccount": "Already have an account?",
     "checkEmail": "Check your email",
     "confirmSent": "We sent a confirmation link to {email}",
-    "loading": "Loading"
+    "loading": "Loading",
+    "loginError": "An error occurred during login",
+    "registerError": "An error occurred during registration"
   },
   "blog": {
     "title": "Blog",

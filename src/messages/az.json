@@ -306,7 +306,9 @@
     "hasAccount": "Artıq hesabınız var?",
     "checkEmail": "Emailinizi yoxlayın",
     "confirmSent": "{email} ünvanına təsdiq linki göndərdik",
-    "loading": "Yüklənir..."
+    "loading": "Yüklənir...",
+    "loginError": "Giriş zamanı xəta baş verdi",
+    "registerError": "Qeydiyyat zamanı xəta baş verdi"
   },
   "blog": {
     "title": "Blog",

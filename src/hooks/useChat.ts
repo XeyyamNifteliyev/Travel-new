@@ -98,25 +98,28 @@ export function useChat(userId: string | null) {
   }, [fetchMessages, supabase, userId]);
 
   const deleteMessage = useCallback(async (msgId: string) => {
+    if (!userId) return false;
     const { error } = await supabase
       .from('messages')
       .delete()
-      .eq('id', msgId);
+      .eq('id', msgId)
+      .eq('sender_id', userId);
     if (error) { setError(error.message); return false; }
     setMessages(prev => prev.filter(m => m.id !== msgId));
     return true;
-  }, [supabase]);
+  }, [supabase, userId]);
 
   const editMessage = useCallback(async (msgId: string, newText: string) => {
-    if (!newText.trim()) return false;
+    if (!userId || !newText.trim()) return false;
     const { error } = await supabase
       .from('messages')
       .update({ message_text: newText.trim() })
-      .eq('id', msgId);
+      .eq('id', msgId)
+      .eq('sender_id', userId);
     if (error) { setError(error.message); return false; }
     setMessages(prev => prev.map(m => m.id === msgId ? { ...m, message_text: newText.trim(), is_edited: true } : m));
     return true;
-  }, [supabase]);
+  }, [supabase, userId]);
 
   const deleteConversation = useCallback(async (convId: string) => {
     await supabase.from('messages').delete().eq('conversation_id', convId);
@@ -185,10 +188,10 @@ export function useChat(userId: string | null) {
       .channel('chat-messages')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${activeConversation}` },
         async (payload) => {
           const newMsg = payload.new as Message;
-          if (activeConversation && newMsg.conversation_id === activeConversation) {
+          if (newMsg.conversation_id === activeConversation) {
             const { data: profile } = await supabase.from('profiles').select('name, avatar_url').eq('id', newMsg.sender_id).single();
             setMessages(prev => [...prev, { ...newMsg, sender: { name: profile?.name || 'İstifadəçi', avatar_url: profile?.avatar_url } }]);
           }

@@ -70,6 +70,32 @@ Yalnız JSON qaytar, heç bir əlavə mətn yazma.`;
 
     const data = JSON.parse(jsonStr);
 
+    if (!data.slug || !/^[a-z0-9-]{2,80}$/.test(data.slug)) {
+      return NextResponse.json({ error: 'AI cavabında etibarsız slug' }, { status: 422 });
+    }
+
+    const validRequirementTypes = ['not_required', 'on_arrival', 'e_visa', 'required'];
+    if (!data.requirement_type || !validRequirementTypes.includes(data.requirement_type)) {
+      return NextResponse.json({ error: 'AI cavabında etibarsız viza növü' }, { status: 422 });
+    }
+
+    if (typeof data.fee_usd !== 'number' || data.fee_usd < 0 || data.fee_usd > 10000) {
+      data.fee_usd = 0;
+    }
+
+    if (typeof data.processing_days_min !== 'number' || data.processing_days_min < 0) {
+      data.processing_days_min = 0;
+    }
+    if (typeof data.processing_days_max !== 'number' || data.processing_days_max < 0) {
+      data.processing_days_max = 0;
+    }
+    if (typeof data.max_stay_days !== 'number' || data.max_stay_days < 0) {
+      data.max_stay_days = 0;
+    }
+    if (typeof data.validity_days !== 'number' || data.validity_days < 0) {
+      data.validity_days = 0;
+    }
+
     const { data: country, error: countryError } = await supabase
       .from('countries')
       .insert({

@@ -11,8 +11,10 @@ export async function GET(
   const { data, error } = await supabase
     .from('visa_info')
     .select(`
-      *,
-      countries!inner(id, name_az, name_en, name_ru, slug, flag_emoji),
+      id, country_id, requirement_type, fee_usd, processing_days_min, processing_days_max,
+      validity_days, max_stay_days, is_evisa, evisa_url, official_visa_url, official_url,
+      appointment_url, notes_az, notes_en, notes_ru, last_verified_at,
+      countries!inner(id, name_az, name_en, name_ru, slug, flag_emoji, cca2),
       visa_documents(
         id, document_name_az, document_name_en, document_name_ru,
         description_az, description_en, description_ru, is_required, document_category,

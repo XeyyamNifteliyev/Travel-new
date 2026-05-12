@@ -44,7 +44,7 @@ export default function LoginPage() {
     setError('');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError(error.message);
+      setError(t('loginError'));
       setLoading(false);
     } else {
       router.push(`/${locale}`);
@@ -64,7 +64,7 @@ export default function LoginPage() {
         },
       },
     });
-    if (error) setError(error.message);
+    if (error) setError(t('loginError'));
   };
 
   return (

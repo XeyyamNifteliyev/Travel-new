@@ -117,18 +117,34 @@ const PLACE_WITH_RELATIONS_FIELDS = [
   'countries(id, slug, name_az, name_en, name_ru, flag_emoji, cca2)',
 ].join(', ');
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://travelaz.az';
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const supabase = await createClient();
   const { data } = await supabase
     .from('countries')
-    .select('name_az, short_desc')
+    .select('name_az, name_en, name_ru, short_desc, short_desc_en, short_desc_ru')
     .eq('slug', slug)
     .single();
 
+  const nameField = locale === 'en' ? 'name_en' : locale === 'ru' ? 'name_ru' : 'name_az';
+  const countryName = data?.[nameField] || data?.name_az;
+  const descField = locale === 'en' ? 'short_desc_en' : locale === 'ru' ? 'short_desc_ru' : 'short_desc';
+
   return {
-    title: data?.name_az ? `${data.name_az} — TravelAZ` : 'Ölkə',
-    description: data?.short_desc || '',
+    title: countryName ? `${countryName} - TravelAZ` : 'Country - TravelAZ',
+    description: data?.[descField] || '',
+    alternates: {
+      canonical: `${BASE_URL}/${locale}/countries/${slug}`,
+      languages: { az: `${BASE_URL}/az/countries/${slug}`, en: `${BASE_URL}/en/countries/${slug}`, ru: `${BASE_URL}/ru/countries/${slug}` },
+    },
+    openGraph: {
+      title: countryName ? `${countryName} - TravelAZ` : 'Country - TravelAZ',
+      description: data?.[descField] || '',
+      locale: locale === 'az' ? 'az_AZ' : locale === 'ru' ? 'ru_RU' : 'en_US',
+      type: 'website',
+    },
   };
 }
 
