@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getSlugByISO } from '@/lib/unsplash';
 import { normalizeVisaResponse, type VisaStatus } from '@/lib/visa/visalist-api';
 
-const VISA_API_URL = process.env.VISA_API_URL || 'https://rough-sun-2523.fly.dev';
+const VISA_API_URL = process.env.VISA_API_URL;
 
 const STATUS_MAP: Record<string, VisaStatus> = {
   not_required: 'visaFree',
@@ -75,6 +75,10 @@ export async function GET(req: NextRequest) {
 
   // 3. External API — last resort
   try {
+    if (!VISA_API_URL) {
+      return NextResponse.json({ error: 'Visa service unavailable' }, { status: 503 });
+    }
+
     const res = await fetch(
       `${VISA_API_URL}/${passport.toUpperCase()}/${destCode}`,
       { next: { revalidate: 3600 } }

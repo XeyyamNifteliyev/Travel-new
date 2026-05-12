@@ -22,8 +22,11 @@ jobs:
             "${{ secrets.SITE_URL }}/api/visa/scraper?batch=1"
 
   scrape-batch-2:
+    needs: scrape-batch-1
     runs-on: ubuntu-latest
     steps:
+      - name: Wait 30s
+        run: sleep 30
       - name: Scrape Batch 2 (countries 26-50)
         run: |
           curl -X POST \
@@ -32,8 +35,11 @@ jobs:
             "${{ secrets.SITE_URL }}/api/visa/scraper?batch=2"
 
   scrape-batch-3:
+    needs: scrape-batch-2
     runs-on: ubuntu-latest
     steps:
+      - name: Wait 30s
+        run: sleep 30
       - name: Scrape Batch 3 (countries 51-75)
         run: |
           curl -X POST \
@@ -42,8 +48,11 @@ jobs:
             "${{ secrets.SITE_URL }}/api/visa/scraper?batch=3"
 
   scrape-batch-4:
+    needs: scrape-batch-3
     runs-on: ubuntu-latest
     steps:
+      - name: Wait 30s
+        run: sleep 30
       - name: Scrape Batch 4 (countries 76-100)
         run: |
           curl -X POST \
@@ -52,8 +61,11 @@ jobs:
             "${{ secrets.SITE_URL }}/api/visa/scraper?batch=4"
 
   scrape-batch-5:
+    needs: scrape-batch-4
     runs-on: ubuntu-latest
     steps:
+      - name: Wait 30s
+        run: sleep 30
       - name: Scrape Batch 5 (countries 101+)
         run: |
           curl -X POST \

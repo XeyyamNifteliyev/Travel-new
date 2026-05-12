@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { assertAiLimit, incrementAiUsage, AI_DAILY_LIMITS } from '@/lib/ai/usage';
+import { assertAndIncrementAiLimit, AI_DAILY_LIMITS } from '@/lib/ai/usage';
 import { getProvider } from '@/lib/ai/provider';
 import { buildPrompt } from '@/lib/ai/prompts';
 import { parseAIResponse } from '@/lib/ai/parser';
@@ -23,11 +23,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const usage = await assertAiLimit(user.id, 'planner');
-    if (!usage.allowed) {
+    const usageCheck = await assertAndIncrementAiLimit(user.id, 'planner');
+    if (!usageCheck.allowed) {
       return NextResponse.json({
         error: 'Gündəlik AI plan limitiniz bitib. Sabah yenidən cəhd edin.',
-        limit: usage.limit,
+        limit: usageCheck.limit,
         remaining: 0,
         from_cache: false,
       }, { status: 429 });
@@ -37,14 +37,13 @@ export async function POST(request: Request) {
     const prompt = buildPrompt(body);
     const rawResponse = await provider.generateText(prompt);
     const plan = parseAIResponse(rawResponse);
-    await incrementAiUsage(user.id, 'planner', usage);
 
     const destinationSlug = body.destination.toLowerCase().replace(/\s+/g, '-');
 
     return NextResponse.json({
       plan,
-      limit: usage.limit,
-      remaining: Math.max(usage.limit - usage.count - 1, 0),
+      limit: usageCheck.limit,
+      remaining: usageCheck.remaining,
       from_cache: false,
       platformData: {
         countryPage: `/${body.language}/countries/${destinationSlug}`,
@@ -55,7 +54,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error: unknown) {
-    console.error('AI Plan error:', error);
+    console.error('AI Plan error', { msg: error instanceof Error ? error.message : 'unknown' });
     return NextResponse.json(
       { error: 'Plan hazırlanarkən xəta baş verdi' },
       { status: 500 }

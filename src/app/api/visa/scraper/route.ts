@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 
 const VISA_SOURCES: Record<string, { urls: string[]; embassy_az?: string }> = {
   turkey: { urls: ['https://baku.be.mfa.gov.tr'], embassy_az: 'https://baku.be.mfa.gov.tr/vize' },
@@ -106,8 +107,23 @@ const VISA_SOURCES: Record<string, { urls: string[]; embassy_az?: string }> = {
 const BATCH_SIZE = 25;
 
 export async function POST(request: NextRequest) {
-  const secret = request.headers.get('x-cron-secret');
-  if (secret !== process.env.CRON_SECRET) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || cronSecret.length < 16) {
+    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+  }
+
+  const provided = request.headers.get('x-cron-secret');
+  if (!provided) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const a = Buffer.from(provided);
+    const b = Buffer.from(cronSecret);
+    if (a.length !== b.length || !timingSafeEqual(a, b)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  } catch {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

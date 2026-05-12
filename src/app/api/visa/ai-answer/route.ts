@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { assertAiLimit, getAiUsage, incrementAiUsage, AI_DAILY_LIMITS } from '@/lib/ai/usage';
+import { assertAndIncrementAiLimit, getAiUsage, AI_DAILY_LIMITS } from '@/lib/ai/usage';
 import { getProvider } from '@/lib/ai/provider';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -57,11 +57,11 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const usage = await assertAiLimit(user.id, 'visa');
-  if (!usage.allowed) {
+  const usageCheck = await assertAndIncrementAiLimit(user.id, 'visa');
+  if (!usageCheck.allowed) {
     return NextResponse.json({
       error: 'Gündəlik AI sual limitiniz bitib. Sabah yenidən cəhd edin.',
-      limit: usage.limit,
+      limit: usageCheck.limit,
       remaining: 0,
       from_cache: false,
     }, { status: 429 });
@@ -105,19 +105,18 @@ export async function POST(request: NextRequest) {
       await adminSupabase.from('visa_qa_cache').upsert(cacheEntry, { onConflict: 'country_id,question_hash' });
     }
 
-    await incrementAiUsage(user.id, 'visa', usage);
     return NextResponse.json({
       answer,
       from_cache: false,
-      limit: usage.limit,
-      remaining: Math.max(usage.limit - usage.count - 1, 0),
+      limit: usageCheck.limit,
+      remaining: usageCheck.remaining,
     });
   } catch (error) {
-    console.error('Visa AI answer error:', error);
+    console.error('Visa AI answer error', { msg: error instanceof Error ? error.message : 'unknown' });
     return NextResponse.json({
       error: 'AI cavab verə bilmədi',
-      limit: usage.limit,
-      remaining: Math.max(usage.limit - usage.count, 0),
+      limit: usageCheck.limit,
+      remaining: usageCheck.remaining,
       from_cache: false,
     }, { status: 500 });
   }

@@ -17,6 +17,35 @@ function getBakuDate(): string {
   }).format(new Date());
 }
 
+export async function assertAndIncrementAiLimit(userId: string, feature: AiFeature) {
+  const supabase = createAdminClient();
+  const limit = AI_DAILY_LIMITS[feature];
+  const usageDate = getBakuDate();
+
+  const { data, error } = await supabase.rpc('increment_ai_usage', {
+    p_user_id: userId,
+    p_feature: feature,
+    p_usage_date: usageDate,
+    p_limit: limit,
+  });
+
+  if (error) {
+    console.error('AI usage atomic error:', { feature, code: error.code });
+    return { allowed: false as const, limit, remaining: 0, count: limit };
+  }
+
+  const row = Array.isArray(data) ? data[0] : data;
+  const allowed = Boolean(row?.allowed);
+  const count = Number(row?.current_count ?? 0);
+
+  return {
+    allowed,
+    limit,
+    remaining: allowed ? Math.max(limit - count, 0) : 0,
+    count,
+  };
+}
+
 export async function getAiUsage(userId: string, feature: AiFeature) {
   const supabase = createAdminClient();
   const usageDate = getBakuDate();
@@ -31,7 +60,7 @@ export async function getAiUsage(userId: string, feature: AiFeature) {
     .maybeSingle();
 
   if (error) {
-    console.error('AI usage read error:', { feature, error });
+    console.error('AI usage read error:', { feature, code: error.code });
   }
 
   const count = (data?.request_count as number | undefined) ?? 0;
@@ -42,51 +71,4 @@ export async function getAiUsage(userId: string, feature: AiFeature) {
     limit,
     remaining: Math.max(limit - count, 0),
   };
-}
-
-export async function assertAiLimit(userId: string, feature: AiFeature) {
-  const usage = await getAiUsage(userId, feature);
-  if (usage.count >= usage.limit) {
-    return {
-      allowed: false as const,
-      ...usage,
-    };
-  }
-
-  return {
-    allowed: true as const,
-    ...usage,
-  };
-}
-
-export async function incrementAiUsage(
-  userId: string,
-  feature: AiFeature,
-  usage: { usageId?: string; usageDate: string; count: number }
-) {
-  const supabase = createAdminClient();
-
-  if (usage.usageId) {
-    const { error } = await supabase
-      .from('ai_daily_usage')
-      .update({
-        request_count: usage.count + 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', usage.usageId);
-
-    if (error) console.error('AI usage update error:', { feature, error });
-    return;
-  }
-
-  const { error } = await supabase
-    .from('ai_daily_usage')
-    .insert({
-      user_id: userId,
-      usage_date: usage.usageDate,
-      feature,
-      request_count: 1,
-    });
-
-  if (error) console.error('AI usage insert error:', { feature, error });
 }

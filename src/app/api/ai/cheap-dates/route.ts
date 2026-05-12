@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { assertAiLimit, incrementAiUsage, AI_DAILY_LIMITS } from '@/lib/ai/usage';
+import { assertAndIncrementAiLimit, AI_DAILY_LIMITS } from '@/lib/ai/usage';
 import { getProvider } from '@/lib/ai/provider';
 import { buildCheapDatesPrompt } from '@/lib/ai/prompts';
 import { CheapDatesRequest, CheapDatesResponse } from '@/types/ai-planner';
@@ -22,11 +22,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const usage = await assertAiLimit(user.id, 'cheap_dates');
-    if (!usage.allowed) {
+    const usageCheck = await assertAndIncrementAiLimit(user.id, 'cheap_dates');
+    if (!usageCheck.allowed) {
       return NextResponse.json({
         error: 'Gündəlik ucuz tarix AI limitiniz bitib. Sabah yenidən cəhd edin.',
-        limit: usage.limit,
+        limit: usageCheck.limit,
         remaining: 0,
         from_cache: false,
       }, { status: 429 });
@@ -67,16 +67,14 @@ export async function POST(request: Request) {
       tip: (parsed.tip as string) || '',
     };
 
-    await incrementAiUsage(user.id, 'cheap_dates', usage);
-
     return NextResponse.json({
       ...result,
-      limit: usage.limit,
-      remaining: Math.max(usage.limit - usage.count - 1, 0),
+      limit: usageCheck.limit,
+      remaining: usageCheck.remaining,
       from_cache: false,
     });
   } catch (error: unknown) {
-    console.error('Cheap Dates error:', error);
+    console.error('Cheap Dates error', { msg: error instanceof Error ? error.message : 'unknown' });
     return NextResponse.json(
       { error: 'Ucuz tarixlər tapılarkən xəta baş verdi' },
       { status: 500 }

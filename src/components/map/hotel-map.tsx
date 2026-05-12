@@ -67,8 +67,11 @@ export default function HotelMap({
     markers.forEach((marker, index) => {
       const el = document.createElement('div');
       el.className = 'hotel-map-marker';
-      el.innerHTML = `<span>${marker.price} AZN</span>`;
       el.style.cssText = 'background:#0ea5e9;color:white;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;box-shadow:0 2px 12px rgba(14,165,233,0.4);border:2px solid rgba(255,255,255,0.3);';
+      const priceNum = Number(marker.price);
+      const span = document.createElement('span');
+      span.textContent = `${isFinite(priceNum) ? Math.round(priceNum) : '?'} AZN`;
+      el.appendChild(span);
 
       const icon = L.divIcon({
         html: el.outerHTML,
