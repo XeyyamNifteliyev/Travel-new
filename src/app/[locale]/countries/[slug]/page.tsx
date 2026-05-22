@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { notFound } from 'next/navigation';
 import CountryDetailClient from './country-detail-client';
 import { mapCityToSummary, mapPlaceToSummary } from '@/lib/open-travel-data';
@@ -258,7 +259,7 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
 export const revalidate = 86400;
 
 export async function generateStaticParams() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase.from('countries').select('slug').limit(189);
   const locales = ['az', 'en', 'ru'];
   return (data || []).flatMap((c) =>

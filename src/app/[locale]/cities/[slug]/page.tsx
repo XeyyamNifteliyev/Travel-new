@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ArrowLeft, ExternalLink, MapPin, Star, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { mapCityToSummary, mapPlaceToSummary } from '@/lib/open-travel-data';
 import { WeatherWidget } from '@/components/weather/weather-widget';
 import { VisaCheckWidget } from '@/components/visa/visa-check-widget';
@@ -41,7 +42,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://travelaz.az';
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data } = await supabase.from('cities').select('slug').eq('is_featured', true).limit(60);
   const locales = ['az', 'en', 'ru'];
   return (data || []).flatMap((c) =>
