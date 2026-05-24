@@ -136,7 +136,7 @@ export default async function CityDetailPage({ params }: PageProps) {
     <main className="max-w-6xl mx-auto px-4 py-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityJsonLd({ name: city.name, slug, countryName: city.country?.name, description: city.description, locale })) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityJsonLd({ name: city.name, slug, countryName: city.country?.name, description: city.description, locale })).replace(/</g, '\\u003c') }}
       />
       <Link href={`/${locale}/countries/${city.country?.slug || ''}`} className="inline-flex items-center gap-2 text-txt-sec hover:text-primary mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" />

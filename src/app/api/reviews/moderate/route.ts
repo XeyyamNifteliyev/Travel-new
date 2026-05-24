@@ -1,18 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
 import { isFlaggedContent } from '@/lib/content-filter';
+import { isAdminUser } from '@/lib/auth/admin';
 import { NextRequest, NextResponse } from 'next/server';
 
 async function verifyAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile || profile.role !== 'admin') return null;
+  if (!(await isAdminUser(supabase, user))) return null;
   return user;
 }
 

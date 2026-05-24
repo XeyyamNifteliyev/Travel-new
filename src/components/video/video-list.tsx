@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { createBrowserClient } from '@/lib/supabase/client';
 import type { User } from '@/types/supabase-helpers';
 import {
-  Play, Plus, X, Loader2, MapPin, Calendar, Eye,
+  Play, Plus, X, Loader2, MapPin, Eye,
   Heart, ExternalLink, Video
 } from 'lucide-react';
 import { toast } from 'sonner';

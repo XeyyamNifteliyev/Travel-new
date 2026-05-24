@@ -62,6 +62,18 @@ const BLOCKED_VISUAL_TERMS = [
   'landscape',
 ];
 
+const GENERIC_PLACE_TERMS = new Set([
+  'home',
+  'building',
+  'gate',
+  'side gate',
+  'local bazaar',
+  'bazaar',
+  'pavillion',
+  'pavilion',
+  'throne hall',
+]);
+
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
   for (const line of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
@@ -98,6 +110,8 @@ function parseArgs() {
     overwrite: false,
     source: 'all',
     offset: 0,
+    offsetProvided: false,
+    stateFile: null,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -125,6 +139,11 @@ function parseArgs() {
     } else if (arg === '--offset' || arg.startsWith('--offset=')) {
       const parsed = readArgValue(args, i);
       opts.offset = Number.parseInt(parsed.value, 10);
+      opts.offsetProvided = true;
+      i = parsed.nextIndex;
+    } else if (arg === '--state-file' || arg.startsWith('--state-file=')) {
+      const parsed = readArgValue(args, i);
+      opts.stateFile = parsed.value;
       i = parsed.nextIndex;
     } else if (arg === '--overwrite') {
       opts.overwrite = true;
@@ -136,6 +155,32 @@ function parseArgs() {
   }
 
   return opts;
+}
+
+function loadState(filePath) {
+  if (!filePath) return null;
+  try {
+    if (!fs.existsSync(filePath)) return {};
+    const raw = fs.readFileSync(filePath, 'utf8');
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveState(filePath, data) {
+  if (!filePath) return;
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+}
+
+function stateKey(opts) {
+  const cityPart = opts.city || 'any';
+  const categories = (opts.categories || []).slice().sort().join(',');
+  const overwritePart = opts.overwrite ? 'overwrite' : 'missing-only';
+  const slugPart = Array.isArray(opts.slug) && opts.slug.length ? `slug:${opts.slug.slice().sort().join(',')}` : 'slug:any';
+  return `${opts.source}|${cityPart}|${categories}|${overwritePart}|${slugPart}`;
 }
 
 function createSupabaseClient() {
@@ -266,12 +311,7 @@ async function searchWikipediaPageImage(placeName, cityName) {
       });
       const data = await fetchJson(`${WIKIPEDIA_API(lang)}?${params}`);
       const pages = Object.values(data?.query?.pages || {});
-      const place = normalize(placeName);
-      const city = normalize(cityName);
-      const match = pages.find((page) => {
-        const title = normalize(page.title);
-        return title.includes(place) || place.includes(title) || (city && title.includes(city));
-      }) || pages[0];
+      const match = pages.find((page) => hasStrongTextMatch(placeName, page.title));
       if (match?.original?.source) return { url: match.original.source, detail: `${lang}:${match.title}` };
       await sleep(250);
     }
@@ -317,11 +357,7 @@ async function searchWikidataImage(placeName, cityName) {
       const data = await fetchJson(`${WIKIDATA_API}?${params}`);
       const candidates = data?.search || [];
       for (const candidate of candidates) {
-        const label = normalize(candidate.label);
-        const description = normalize(candidate.description);
-        const place = normalize(placeName);
-        const city = normalize(cityName);
-        const looksRelated = label.includes(place) || place.includes(label) || (city && description.includes(city));
+        const looksRelated = hasStrongTextMatch(placeName, candidate.label);
         if (!looksRelated) continue;
         const filename = await fetchWikidataImageFilename(candidate.id);
         if (filename) return filename;
@@ -355,6 +391,46 @@ function isAnimalAttraction(place) {
 function containsBlockedVisualTerms(text) {
   const haystack = normalize(text);
   return BLOCKED_VISUAL_TERMS.some((term) => haystack.includes(term));
+}
+
+function hasStrongTextMatch(targetText, candidateText) {
+  const target = normalize(targetText);
+  const candidate = normalize(candidateText);
+  if (!target || !candidate) return false;
+  if (candidate.includes(target)) return true;
+
+  const targetTokens = target.split(' ').filter((token) => token.length >= 4);
+  if (targetTokens.length === 0) return false;
+  const matchCount = targetTokens.filter((token) => candidate.includes(token)).length;
+  return matchCount / targetTokens.length >= 0.6;
+}
+
+function hasReliablePlaceIdentity(placeName) {
+  const normalized = normalize(placeName);
+  if (!normalized) return false;
+  if (GENERIC_PLACE_TERMS.has(normalized)) return false;
+
+  const tokens = normalized.split(' ').filter(Boolean);
+  const significantTokens = tokens.filter((token) => token.length >= 4);
+  if (significantTokens.length === 0) return false;
+  if (tokens.length === 1 && significantTokens[0].length < 6) return false;
+
+  return true;
+}
+
+function shouldSkipPlaceForImageSearch(place) {
+  if (isAnimalAttraction(place)) return true;
+  if (!hasReliablePlaceIdentity(place.name)) return true;
+
+  const tags = rawTags(place.raw_data);
+  const naturalTag = normalize(tags.natural);
+  if (['tree', 'wood', 'forest', 'beach', 'water'].includes(naturalTag)) return true;
+
+  return false;
+}
+
+function selectProcessablePlaces(places, limit) {
+  return (places || []).filter((place) => !shouldSkipPlaceForImageSearch(place)).slice(0, limit);
 }
 
 function buildPlaceMatchSignals(place, haystack) {
@@ -444,40 +520,43 @@ async function fetchPexelsImage(place) {
 
 async function findImageForPlace(place) {
   const tags = rawTags(place.raw_data);
+  const hasReliableIdentity = hasReliablePlaceIdentity(place.name);
 
-  if (tags.wikidata && ['all', 'wikimedia'].includes(place.sourceMode)) {
+  if (shouldSkipPlaceForImageSearch(place)) return null;
+
+  if (tags.wikidata && ['all', 'wikimedia', 'auto'].includes(place.sourceMode)) {
     const filename = await fetchWikidataImageFilename(tags.wikidata);
     if (filename) return { url: commonsThumbnailUrl(filename), provider: 'wikidata', detail: tags.wikidata };
   }
 
   const wiki = parseWikipediaTag(tags.wikipedia);
-  if (wiki && ['all', 'wikimedia'].includes(place.sourceMode)) {
+  if (wiki && ['all', 'wikimedia', 'auto'].includes(place.sourceMode)) {
     const url = await fetchWikipediaPageImage(wiki.lang, wiki.title);
     if (url) return { url, provider: 'wikipedia', detail: tags.wikipedia };
   }
 
   const osm = parseOsmSourceId(place.source_place_id);
-  if (osm && ['all', 'wikimedia'].includes(place.sourceMode)) {
+  if (osm && ['all', 'wikimedia', 'auto'].includes(place.sourceMode)) {
     const filename = await fetchWikidataByOsmId(osm.osmType, osm.osmId);
     if (filename) return { url: commonsThumbnailUrl(filename), provider: 'wikidata-osm', detail: place.source_place_id };
   }
 
-  if (['all', 'wikimedia'].includes(place.sourceMode)) {
+  if (hasReliableIdentity && ['all', 'wikimedia', 'auto'].includes(place.sourceMode)) {
     const filename = await searchWikidataImage(place.name, place.cities?.name_en || place.cities?.name_az);
     if (filename) return { url: commonsThumbnailUrl(filename), provider: 'wikidata-search', detail: filename };
   }
 
-  if (['all', 'wikimedia'].includes(place.sourceMode)) {
+  if (hasReliableIdentity && ['all', 'wikimedia', 'auto'].includes(place.sourceMode)) {
     const pageImage = await searchWikipediaPageImage(place.name, place.cities?.name_en || place.cities?.name_az);
     if (pageImage?.url) return { url: pageImage.url, provider: 'wikipedia-search', detail: pageImage.detail };
   }
 
-  if (['all', 'unsplash'].includes(place.sourceMode)) {
+  if (hasReliableIdentity && ['all', 'unsplash', 'auto'].includes(place.sourceMode)) {
     const url = await fetchUnsplashImage(place);
     if (url) return { url, provider: 'unsplash', detail: unsplashQuery(place) };
   }
 
-  if (['all', 'pexels'].includes(place.sourceMode)) {
+  if (hasReliableIdentity && ['all', 'pexels', 'auto'].includes(place.sourceMode)) {
     const url = await fetchPexelsImage(place);
     if (url) return { url, provider: 'pexels', detail: pexelsQuery(place) };
   }
@@ -498,6 +577,13 @@ async function main() {
   const supabase = createSupabaseClient();
   const cityId = await getCityId(supabase, opts.city);
 
+  const resolvedStateFile = opts.stateFile ? path.resolve(process.cwd(), opts.stateFile) : null;
+  const state = loadState(resolvedStateFile);
+  const key = stateKey(opts);
+  if (!opts.offsetProvided && resolvedStateFile && state && typeof state[key]?.nextOffset === 'number') {
+    opts.offset = state[key].nextOffset;
+  }
+
   console.log(`\nPlace Image Enrichment - ${opts.dryRun ? 'DRY-RUN' : 'APPLY'}`);
   console.log(`  Limit: ${opts.limit}`);
   console.log(`  City: ${opts.city || 'any'}`);
@@ -505,6 +591,13 @@ async function main() {
   console.log(`  Overwrite: ${opts.overwrite ? 'yes' : 'no'}`);
   console.log(`  Source: ${opts.source}\n`);
   console.log(`  Offset: ${opts.offset}\n`);
+  if (resolvedStateFile) {
+    console.log(`  State file: ${resolvedStateFile}`);
+    if (state && typeof state[key]?.nextOffset === 'number') console.log(`  State nextOffset: ${state[key].nextOffset}`);
+    console.log('');
+  }
+
+  const fetchWindow = Math.max(opts.limit * 4, opts.limit);
 
   let query = supabase
     .from('places')
@@ -512,7 +605,7 @@ async function main() {
     .eq('status', 'active')
     .in('category', opts.categories)
     .order('popular_rank', { ascending: true })
-    .range(opts.offset, opts.offset + opts.limit - 1);
+    .range(opts.offset, opts.offset + fetchWindow - 1);
 
   if (cityId) query = query.eq('city_id', cityId);
   if (opts.slug) query = query.in('slug', opts.slug);
@@ -520,7 +613,9 @@ async function main() {
 
   const { data: places, error } = await query;
   if (error) throw error;
-  if (!places || places.length === 0) {
+  const processablePlaces = selectProcessablePlaces(places, opts.limit);
+
+  if (!processablePlaces || processablePlaces.length === 0) {
     console.log('No matching places found.');
     return;
   }
@@ -535,7 +630,7 @@ async function main() {
   let skipped = 0;
   let duplicates = 0;
 
-  for (const place of places.map((item) => ({ ...item, sourceMode: opts.source }))) {
+  for (const place of processablePlaces.map((item) => ({ ...item, sourceMode: opts.source }))) {
     console.log(`  [${place.name}] ${place.cities?.slug || ''}...`);
 
     let result = null;
@@ -579,10 +674,30 @@ async function main() {
 
   console.log('\n=== Summary ===');
   console.log(`  Mode: ${opts.dryRun ? 'DRY-RUN' : 'APPLY'}`);
-  console.log(`  Processed: ${places.length}`);
+  console.log(`  Processed: ${processablePlaces.length}`);
   console.log(`  Enriched: ${enriched}`);
   console.log(`  Skipped: ${skipped}`);
   console.log(`  Duplicate skipped: ${duplicates}`);
+
+  if (resolvedStateFile) {
+    const nextOffset = opts.offset + fetchWindow;
+    const updatedState = state && typeof state === 'object' ? state : {};
+    updatedState[key] = {
+      nextOffset,
+      updatedAt: new Date().toISOString(),
+      lastRun: {
+        mode: opts.dryRun ? 'dry-run' : 'apply',
+        processed: processablePlaces.length,
+        enriched,
+        skipped,
+        duplicateSkipped: duplicates,
+        offset: opts.offset,
+        fetchWindow,
+      },
+    };
+    saveState(resolvedStateFile, updatedState);
+    console.log(`\nState updated: nextOffset=${nextOffset}`);
+  }
 }
 
 if (require.main === module) {
@@ -595,8 +710,12 @@ if (require.main === module) {
 module.exports = {
   buildPlaceMatchSignals,
   containsBlockedVisualTerms,
+  hasStrongTextMatch,
   isAnimalAttraction,
   rawTags,
+  hasReliablePlaceIdentity,
+  selectProcessablePlaces,
+  shouldSkipPlaceForImageSearch,
   selectPexelsPhoto,
   selectUnsplashPhoto,
 };

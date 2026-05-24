@@ -4,15 +4,14 @@ import { useTranslations } from 'next-intl';
 import { TravelPlan } from '@/types/ai-planner';
 import { DayCard } from './DayCard';
 import { CostBreakdown } from './CostBreakdown';
-import { PlanActions } from './PlanActions';
-import { Plane, Hotel, Utensils, Ticket, Bus, ShieldCheck, Lightbulb, Backpack } from 'lucide-react';
+import { ShieldCheck, Lightbulb, Backpack } from 'lucide-react';
 
 interface Props {
   plan: TravelPlan;
   destination: string;
 }
 
-export function PlanResultContent({ plan, destination }: Props) {
+export function PlanResultContent({ plan }: Props) {
   const t = useTranslations('aiPlanner');
 
   return (

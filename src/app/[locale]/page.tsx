@@ -8,11 +8,9 @@ import {
   Building2,
   CalendarDays,
   Compass,
-  HeartHandshake,
   Landmark,
   Map,
   MapPin,
-  MessageCircle,
   Newspaper,
   Plane,
   ShieldCheck,
@@ -93,6 +91,13 @@ type HomePlace = {
   countries?: HomeCountryRef | null;
 };
 
+type HomeStats = {
+  countries: number;
+  cities: number;
+  places: number;
+  visa: number;
+};
+
 const fallbackCountries: ExpandedCountry[] = [
   {
     id: 'turkey',
@@ -168,13 +173,6 @@ const fallbackCountries: ExpandedCountry[] = [
   },
 ];
 
-const placeIdeas = [
-  { icon: Compass, title: 'Attractions', label: 'OpenStreetMap POI', color: 'text-primary' },
-  { icon: BedDouble, title: 'Hotels', label: 'Real API ready', color: 'text-secondary' },
-  { icon: HeartHandshake, title: 'Restaurants', label: 'Community reviews', color: 'text-accent' },
-  { icon: MessageCircle, title: 'Forums', label: 'TravelAZ icma', color: 'text-sky-300' },
-];
-
 function localizedCountryName(country: ExpandedCountry, locale: Locale) {
   if (locale === 'en') return country.name_en || country.name_az;
   if (locale === 'ru') return country.name_ru || country.name_az;
@@ -225,7 +223,17 @@ async function getHomeData() {
   try {
     const supabase = await createClient();
 
-    const [countriesResult, toursResult, blogsResult, citiesResult, placesResult] = await Promise.all([
+    const [
+      countriesResult,
+      toursResult,
+      blogsResult,
+      citiesResult,
+      placesResult,
+      countriesCountResult,
+      citiesCountResult,
+      placesCountResult,
+      visaCountResult,
+    ] = await Promise.all([
       supabase
         .from('countries')
         .select('id, slug, name_az, name_en, name_ru, flag_emoji, capital, continent, cover_photo_id, cover_photo_alt, short_desc, short_desc_en, short_desc_ru, avg_flight_azn, avg_hotel_azn, best_months, visa_required, popular_rank, is_featured, safety_level, cca2')
@@ -258,7 +266,18 @@ async function getHomeData() {
         .in('category', ['attraction', 'museum', 'landmark', 'restaurant', 'cafe', 'historic', 'viewpoint'])
         .order('popular_rank', { ascending: true })
         .limit(8),
+      supabase.from('countries').select('id', { count: 'exact', head: true }),
+      supabase.from('cities').select('id', { count: 'exact', head: true }),
+      supabase.from('places').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+      supabase.from('visa_info').select('id', { count: 'exact', head: true }),
     ]);
+
+    const stats: HomeStats = {
+      countries: countriesCountResult.count || countriesResult.data?.length || 0,
+      cities: citiesCountResult.count || citiesResult.data?.length || 0,
+      places: placesCountResult.count || placesResult.data?.length || 0,
+      visa: visaCountResult.count || 0,
+    };
 
     return {
       countries: ((countriesResult.data as ExpandedCountry[] | null) || []).length > 0
@@ -268,6 +287,7 @@ async function getHomeData() {
       blogs: (blogsResult.data as HomeBlog[] | null) || [],
       cities: (citiesResult.data as HomeCity[] | null) || [],
       places: (placesResult.data as HomePlace[] | null) || [],
+      stats,
     };
   } catch {
     return {
@@ -276,6 +296,7 @@ async function getHomeData() {
       blogs: [] as HomeBlog[],
       cities: [] as HomeCity[],
       places: [] as HomePlace[],
+      stats: { countries: fallbackCountries.length, cities: 0, places: 0, visa: 0 } as HomeStats,
     };
   }
 }
@@ -288,13 +309,13 @@ export default async function HomePage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'home' });
   const common = await getTranslations({ locale, namespace: 'common' });
-  const { countries, tours, blogs, cities, places } = await getHomeData();
+  const { countries, tours, blogs, cities, places, stats } = await getHomeData();
 
   return (
     <div className="overflow-hidden">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({ ...organizationJsonLd(), ...webSiteJsonLd(locale) }) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({ ...organizationJsonLd(), ...webSiteJsonLd(locale) }).replace(/</g, '\\u003c') }}
       />
       <section className="relative px-4 pt-28 pb-14 md:pt-36 md:pb-20 min-h-screen overflow-hidden">
         <div className="absolute inset-0 -z-10">
@@ -347,6 +368,20 @@ export default async function HomePage({
                   <Stamp className="h-4 w-4" />
                   {t('ctaVisa')}
                 </Link>
+              </div>
+
+              <div className="mt-8 grid max-w-2xl grid-cols-2 gap-3 md:grid-cols-4">
+                {[
+                  { value: stats.countries, label: t('statsCountries') },
+                  { value: stats.cities, label: t('statsCities') },
+                  { value: stats.places, label: t('statsPlaces') },
+                  { value: stats.visa, label: t('statsVisa') },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-md">
+                    <p className="text-2xl font-black text-white">{item.value.toLocaleString(locale)}</p>
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/65">{item.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -592,16 +627,17 @@ export default async function HomePage({
                   </div>
                 </Link>
               );
-            }) : placeIdeas.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.title} className="rounded-2xl border border-border bg-bg-base/50 p-5">
-                  <Icon className={`h-7 w-7 ${item.color}`} />
-                  <h3 className="mt-5 font-black text-txt">{item.title}</h3>
-                  <p className="mt-2 text-sm text-txt-sec">{item.label}</p>
-                </div>
-              );
-            })}
+            }) : (
+              <div className="md:col-span-4 rounded-2xl border border-dashed border-primary/30 bg-bg-base/60 p-8 text-center">
+                <Building2 className="mx-auto h-10 w-10 text-primary" />
+                <h3 className="mt-4 text-xl font-black text-txt">{t('placesEmptyTitle')}</h3>
+                <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-txt-sec">{t('placesEmptyText')}</p>
+                <Link href={`/${locale}/countries`} className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white">
+                  {t('ctaCountries')}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -616,11 +652,9 @@ export default async function HomePage({
               </div>
               <Link href={`/${locale}/tours`} className="text-sm font-bold text-primary">{t('viewAll')}</Link>
             </div>
-            <div className="space-y-3">
-              {(tours.length ? tours : [
-                { id: 'fallback-tour-1', title: t('fallbackTourOne'), slug: 'gabala-weekend', region: 'Qabala', price: 89, duration_days: 2, rating: 4.8 },
-                { id: 'fallback-tour-2', title: t('fallbackTourTwo'), slug: 'sheki-culture', region: 'Sheki', price: 110, duration_days: 2, rating: 4.7 },
-              ]).map((tour) => (
+            {tours.length > 0 ? (
+              <div className="space-y-3">
+                {tours.map((tour) => (
                 <Link
                   key={tour.id}
                   href={`/${locale}/tours`}
@@ -636,8 +670,25 @@ export default async function HomePage({
                     <p className="text-xs text-txt-muted">{t('perPerson')}</p>
                   </div>
                 </Link>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-border bg-bg-surface p-7">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Compass className="h-6 w-6" />
+                </div>
+                <h3 className="mt-5 text-xl font-black text-txt">{t('tourEmptyTitle')}</h3>
+                <p className="mt-3 text-sm leading-7 text-txt-sec">{t('tourEmptyText')}</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link href={`/${locale}/company`} className="rounded-full bg-primary px-5 py-3 text-sm font-bold text-white">
+                    {t('tourCompanyCta')}
+                  </Link>
+                  <Link href={`/${locale}/countries`} className="rounded-full border border-border px-5 py-3 text-sm font-bold text-txt hover:border-primary/50 hover:text-primary">
+                    {t('ctaCountries')}
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>

@@ -71,6 +71,7 @@ export function ChatList({ conversations, activeId, onSelect, onDelete, onBlock,
         const isActive = activeId === conv.id;
         const initial = conv.other_user?.name?.[0]?.toUpperCase() || 'U';
         const otherId = conv.other_user?.id || '';
+        const otherName = conv.other_user?.name || t('user');
         const isBlocked = blockedUsers.includes(otherId);
         const isConfirmingDelete = confirmDelete === conv.id;
         const isConfirmingBlock = confirmBlock === conv.id;
@@ -102,13 +103,13 @@ export function ChatList({ conversations, activeId, onSelect, onDelete, onBlock,
             <div key={conv.id} className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
               <p className="text-sm text-txt mb-3">
                 {isBlocked
-                  ? t('unblockConfirm', { name: conv.other_user?.name })
-                  : t('blockConfirm', { name: conv.other_user?.name })
+                  ? t('unblockConfirm', { name: otherName })
+                  : t('blockConfirm', { name: otherName })
                 }
               </p>
               <div className="flex gap-2">
                 <button
-                  onClick={(e) => { e.stopPropagation(); onBlock(otherId, conv.other_user?.name || ''); setConfirmBlock(null); }}
+                  onClick={(e) => { e.stopPropagation(); onBlock(otherId, otherName); setConfirmBlock(null); }}
                   className="flex-1 py-2 text-xs bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors"
                 >
                   {isBlocked ? t('unblock') : t('block')}

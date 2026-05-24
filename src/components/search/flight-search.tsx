@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plane, Calendar, Users, ArrowRight, Navigation, MapPin } from 'lucide-react';
+import { Calendar, ArrowRight, Navigation, MapPin } from 'lucide-react';
 
 interface FlightSearchProps {
   onSearch?: (params: { from: string; to: string; date: string; passengers: number; tripType: string }) => void;
@@ -14,7 +14,7 @@ export function FlightSearch({ onSearch }: FlightSearchProps) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [date, setDate] = useState('');
-  const [passengers, setPassengers] = useState(1);
+  const [passengers] = useState(1);
 
   const handleSearch = () => {
     if (onSearch) {

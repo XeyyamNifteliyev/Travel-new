@@ -240,7 +240,7 @@ export default async function CountryDetailPage({ params }: { params: Promise<{ 
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(countryJsonLd({ name: country.name_az, nameEn: country.name_en, slug, capital: country.capital, description: country.short_desc, cca2: country.cca2, locale })) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(countryJsonLd({ name: country.name_az, nameEn: country.name_en, slug, capital: country.capital, description: country.short_desc, cca2: country.cca2, locale })).replace(/</g, '\\u003c') }}
       />
       <CountryDetailClient
         country={countryWithCoordinates}

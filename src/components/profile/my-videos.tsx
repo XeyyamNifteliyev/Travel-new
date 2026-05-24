@@ -182,7 +182,6 @@ export function MyVideos() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {videos.map((video) => {
-            const videoId = extractVideoId(video.youtube_url);
             return (
               <div key={video.id} className="bg-bg-surface rounded-xl border border-border overflow-hidden">
                 {video.thumbnail_url ? (

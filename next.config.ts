@@ -3,6 +3,7 @@ import path from 'node:path';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+const isProduction = process.env.NODE_ENV === 'production';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -73,9 +74,9 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+              `script-src 'self' 'unsafe-inline'${isProduction ? '' : " 'unsafe-eval'"}`,
               "img-src 'self' data: blob: https://images.unsplash.com https://images.pexels.com https://*.supabase.co https://flagcdn.com https://lh3.googleusercontent.com https://upload.wikimedia.org https://i.ytimg.com https://img.youtube.com",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.duffel.com https://rough-sun-2523.fly.dev",
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' https://fonts.gstatic.com",
               "frame-src https://www.youtube.com",

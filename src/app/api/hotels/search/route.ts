@@ -4,13 +4,6 @@ import { mapDuffelStayResults } from '@/lib/duffel/stays';
 import { checkRateLimit, getIpFromHeaders } from '@/lib/rate-limit';
 import type { HotelOffer } from '@/types/hotel';
 
-const FALLBACK_HOTELS: HotelOffer[] = [
-  { id: 'mock-1', source: 'mock', name: 'Baku Palace & Spa', stars: 5, location: 'Baku, Azerbaijan', lat: 40.4093, lng: 49.8671, rating: 9.2, reviews: 2341, price: 240, currency: 'AZN', badge: 'premium', features: { pool: true, breakfast: true, spa: true, wifi: true }, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80', phone: '' },
-  { id: 'mock-2', source: 'mock', name: 'Mountain Retreat', stars: 4, location: 'Gabala, Azerbaijan', lat: 40.9876, lng: 47.8412, rating: 8.8, reviews: 1892, price: 185, currency: 'AZN', badge: 'bestSeller', features: { pool: false, breakfast: true, spa: true, wifi: true }, image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80', phone: '' },
-  { id: 'mock-3', source: 'mock', name: 'Grand Hotel Istanbul', stars: 4, location: 'Sultanahmet, Istanbul', lat: 41.0054, lng: 28.9768, rating: 8.7, reviews: 2341, price: 120, currency: 'EUR', badge: null, features: { pool: false, breakfast: true, spa: false, wifi: true }, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80', phone: '' },
-  { id: 'mock-4', source: 'mock', name: 'Dubai Marina Hotel', stars: 5, location: 'Dubai Marina, UAE', lat: 25.0805, lng: 55.1403, rating: 9.1, reviews: 1892, price: 250, currency: 'EUR', badge: 'premium', features: { pool: true, breakfast: false, spa: true, wifi: true }, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80', phone: '' },
-];
-
 export async function GET(req: NextRequest) {
   const ip = getIpFromHeaders(req);
   const rl = await checkRateLimit(ip, 'hotels-search', 10, 60_000);
@@ -35,7 +28,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       error: 'Duffel API not configured',
       configured: false,
-      hotels: FALLBACK_HOTELS,
+      hotels: [] as HotelOffer[],
     });
   }
 
@@ -43,7 +36,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       error: 'latitude and longitude are required for hotel search',
       configured: true,
-      hotels: FALLBACK_HOTELS,
+      hotels: [] as HotelOffer[],
     });
   }
 
@@ -70,13 +63,12 @@ export async function GET(req: NextRequest) {
     });
 
 if (!res.ok) {
-      const text = await res.text();
       if (res.status === 403) {
         return NextResponse.json({
           error: 'Duffel Stays not enabled for this account',
           configured: true,
           staysEnabled: false,
-          hotels: FALLBACK_HOTELS,
+          hotels: [] as HotelOffer[],
         });
       }
       return NextResponse.json(

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { createBrowserClient } from '@/lib/supabase/client';
-import { Trophy, Eye, Share2, Heart, FileText, Loader2, Crown, Medal } from 'lucide-react';
+import { Trophy, Eye, Heart, Loader2, Crown, Medal } from 'lucide-react';
 
 interface LeaderboardEntry {
   userId: string;

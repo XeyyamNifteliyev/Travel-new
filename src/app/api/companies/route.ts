@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit, getIpFromHeaders, rateLimitResponse } from '@/lib/rate-limit';
 
 const COMPANY_FIELDS = 'id, user_id, company_name, logo_url, license_number, description, phone, whatsapp, telegram, email, website, plan_type, plan_expires_at, is_verified, rating, review_count, status, created_at, updated_at';
 const VALID_STATUSES = new Set(['pending', 'active', 'suspended']);
@@ -59,6 +60,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getIpFromHeaders(request);
+    const rl = await checkRateLimit(ip, 'company-create', 3, 3_600_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, ...rateLimitResponse(rl.remaining, rl.resetAt) }
+      );
+    }
+
     const cookieStore = await cookies();
     const supabase = createServerClient(cookieStore);
 
@@ -135,6 +145,15 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    const ip = getIpFromHeaders(request);
+    const rl = await checkRateLimit(ip, 'company-update', 10, 3_600_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, ...rateLimitResponse(rl.remaining, rl.resetAt) }
+      );
+    }
+
     const cookieStore = await cookies();
     const supabase = createServerClient(cookieStore);
 

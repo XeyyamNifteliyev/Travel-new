@@ -1,15 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@/types/supabase-helpers';
 import { FileText, Users, Video, Globe, TrendingUp } from 'lucide-react';
 
 export function DashboardOverview() {
-  const params = useParams();
-  const locale = params?.locale as string;
   const supabase = createClient();
   const t = useTranslations('profile');
   const [user, setUser] = useState<SupabaseUser | null>(null);

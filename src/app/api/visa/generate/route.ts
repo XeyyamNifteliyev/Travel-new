@@ -1,9 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { getProvider } from '@/lib/ai/provider';
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdminUser } from '@/lib/auth/admin';
 
 export async function POST(request: NextRequest) {
-  const { country_name, locale } = await request.json();
+  const { country_name } = await request.json();
 
   if (!country_name) {
     return NextResponse.json({ error: 'Ölkə adı tələb olunur' }, { status: 400 });
@@ -24,12 +25,9 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Giriş tələb olunur' }, { status: 401 });
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-  if (profile?.role !== 'admin') return NextResponse.json({ error: 'Admin icazəsi tələb olunur' }, { status: 403 });
+  if (!(await isAdminUser(supabase, user))) {
+    return NextResponse.json({ error: 'Admin icazəsi tələb olunur' }, { status: 403 });
+  }
 
   const provider = getProvider();
   const prompt = `Sən TravelAZ saytının viza məlumat assistentisən. Azərbaycan vətəndaşlarına kömək edirsən.
@@ -147,7 +145,7 @@ Yalnız JSON qaytar, heç bir əlavə mətn yazma.`;
     }
 
     return NextResponse.json({ success: true, slug: data.slug });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'AI məlumat yarada bilmədi' }, { status: 500 });
   }
 }

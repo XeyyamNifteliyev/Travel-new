@@ -134,7 +134,7 @@ const CATEGORY_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
-export default function CountryDetailClient({ country, highlights, blogs, cities, places, foodPlaces, locale, hasVisaInfo }: Props) {
+export default function CountryDetailClient({ country, highlights, blogs, cities, places, foodPlaces, locale }: Props) {
   const t = useTranslations('countries');
   const [heroError, setHeroError] = useState(false);
 

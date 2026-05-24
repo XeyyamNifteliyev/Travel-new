@@ -1,5 +1,3 @@
-import type { User } from '@supabase/supabase-js';
-
 export type { User } from '@supabase/supabase-js';
 
 export interface ProfileRow {

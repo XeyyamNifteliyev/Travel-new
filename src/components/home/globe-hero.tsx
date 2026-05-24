@@ -209,13 +209,13 @@ export function GlobeHero() {
     const gridPaths: SVGPathElement[] = [];
     const gridG = document.createElementNS(ns, 'g');
 
-    for (const m of MERIDIANS) {
+    for (let i = 0; i < MERIDIANS.length; i++) {
       const p = document.createElementNS(ns, 'path');
       p.setAttribute('class', 'globe-grid');
       gridPaths.push(p);
       gridG.appendChild(p);
     }
-    for (const pa of PARALLELS) {
+    for (let i = 0; i < PARALLELS.length; i++) {
       const p = document.createElementNS(ns, 'path');
       p.setAttribute('class', 'globe-grid');
       gridPaths.push(p);

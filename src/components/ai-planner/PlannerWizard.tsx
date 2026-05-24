@@ -11,7 +11,7 @@ import { PlanResult } from './PlanResult';
 import { CheapDatesResult } from './CheapDatesResult';
 import { PlannerLoading } from './PlannerLoading';
 import { PlanRequest, PlanResponse, CheapDatesResponse } from '@/types/ai-planner';
-import { Sparkles, ChevronLeft, ChevronRight, SparklesIcon, TrendingDown } from 'lucide-react';
+import { Sparkles, ChevronLeft, ChevronRight, TrendingDown } from 'lucide-react';
 
 const POPULAR_DESTINATIONS = [
   { slug: 'turkey', name: 'Türkiyə', flag: '🇹🇷' },

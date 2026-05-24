@@ -2,8 +2,77 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const {
+  selectProcessablePlaces,
+  shouldSkipPlaceForImageSearch,
   selectPexelsPhoto,
 } = require('./enrich-place-images.js');
+
+test('shouldSkipPlaceForImageSearch skips animal and plant exhibit names before API calls', () => {
+  assert.equal(
+    shouldSkipPlaceForImageSearch({
+      name: 'kasuáři',
+      category: 'attraction',
+      cities: { name_en: 'Prague' },
+      raw_data: { osm: { tags: { tourism: 'zoo' } } },
+    }),
+    true,
+  );
+
+  assert.equal(
+    shouldSkipPlaceForImageSearch({
+      name: 'Himalayan Cedar',
+      category: 'attraction',
+      cities: { name_en: 'Tbilisi' },
+      raw_data: { osm: { tags: { natural: 'tree' } } },
+    }),
+    true,
+  );
+
+  assert.equal(
+    shouldSkipPlaceForImageSearch({
+      name: 'Basilica di San Pietro in Vincoli',
+      category: 'landmark',
+      cities: { name_en: 'Rome' },
+      raw_data: { osm: { tags: { building: 'church' } } },
+    }),
+    false,
+  );
+});
+
+test('selectProcessablePlaces backfills past skipped rows to preserve batch size', () => {
+  const places = [
+    {
+      name: 'kasuáři',
+      category: 'attraction',
+      cities: { name_en: 'Prague' },
+      raw_data: { osm: { tags: { tourism: 'zoo' } } },
+    },
+    {
+      name: 'Himalayan Cedar',
+      category: 'attraction',
+      cities: { name_en: 'Tbilisi' },
+      raw_data: { osm: { tags: { natural: 'tree' } } },
+    },
+    {
+      name: 'Basilica di San Pietro in Vincoli',
+      category: 'landmark',
+      cities: { name_en: 'Rome' },
+      raw_data: { osm: { tags: { building: 'church' } } },
+    },
+    {
+      name: 'Casa Mulleras',
+      category: 'landmark',
+      cities: { name_en: 'Barcelona' },
+      raw_data: { osm: { tags: { building: 'yes' } } },
+    },
+  ];
+
+  const selected = selectProcessablePlaces(places, 2);
+  assert.deepEqual(
+    selected.map((place) => place.name),
+    ['Basilica di San Pietro in Vincoli', 'Casa Mulleras'],
+  );
+});
 
 test('selectPexelsPhoto rejects zoo and animal attraction false positives', () => {
   const place = {

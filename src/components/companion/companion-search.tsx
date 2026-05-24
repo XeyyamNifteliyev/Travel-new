@@ -9,8 +9,8 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { getUnsplashUrl, getCountryCoverPhotoId } from '@/lib/unsplash';
 import type { User } from '@/types/supabase-helpers';
 import {
-  Search, MapPin, Calendar, Users,
-  X, Plus, Loader2, Globe, MessageCircle, ArrowLeft
+  MapPin, Calendar, Users,
+  X, Plus, Loader2, Globe, MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -553,7 +553,6 @@ export default function CompanionSearch() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {companions.map((companion, index) => {
               const gradient = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
-              const initial = companion.author?.name?.[0]?.toUpperCase() || '?';
               const coverImage = countryImages[companion.destinationCountry];
 
               return (

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Search, MapPin, Users, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, MapPin, Users, Building2, ChevronLeft, ChevronRight, Compass } from 'lucide-react';
 import { getUnsplashUrl, getCityCoverPhotoId } from '@/lib/unsplash';
 import type { CitySummary } from '@/types/place';
 
@@ -49,8 +49,30 @@ export default function CityGrid({ cities, locale, currentPage, totalPages, tota
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
-      <p className="text-txt-sec text-lg mb-8">{t('subtitle')}</p>
+      <section className="relative mb-8 overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white md:p-9">
+        <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute -bottom-20 left-1/3 h-52 w-52 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="relative grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-sky-200">
+              <Compass className="h-3.5 w-3.5" />
+              {t('eyebrow')}
+            </div>
+            <h1 className="max-w-3xl text-4xl font-black tracking-tight md:text-5xl">{t('title')}</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 md:text-base">{t('subtitle')}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:min-w-[260px]">
+            <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+              <p className="text-3xl font-black">{totalCount.toLocaleString(locale)}</p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/65">{t('resultsCount')}</p>
+            </div>
+            <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+              <p className="text-3xl font-black">{currentPage}/{totalPages}</p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/65">{t('page')}</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-txt-sec" />

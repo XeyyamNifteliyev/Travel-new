@@ -12,7 +12,7 @@ export function HotelSearch({ onSearch }: HotelSearchProps) {
   const t = useTranslations('search');
   const [city, setCity] = useState('');
   const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
+  const [checkOut] = useState('');
   const [guests, setGuests] = useState(2);
 
   const handleSearch = () => {

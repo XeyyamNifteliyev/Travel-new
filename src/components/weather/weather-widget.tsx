@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Thermometer, Wind, Droplets, Loader2 } from 'lucide-react';
+import { Thermometer, Wind, Loader2 } from 'lucide-react';
 import { getWeatherIcon } from './weather-icon';
 import type { WeatherResponse, WeatherDaily } from '@/lib/weather';
 import { getWeatherLabel } from '@/lib/weather';

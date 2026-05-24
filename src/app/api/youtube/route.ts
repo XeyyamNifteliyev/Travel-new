@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit, getIpFromHeaders, rateLimitResponse } from '@/lib/rate-limit';
 
 const YOUTUBE_SELECT = 'id, user_id, youtube_url, title, description, thumbnail_url, destination_country, destination_city, language, status, created_at, updated_at';
 
@@ -70,6 +71,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getIpFromHeaders(request);
+    const rl = await checkRateLimit(ip, 'youtube-submit', 5, 3_600_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, ...rateLimitResponse(rl.remaining, rl.resetAt) }
+      );
+    }
+
     const cookieStore = await cookies();
     const supabase = createServerClient(cookieStore);
 
@@ -135,6 +145,15 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const ip = getIpFromHeaders(request);
+    const rl = await checkRateLimit(ip, 'youtube-delete', 20, 3_600_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, ...rateLimitResponse(rl.remaining, rl.resetAt) }
+      );
+    }
+
     const cookieStore = await cookies();
     const supabase = createServerClient(cookieStore);
 

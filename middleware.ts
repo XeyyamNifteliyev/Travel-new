@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from '@/i18n/routing';
+import { isAdminUser } from '@/lib/auth/admin';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -83,10 +84,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url));
   }
 
-if (isAdminPath(request.nextUrl.pathname)) {
-    const appMetadata = user.app_metadata;
-    const role = appMetadata?.role;
-    if (role !== 'admin') {
+  if (isAdminPath(request.nextUrl.pathname)) {
+    if (!(await isAdminUser(supabase, user))) {
       const locale = request.nextUrl.pathname.match(/^\/(az|ru|en)/)?.[1] || 'az';
       return NextResponse.redirect(new URL(`/${locale}/profile`, request.url));
     }

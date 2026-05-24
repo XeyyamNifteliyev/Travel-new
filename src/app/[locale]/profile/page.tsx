@@ -3,20 +3,54 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@/types/supabase-helpers';
 import {
   LayoutDashboard, FileText, Users, Video, Map, Settings, LogOut, User, Menu, X, MessageCircle
 } from 'lucide-react';
 import Link from 'next/link';
-import { DashboardOverview } from '@/components/profile/dashboard-overview';
-import { MyBlogs } from '@/components/profile/my-blogs';
-import { MyCompanions } from '@/components/profile/my-companions';
-import { MyVideos } from '@/components/profile/my-videos';
-import { MyMap } from '@/components/profile/my-map';
-import { ProfileSettings } from '@/components/profile/profile-settings';
 
 type Section = 'dashboard' | 'blogs' | 'companions' | 'videos' | 'map' | 'settings';
+
+const ProfileTabFallback = () => (
+  <div className="rounded-xl border border-border bg-bg-surface p-6">
+    <div className="animate-pulse space-y-4">
+      <div className="h-6 w-40 rounded bg-bg-surface-hover" />
+      <div className="h-4 w-64 max-w-full rounded bg-bg-surface-hover" />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="h-24 rounded-lg bg-bg-surface-hover" />
+        <div className="h-24 rounded-lg bg-bg-surface-hover" />
+        <div className="h-24 rounded-lg bg-bg-surface-hover" />
+      </div>
+    </div>
+  </div>
+);
+
+const DashboardOverview = dynamic(
+  () => import('@/components/profile/dashboard-overview').then((mod) => mod.DashboardOverview),
+  { loading: ProfileTabFallback }
+);
+const MyBlogs = dynamic(
+  () => import('@/components/profile/my-blogs').then((mod) => mod.MyBlogs),
+  { loading: ProfileTabFallback }
+);
+const MyCompanions = dynamic(
+  () => import('@/components/profile/my-companions').then((mod) => mod.MyCompanions),
+  { loading: ProfileTabFallback }
+);
+const MyVideos = dynamic(
+  () => import('@/components/profile/my-videos').then((mod) => mod.MyVideos),
+  { loading: ProfileTabFallback }
+);
+const MyMap = dynamic(
+  () => import('@/components/profile/my-map').then((mod) => mod.MyMap),
+  { loading: ProfileTabFallback }
+);
+const ProfileSettings = dynamic(
+  () => import('@/components/profile/profile-settings').then((mod) => mod.ProfileSettings),
+  { loading: ProfileTabFallback }
+);
 
 export default function ProfilePage() {
   const router = useRouter();

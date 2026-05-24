@@ -17,13 +17,6 @@ const FEATURE_ICONS: Record<string, React.ComponentType<{ className?: string }>>
   wifi: Wifi,
 };
 
-const FALLBACK_HOTELS: HotelOffer[] = [
-  { id: 'mock-1', source: 'mock', name: 'Baku Palace & Spa', stars: 5, location: 'Baku, Azerbaijan', lat: 40.4093, lng: 49.8671, rating: 9.2, reviews: 2341, price: 240, currency: 'AZN', badge: 'premium', features: { pool: true, breakfast: true, spa: true, wifi: true }, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80', phone: '' },
-  { id: 'mock-2', source: 'mock', name: 'Mountain Retreat', stars: 4, location: 'Gabala, Azerbaijan', lat: 40.9876, lng: 47.8412, rating: 8.8, reviews: 1892, price: 185, currency: 'AZN', badge: 'bestSeller', features: { pool: false, breakfast: true, spa: true, wifi: true }, image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80', phone: '' },
-  { id: 'mock-3', source: 'mock', name: 'Grand Hotel Istanbul', stars: 4, location: 'Sultanahmet, Istanbul', lat: 41.0054, lng: 28.9768, rating: 8.7, reviews: 2341, price: 120, currency: 'EUR', badge: null, features: { pool: false, breakfast: true, spa: false, wifi: true }, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80', phone: '' },
-  { id: 'mock-4', source: 'mock', name: 'Dubai Marina Hotel', stars: 5, location: 'Dubai Marina, UAE', lat: 25.0805, lng: 55.1403, rating: 9.1, reviews: 1892, price: 250, currency: 'EUR', badge: 'premium', features: { pool: true, breakfast: false, spa: true, wifi: true }, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80', phone: '' },
-];
-
 const STAR_OPTIONS = [3, 4, 5];
 
 const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
@@ -84,23 +77,21 @@ export default function HotelsPage() {
 
       if (!data.configured) {
         setConfigured(false);
-        setHotels(FALLBACK_HOTELS);
+        setHotels([]);
       } else if (data.error) {
         setError(data.error);
-        setHotels(FALLBACK_HOTELS);
+        setHotels([]);
       } else {
         setConfigured(true);
-        setHotels(data.hotels?.length ? data.hotels : FALLBACK_HOTELS);
+        setHotels(data.hotels || []);
       }
     } catch {
       setError('Failed to search hotels');
-      setHotels(FALLBACK_HOTELS);
+      setHotels([]);
     } finally {
       setLoading(false);
     }
   }, []);
-
-  const isFallback = hotels.length > 0 && hotels[0].source === 'mock';
 
   const filteredHotels = hotels
     .filter((h) => !starFilter || h.stars === starFilter)
@@ -145,7 +136,6 @@ export default function HotelsPage() {
           <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-red-400 font-medium">{error}</p>
-            {isFallback && <p className="text-txt-sec text-sm mt-1">Showing sample hotels</p>}
           </div>
         </div>
       )}
@@ -153,7 +143,7 @@ export default function HotelsPage() {
       {!loading && !configured && !error && searched && (
         <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-start gap-3 mb-6">
           <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-          <p className="text-primary text-sm">Hotel search is not configured. Showing sample hotels.</p>
+          <p className="text-primary text-sm">{th('apiNotConfigured')}</p>
         </div>
       )}
 

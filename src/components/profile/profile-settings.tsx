@@ -1,19 +1,15 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
-import type { User as SupabaseUser, ProfileRow } from '@/types/supabase-helpers';
+import type { User as SupabaseUser } from '@/types/supabase-helpers';
 import { Save, Loader2, User, Camera, Video, Link as LinkIcon } from 'lucide-react';
 
 export function ProfileSettings() {
-  const params = useParams();
-  const locale = params?.locale as string;
   const supabase = useMemo(() => createClient(), []);
   const t = useTranslations('profile');
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
@@ -39,7 +35,6 @@ export function ProfileSettings() {
         .eq('id', user.id)
         .single();
       if (data) {
-        setProfile(data);
         setFormData({
           name: data.name || '',
           bio: data.bio || '',

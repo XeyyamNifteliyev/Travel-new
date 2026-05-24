@@ -57,7 +57,6 @@ export async function GET(req: NextRequest) {
     });
 
 if (!res.ok) {
-      const text = await res.text();
       return NextResponse.json({
         error: `Duffel API error (${res.status})`,
         flights: FALLBACK_FLIGHTS,

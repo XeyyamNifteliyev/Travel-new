@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         content: trimmedContent,
       })
-      .select()
+      .select(COMMENT_SELECT)
       .single();
 
     if (error) {

@@ -196,7 +196,7 @@ Open data import script default olaraq dry-run işləyir. Supabase-ə yazmaq ü�
 
 ## Database və Migration-lar
 
-Migration siyahısı hazırda `028_seed_20_cities_open_data.sql` faylına qədər gedir.
+Migration siyahısı hazırda `033_rls_policy_final_hardening.sql` faylına qədər gedir.
 
 Mühüm cədvəllər:
 
@@ -249,6 +249,7 @@ Dəstəklənən provider-lar:
 - Public API route-larında user body-ni birbaşa DB-yə yazma; mütləq allowlist, type validation və length limit istifadə et.
 - Normal user blog/post yaratdıqda `status`, `is_verified`, `views`, `rating`, `role` kimi həssas sahələri body-dən qəbul etmə.
 - Blog publish yalnız admin/moderation axını ilə açılmalıdır; `/api/blogs` POST default olaraq `draft` yaratmalıdır.
+- Admin yoxlaması üçün server route-larda `src/lib/auth/admin.ts` içindəki `isAdminUser` helper-indən istifadə et. Eyni məntiqi route-larda yenidən yazma.
 - Clientə Supabase `error.message`, constraint, table, column və daxili stack detalları göndərmə. Detalı serverdə `console.error` ilə saxla, clientə generic error qaytar.
 - Server/page query-lərində `select('*')` istifadə etmə; lazım olan field-ləri açıq yaz.
 - Bir-birindən asılı olmayan Supabase query-lərini `Promise.all` ilə paralel işlət.
@@ -274,6 +275,9 @@ Hər import source/license metadata saxlamalıdır.
 - City və place səhifələri.
 - Review moderation workflow.
 - AI route auth və image enrich admin gate.
+- Admin authorization helper-i mərkəzləşdirildi: middleware və admin API route-ları `isAdminUser` istifadə edir.
+- Image enrich API ölkə/şəhər şəkillərində paytaxt/şəhər skyline, architecture, downtown və landmark query-lərini üstün tutur, heyvan/təbiət/random landscape nəticələrini skip edir.
+- Profile səhifəsində ağır dashboard tab-ları dynamic import ilə yüklənir.
 - Viza widget `cca2` və Supabase fallback düzəlişi.
 - Viza üçün dəqiq rəsmi link modeli: `official_visa_url` əsas CTA, köhnə `official_url` ümumi mənbə/fallback kimi qalır.
 - i18n və type cleanup.
@@ -287,15 +291,29 @@ Hər import source/license metadata saxlamalıdır.
 - Blog səhifəsindəki test/junk published yazılar draft-a keçirildi və 16 peşəkar TravelAZ redaksiya bloqu əlavə edildi. Bütün published bloglarda cover image var. `scripts/seed-professional-blogs.js` idempotentdir və `npm run seed:professional-blogs -- --apply` ilə təkrar işlədilə bilər.
 - Xəbərlər bölməsi yenidən viza/giriş qaydaları məntiqinə keçirildi: 15 published xəbər var, hamısında cover image var, köhnə bəyənilməyən platforma xəbərləri DB-dən silindi. `scripts/seed-professional-news.js` idempotentdir və `npm run seed:professional-news -- --apply` ilə təkrar işlədilə bilər.
 - Kontent fərqi: Blog uzun bələdçi, marşrut və təcrübə məqaləsidir; Xəbər isə qısa viza/giriş qaydası update-i, vizasız istiqamət xatırlatması və praktik sərhəd bildirişidir. Xəbərdə dəqiq hüquqi/viza qərarı kimi iddia yazılmamalı, dəyişən qaydalar üçün rəsmi mənbə yoxlama qeydi saxlanmalıdır.
+- SEO sitemap genişləndirildi: ölkə və şəhərlərlə yanaşı blog, xəbər, place və visa detail URL-ləri də sitemap-a düşür.
+- Hotels axınında real provider konfiqurasiya edilməyəndə və ya Duffel data qaytarmayanda mock hotel kartları göstərilmir; istifadəçiyə professional empty/config state göstərilir.
+- Tours boş data ilə zəif görünməsin deyə empty state professional marketplace mesajı və şirkət qeydiyyatı CTA-sı ilə yeniləndi.
+- Lint/type debt təmizləndi: `npm run lint` xəbərdarlıqsız keçir, `npx tsc --noEmit` keçir.
+- Ana səhifədə saxta fallback tour kartları çıxarıldı; real tur datası yoxdursa kurasiya mesajı və şirkət qeydiyyatı CTA-sı göstərilir.
+- Ana səhifə hero real platforma metrikləri ilə gücləndirildi: ölkə, şəhər, məkan və viza data sayları Supabase count query-lərindən gəlir.
+- `/cities` və `/restaurants` səhifələrinin giriş hissəsi professional hero/stat kartları ilə yeniləndi.
 
 ## Natamam Qalanlar
 
 0. Production security hardening aktiv prioritetdir.
    - Əsas sənəd: `production-hardening.md`.
    - Yeni migration: `032_ai_usage_and_rls_hardening.sql`.
+   - Son sərtləşdirmə migration-u: `033_rls_policy_final_hardening.sql`.
    - RLS-də public yazma policy-ləri bağlanmalıdır: `visa_qa_cache`, `visa_updates`, `scraper_logs`, `leaderboard_stats`, `notifications`.
    - AI endpoint-lər günlük limitlə işləməlidir: visa 3, planner 3, cheap dates 5.
-   - `npm audit --audit-level=moderate` hələ `next-intl` və Next/PostCSS üçün breaking update tələb edir; bunu ayrıca migration kimi et.
+   - Admin check-lər `isAdminUser` helper-i ilə mərkəzləşdirilib; yeni admin endpoint-lər də bu helper-i istifadə etməlidir.
+   - `npm audit fix` təhlükəsiz patch-lərlə `brace-expansion` və `ws` risklərini yenilədi.
+   - `next@16.2.6`, `next-intl@4.12.0`, `eslint-config-next@16.2.6` və `postcss@8.5.15` ilə `npm audit --audit-level=moderate` təmizlənib.
+   - Production CSP-də `unsafe-eval` çıxarılıb, JSON-LD escaping standartlaşdırılıb, əsas write API-lərə rate limit əlavə edilib.
+   - Docker builder tam dependency install edir; release-dən əvvəl `docker build` ayrıca yoxlanmalıdır.
+   - Public sitemap artıq `news`, `places` və `visa` detail səhifələrini də əhatə edir.
+   - Real hotel provider aktiv olmayanda mock data göstərilməməlidir; boş state qalmalıdır.
 
 1. Qalan ölkə şəkillərini batch-batch doldurmaq.
    - Əsas problem budur.
@@ -347,6 +365,7 @@ Hər import source/license metadata saxlamalıdır.
    - AI ilə link uydurmaq olmaz; linklər manual və ya rəsmi mənbə ilə yoxlanmalıdır.
    - Əvvəl audit: `npm run audit:visa-official-links`.
    - İlk batch seed: `npm run seed:visa-official-links -- --apply`.
+   - 2026-05-25: curated link batch `37/187` coverage verdi; qalan ölkələr manual rəsmi mənbə yoxlaması istəyir.
    - Qalan ölkələr `data/visa-official-links-audit.json` report-una görə mərhələli doldurulmalıdır.
 
 ## Yoxlama Bazası

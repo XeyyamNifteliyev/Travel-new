@@ -6,7 +6,7 @@ import { Tour } from '@/types/tour';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  Search, MapPin, Calendar, Clock, Users, Star,
+  Search, MapPin, Clock, Users, Star,
   Loader2, Bus, Hotel, Utensils, Eye, ChevronRight
 } from 'lucide-react';
 
@@ -128,10 +128,27 @@ export default function ToursPage() {
             <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
           </div>
         ) : tours.length === 0 ? (
-          <div className="text-center py-20">
-            <MapPin className="w-16 h-16 text-txt-muted mx-auto mb-4" />
-            <p className="text-txt-sec text-lg">{t('noTours')}</p>
-            <p className="text-txt-muted text-sm mt-1">{t('noToursSub')}</p>
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-bg-surface p-8 md:p-12 text-center">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-sky-400 to-primary" />
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
+              <MapPin className="w-8 h-8 text-emerald-400" />
+            </div>
+            <p className="text-txt text-2xl font-bold">{t('noTours')}</p>
+            <p className="text-txt-sec text-sm md:text-base mt-3 max-w-2xl mx-auto leading-7">{t('noToursSub')}</p>
+            <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => router.push(`/${locale}/company`)}
+                className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
+              >
+                {t('registerCompanyCta')}
+              </button>
+              <button
+                onClick={() => router.push(`/${locale}/countries`)}
+                className="inline-flex items-center justify-center rounded-full border border-border px-5 py-3 text-sm font-semibold text-txt transition-colors hover:border-emerald-400 hover:text-emerald-400"
+              >
+                {t('exploreCountriesCta')}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

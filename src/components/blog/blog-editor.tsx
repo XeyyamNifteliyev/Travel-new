@@ -3,7 +3,7 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import type { BlogFormData } from '@/types/blog';
@@ -19,7 +19,6 @@ export function BlogEditor({ onSave }: BlogEditorProps) {
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [saving, setSaving] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -29,10 +28,6 @@ export function BlogEditor({ onSave }: BlogEditorProps) {
       Placeholder.configure({ placeholder: t('writeContent') }),
     ],
   });
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const handlePublish = async () => {
     if (!editor || !title) return;

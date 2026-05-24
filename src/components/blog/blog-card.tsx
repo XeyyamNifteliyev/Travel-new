@@ -36,17 +36,18 @@ function getBlogExcerpt(blog: Blog) {
 interface BlogCardProps {
   blog: Blog;
   index?: number;
+  locale?: string;
 }
 
-export function BlogCard({ blog, index = 0 }: BlogCardProps) {
+export function BlogCard({ blog, index = 0, locale }: BlogCardProps) {
   const params = useParams();
-  const locale = params?.locale as string;
+  const currentLocale = locale || (params?.locale as string);
   const author = blog.author;
   const gradient = CARD_GRADIENTS[(index ?? 0) % CARD_GRADIENTS.length];
   const initial = author?.name?.[0]?.toUpperCase() || 'A';
 
   return (
-    <Link href={`/${locale}/blog/${blog.id}`}>
+    <Link href={`/${currentLocale}/blog/${blog.id}`}>
       <article className="bg-bg-surface/50 rounded-2xl overflow-hidden border border-border hover:border-primary/50 hover:shadow-[0_0_20px_rgba(14,165,233,0.15)] transition-all duration-300 group flex flex-col h-full">
         <div className="h-48 overflow-hidden relative">
           {blog.cover_image ? (

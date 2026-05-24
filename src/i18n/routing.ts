@@ -1,5 +1,5 @@
 import { defineRouting } from 'next-intl/routing';
-import { createSharedPathnamesNavigation } from 'next-intl/navigation';
+import { createNavigation } from 'next-intl/navigation';
 
 export const routing = defineRouting({
   locales: ['az', 'ru', 'en'],
@@ -7,8 +7,6 @@ export const routing = defineRouting({
   localePrefix: 'always'
 });
 
-export const { Link, useRouter, usePathname } = createSharedPathnamesNavigation({
-  locales: routing.locales
-});
+export const { Link, useRouter, usePathname } = createNavigation(routing);
 
 export type Locale = (typeof routing.locales)[number];

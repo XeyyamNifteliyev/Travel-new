@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { DayPlan } from '@/types/ai-planner';
-import { ChevronDown, Clock, MapPin, Wallet, Utensils, Bus, Lightbulb } from 'lucide-react';
+import { ChevronDown, MapPin, Wallet, Utensils, Bus, Lightbulb } from 'lucide-react';
 
 interface Props {
   day: DayPlan;

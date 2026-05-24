@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { blogPostJsonLd } from '@/lib/jsonld';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
+import type { Blog } from '@/types/blog';
 import BlogDetailClient from './blog-detail-client';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://travelaz.az';
@@ -50,7 +51,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ id:
 
   if (!data) notFound();
 
-  const blog = data as any;
+  const blog = data as unknown as Blog;
   const jsonLd = blogPostJsonLd({
     title: blog.title,
     id: blog.id,
@@ -64,7 +65,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ id:
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
       <BlogDetailClient blog={blog} locale={currentLocale} />
     </>

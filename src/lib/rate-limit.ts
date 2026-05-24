@@ -1,4 +1,3 @@
-import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
 type RateLimitEntry = { count: number; resetAt: number };
@@ -6,18 +5,13 @@ type RateLimitEntry = { count: number; resetAt: number };
 const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-let redisLimiter: Ratelimit | null = null;
+let redis: Redis | null = null;
 
-function getRedisLimiter(): Ratelimit | null {
+function getRedis(): Redis | null {
   if (!UPSTASH_URL || !UPSTASH_TOKEN) return null;
-  if (redisLimiter) return redisLimiter;
-
-  const redis = new Redis({ url: UPSTASH_URL, token: UPSTASH_TOKEN });
-  redisLimiter = new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(1, '1 s'),
-  });
-  return redisLimiter;
+  if (redis) return redis;
+  redis = new Redis({ url: UPSTASH_URL, token: UPSTASH_TOKEN });
+  return redis;
 }
 
 const memoryStore = new Map<string, RateLimitEntry>();
@@ -30,17 +24,29 @@ setInterval(() => {
 }, 60_000);
 
 export async function checkRateLimit(ip: string, action: string, limit: number, windowMs: number): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
-  const limiter = getRedisLimiter();
+  const r = getRedis();
 
-  if (limiter) {
+  if (r) {
     try {
-      const key = `${ip}:${action}`;
-      const { success, remaining } = await limiter.limit(key, { rate: 1 });
-      return {
-        allowed: success,
-        remaining,
-        resetAt: Date.now() + windowMs,
-      };
+      const key = `rl:${ip}:${action}`;
+      const windowSec = Math.ceil(windowMs / 1000);
+      const ttl = await r.ttl(key);
+
+      if (ttl === -2 || ttl <= 0) {
+        await r.set(key, 1, { ex: windowSec });
+        return { allowed: true, remaining: limit - 1, resetAt: Date.now() + windowMs };
+      }
+
+      const raw = await r.get(key);
+      const count = typeof raw === 'number' ? raw : parseInt(String(raw), 10) || 0;
+
+      if (count >= limit) {
+        const resetAt = Date.now() + (ttl * 1000);
+        return { allowed: false, remaining: 0, resetAt };
+      }
+
+      const newCount = await r.incr(key);
+      return { allowed: true, remaining: limit - newCount, resetAt: Date.now() + (ttl * 1000) };
     } catch {
       // Redis error fallback to memory
     }
